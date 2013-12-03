@@ -1,6 +1,0 @@
-file_get_contents(data/weather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/devices/devices.index.php line 204
-file_get_contents(data/weather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/devices/devices.index.php line 204
-file_get_contents(data/weather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/devices/devices.index.php line 204
-file_get_contents(data/weather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/devices/devices.index.php line 204
-file_get_contents(data/openweather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/svc/svc.controller.php line 57
-file_get_contents(data/weather.json): failed to open stream: No such file or directory in /srv/www/htdocs/hc/mvc/devices/devices.index.php line 204
