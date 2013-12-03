@@ -1,0 +1,3 @@
+<?php
+
+$GLOBALS['menu'] = array();

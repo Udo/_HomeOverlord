@@ -1,0 +1,5 @@
+log/
+log/
+node/node_modules/
+data/
+node/nohup.out

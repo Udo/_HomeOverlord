@@ -1,0 +1,12 @@
+{ 
+  "home" : "Home",
+  "about" : "About",
+  "accounts.signin" : "Sign In",
+  "signin" : "Log In",
+  "signup" : "Sign Up",
+  "devices.index" : "Devices",
+  "devices.groups" : "Groups",
+  "devices.group" : "Group",
+  "devices.cli" : "Command Line",
+  "devices" : "Devices"
+}
