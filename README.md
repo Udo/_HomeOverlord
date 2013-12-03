@@ -17,7 +17,7 @@ At this stage, this is a project that runs for me, but it's not really designed 
 
 Installing this thing is painful. You're going to need the following:
 
-* Hardware: a spare Linux-ready device, preferrably a Raspberry Pi or something similar. For HomeEasy devices, there is a simple HomeEasy USB sender you can buy, plug it in. For HomeMatic devices, use a CUL or really anything that works with Homegear. I'm using both since I have both systems deployed at home.
+* Hardware: a spare Linux-ready device, preferrably a Raspberry Pi or something similar. For HomeEasy devices, there is a simple HomeEasy USB sender you can buy, plug it in. For HomeMatic devices, use a CUL or really anything that works with Homegear. I'm using both since I have both systems deployed at home. Alternatively to the CUL/Homegear combo, you could probably use the HomeMatic CCU1/2 via its XMLRPC interface. Since HomeOverlord sends HM XMLRPC to port 2001 and listens at 9091 on the localhost, you will have to do some port forwarding to the actual CCU. Alternatively, you could edit the source code of node/srv.js to the CCU address. Since I don't have a CCU, I have no idea if this works but it should.
 
 * A LAMP-style web server supporting PHP and preferrably with websocket forwarding. I use nginx/php-fpm/MySQL. Clone the repository into your web server's htdocs directory. Create a database named hc or similar, import the SQL file  from setup/ and edit the file config/defaults.php with your database credentials. 
 
