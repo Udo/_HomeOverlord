@@ -2,12 +2,11 @@
 
 $GLOBALS['config']['db'] = array(
     'host' => 'localhost',
-    'user' => '<DATABASE USER>',
-    'password' => '<YOUR DATABASE PASSWORD HERE>',
-    'database' => '<DATABASE NAME>',
+    'user' => 'hc',
+    'password' => 'UQM3DY6xnLscMxxa',
+    'database' => 'hc',
   );
 
-// fill in your own location data here:
 $GLOBALS['config']['geo'] = array(
     'lat' => 49.63837280000002,
     'long' => 8.328505900000007,
