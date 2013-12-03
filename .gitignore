@@ -1,6 +1,5 @@
-log/
-log/
+log/*
 node/node_modules/
-data/
+data/*
 node/nohup.out
 config/settings.php
