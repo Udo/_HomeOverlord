@@ -17,6 +17,8 @@ At this stage, this is a project that runs for me, but it's not really designed 
 
 Installing this thing is painful. You're going to need the following:
 
+* Hardware: a spare Linux-ready device, preferrably a Raspberry Pi or something similar. For HomeEasy devices, there is a simple HomeEasy USB sender you can buy, plug it in. For HomeMatic devices, use a CUL or really anything that works with Homegear. I'm using both since I have both systems deployed at home.
+
 * A LAMP-style web server supporting PHP and preferrably with websocket forwarding. I use nginx/php-fpm/MySQL. Clone the repository into your web server's htdocs directory. Create a database named hc or similar, import the SQL file  from setup/ and edit the file config/defaults.php with your database credentials. 
 
 * For HomeMatic support, install https://github.com/hfedcba/Homegear (or download the pre-compiled version). 
