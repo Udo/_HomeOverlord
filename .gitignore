@@ -1,5 +1,5 @@
-xlog/*
+log/*
 node/node_modules/
-xdata/*
+data/*
 node/nohup.out
 config/settings.php
