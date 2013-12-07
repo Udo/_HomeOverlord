@@ -337,7 +337,7 @@ input[type=button], input[type=submit], button, .btn {
   text-align: center;
   display: inline-block;
   padding: <?= $stdPadding ?>;
-  color: <?= $baseColor ?>;
+  color: <?= $barText ?>;
   min-width: 80px;
   cursor: pointer;
   border: <?= $borderColor ?>;

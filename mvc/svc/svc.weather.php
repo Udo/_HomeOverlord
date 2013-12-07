@@ -1,5 +1,6 @@
 <pre><?
 
+
 $owFileName = 'data/openweather.json';
 $weatherReportFile = 'data/weather.json';
 
@@ -25,6 +26,11 @@ if(time() - filemtime($owFileName) > 60*2)
   $data['tecur'] = number_format($owd['main']['temp'], 1);
   $data['wscur'] = number_format($owd['wind']['speed'], 1);
   
+  include('lib/moon.php');
+  $moon = new Solaris\MoonPhase();
+  $data['moonlight'] = number_format($moon->illumination(), 1)*100;
+  $data['moonstage'] = $moon->phase() < 0.5 ? 'waxing' : 'waning';
+
   print_r($data);
   
   if(sizeof($data) > 0)

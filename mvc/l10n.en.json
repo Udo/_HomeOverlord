@@ -8,5 +8,6 @@
   "devices.groups" : "Groups",
   "devices.group" : "Group",
   "devices.cli" : "Command Line",
+  "devices.pairhm" : "Pair New Device",
   "devices" : "Devices"
 }

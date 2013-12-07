@@ -183,7 +183,7 @@ setInterval(function() {
   //wss.broadcast({ type : 'globalstate', data : deviceState });
   wss.broadcast({ type : 'reload' });
 
-  }, 1000*60*30);
+  }, 1000*60*60);
   
 /****************************************************************************************/
 // ======================== SERVER TIME TICK
@@ -251,12 +251,15 @@ xmlrpcServer.on('system.multicall', function (err, params, callback) {
                         var pr = params[0][i].params;
                         if(!coolDownTimers[ct])
                         {
-                          cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify({
+                          var eventData = {
                             type : 'HM',
                             device : pr[1],
                             param : pr[2],
                             value : pr[3]
-                            })});
+                            };
+                          cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
+                          if(wss) 
+                            wss.broadcast({ type : 'busmessage', data : eventData });
                           console.log('HM RT CMD -- '+ct);
                           coolDownTimers[ct] = true;
                           setTimeout(function(){ coolDownTimers[ct] = false; }, 500);
