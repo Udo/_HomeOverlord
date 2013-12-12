@@ -148,13 +148,13 @@ If a shortcode event handler line starts with the ">" (greater-than) sign, it's 
 
 The timer command serves to queue an event for the near future. The timer command can be used to invoke an event by name:
 
-> >TIMER:[minutes]:[event address]
+> \>TIMER:[minutes]:[event address]
 
 The amount of [minutes] can be a floating point value.
 
 The timer command can also execute a specific device command directly:
 
-> >TIMER:[minutes]:deviceCommand:[DeviceID]:[PARAM]:[value]
+> \>TIMER:[minutes]:deviceCommand:[DeviceID]:[PARAM]:[value]
 
 ## Event Handler Code
 
