@@ -90,6 +90,8 @@ The following event address codes are supported right now for "C" type events. T
 * "[bus]-[param]": activated by all events regarding that parameter
 * "[bus]-[device]-[param]": activated by all events from that device regarding that parameter
 * "[bus]-[device]-[param]-[value]": activated by all events from that device regarding that parameter having that value
+* "[bus]-[device]-[day|night]-[param]": activation on either "day" or "night", as defined by sunset and sunrise of that day
+* "[bus]-[device]-[day|night]-[param]-[value]": selective activation at day or night time
 
 For example, an HomeMatic key device called "KEQ0180768:1" issues a "PRESSED" parameter when it's activated. To catch that, make an event handler with the address "HM-KEQ0180768:1-PRESSED".
 
