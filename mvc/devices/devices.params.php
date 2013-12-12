@@ -48,6 +48,29 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
     if (($operationsVal & 4) == 4) $r[] = 'EVENT';
     return(implode(', ', $r));
   }
+  
+  function parseParam($val, $p)
+  {
+    switch($p['TYPE'])
+    {
+      case('BOOL'):
+      {
+        return($val == 'Yes' ? true : false);
+        break;
+      }
+      case('INTEGER'):
+      {
+        return($val+0);
+        break;
+      }
+      case('FLOAT'):
+      {
+        return($val + 0.0);
+        break;
+      }
+    }
+    return(0);
+  }
 
 foreach(array('MASTER', 'VALUES') as $psetType)
 {
@@ -61,9 +84,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
     $ps['WRITABLE'] = ($ps['OPERATIONS'] & 2) == 2;
     if($ps['WRITABLE'] && $doSave)
     {
-      $fVal = $_POST[$k];
-      if($fVal == 'Yes') $fVal = true;
-      if($fVal == 'No') $fVal = false;
+      $fVal = parseParam($_POST[$k], $ps);
       if($fVal != $p[$k]) 
       {
         $saveP[$k] = $fVal;
@@ -91,7 +112,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   if(sizeof($saveP) > 0)
   {
     print('<pre>New parameters have been saved: ');
-    print_r($saveP);
+    print(json_encode($saveP));
     print_r(HMRPC('putParamset', array($ds['d_id'], $psetType, $saveP)));
     //print_r($_POST);
     print('</pre>');

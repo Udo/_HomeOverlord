@@ -170,6 +170,9 @@ class SvcController extends H2Controller
   
   function ajax_event()
   {
+    $isDay = $t >= strtotime(date('H:i', getSunrise(false))) && $t <= strtotime(date('H:i', getSunset(false)));
+    $dayString = $isDay ? 'DAY' : 'NIGHT';
+
     $data = json_decode($_REQUEST['data'], true);
     $hdl = array(
         'all', 
@@ -178,6 +181,8 @@ class SvcController extends H2Controller
         $data['type'].'-'.$data['param'],
         $data['type'].'-'.$data['device'].'-'.$data['param'],
         $data['type'].'-'.$data['device'].'-'.$data['param'].'-'.$data['value'],
+        $data['type'].'-'.$data['device'].'-'.$dayString.'-'.$data['param'],
+        $data['type'].'-'.$data['device'].'-'.$dayString.'-'.$data['param'].'-'.$data['value'],
         );
     if($data['param'] == 'PRESS_SHORT' || $data['param'] == 'PRESS_LONG_RELEASE')
       $hdl[] = $data['type'].'-'.$data['device'].'-PRESSED';
