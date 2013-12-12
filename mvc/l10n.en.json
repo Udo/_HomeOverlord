@@ -7,7 +7,9 @@
   "devices.index" : "Devices",
   "devices.groups" : "Groups",
   "devices.group" : "Group",
+  "devices.admin" : "Admin",
   "devices.cli" : "Command Line",
   "devices.pairhm" : "Pair New Device",
+  "devices.params" : "Device Parameters",
   "devices" : "Devices"
 }

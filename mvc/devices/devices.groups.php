@@ -1,4 +1,4 @@
-<ul><?
+<?= $this->_getSubmenu2() ?><ul><?
 
 $GLOBALS['pagetitle'] = 'Device Groups';
 

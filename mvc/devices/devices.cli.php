@@ -1,3 +1,4 @@
+<?= $this->_getSubmenu2() ?>
 <input type="text" id="cmd" value="" placeholder="prefix HomeMatic XMLRPC methods with 'hm.'" onkeypress="if(event.keyCode == 13) sendCli();"/>
 <pre id="result" style="font-size: 70%;"></pre>
 

@@ -6,7 +6,7 @@ class DevicesController extends H2Controller
   {
     $this->access('local,internal,auth');
     $GLOBALS['submenu'] = array();
-    foreach(array('index', 'groups', 'cli', 'pairhm') as $a)
+    foreach(array('index', 'admin') as $a)
       $GLOBALS['submenu'][] = array('controller' => 'devices', 'action' => $a, 'text' => 'devices.'.$a);
   }
 
@@ -19,6 +19,10 @@ class DevicesController extends H2Controller
   function pairHm()
   {
   
+  }
+  
+  function admin()
+  {
   }
   
   function ajax_pairHmStart()
@@ -74,6 +78,11 @@ class DevicesController extends H2Controller
     }
   }
   
+  function params()
+  {
+  
+  }
+  
   function ajax_getstate()
   {
     $r = array();
@@ -112,6 +121,17 @@ class DevicesController extends H2Controller
   {
     $this->skipView = true;
     deviceCommand($_REQUEST['key'], first($_REQUEST['p'], 'STATE'), $_REQUEST['v'], first($_REQUEST['by'], 'EXT'));
+  }
+  
+  function _getSubmenu2()
+  {
+    foreach(array(
+      'admin', 'cli', 'pairhm', 'groups',
+      ) as $act)
+      $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" 
+        href="?action='.$act.'&controller='.$_REQUEST['controller'].'">'.l10n($_REQUEST['controller'].'.'.$act).'</a>';
+    
+    return('<div class="submenu2">'.implode(' | ', $submenu).'</div>');
   }
 
 }

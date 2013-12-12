@@ -8,7 +8,7 @@ foreach($this->devices as $dtype => $dt)
     $iconFile = 'icons/'.strtolower($ds['d_type']).'.png';
     if(!file_exists($iconFile))
       $iconFile = 'icons/default.png';
-    if($ds['d_type'] == 'Light') 
+    if($ds['d_type'] == 'Light' || $ds['d_type'] == 'IT') 
     {
       ?><div class="device_line highlightable" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
         onclick="toggleDevice(<?= $ds['d_key'] ?>);">
@@ -222,9 +222,9 @@ updateWeatherInfo = function() {
     else if(currentMinutes > sunRise - 120 && currentMinutes < sunRise + 120)
     {
       if(currentMinutes > sunRise)
-        weatherInfo.push('sunrise '+(currentMinutes-sunSet)+' min ago');
+        weatherInfo.push('sunrise '+(currentMinutes-sunRise)+' min ago');
       else
-        weatherInfo.push('sunrise in '+(sunSet-currentMinutes)+'min');
+        weatherInfo.push('sunrise in '+(sunRise-currentMinutes)+'min');
     }
 
   if(currentSunState == 'night')

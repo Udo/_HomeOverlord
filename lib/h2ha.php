@@ -75,7 +75,8 @@ function HMRPC($method, $cmd)
   try
   {
     $params = array();
-    foreach($cmd as $c)
+    foreach($cmd as $c) if(!is_array($c))
+    {
       if($c == 'true')
         $params[] = true;
       else if($c + 0 > 0)
@@ -84,6 +85,9 @@ function HMRPC($method, $cmd)
         $params[] = $c+0;
       else 
         $params[] = $c;
+    }
+    else
+      $params[] = $c;
     $result = $Client->send($method, $params);
     return($result);
   }

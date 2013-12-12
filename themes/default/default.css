@@ -20,6 +20,14 @@ body, td, input, div, p, textarea {
   font-size: 11px;
 }
 
+.submenu2 {
+  margin-top: -12px;
+  margin-bottom: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom: <?= $borderColor ?>;
+}
+
 a {
   color: <?= $linkColor ?>;
 }
@@ -131,6 +139,10 @@ a {
   cursor: pointer;
 }
 
+.border-bottom {
+  border-bottom: <?= $borderColor ?>;
+}
+
 input[type=text], input[type=password], textarea {
   border: <?= $borderColor ?>;
   background: <?= $barBackground ?>;
@@ -176,6 +188,10 @@ h1, h2, h3 {
   padding: 0;
   margin-bottom: <?= $stdMargin ?>;
   padding-bottom: <?= $stdMargin ?>;
+}
+
+.devicetable tr:hover td {
+  background: <?= $barBackground ?>;
 }
 
 #header_outer {

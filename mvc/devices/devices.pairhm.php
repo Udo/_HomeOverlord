@@ -1,3 +1,4 @@
+<?= $this->_getSubmenu2() ?>
 <h1><?= l10n($_REQUEST['controller'].'.'.$_REQUEST['action']) ?></h1>
 <div class="description">
 

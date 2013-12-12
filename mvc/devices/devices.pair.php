@@ -1,3 +1,4 @@
+<?= $this->_getSubmenu2() ?>
 <?
 
 $this->devices = array();
