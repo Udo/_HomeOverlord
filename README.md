@@ -108,7 +108,9 @@ The following list described system-driven address codes for "T" type events.
 * "DAY-[WEATHER]" where [WEATHER] is an openweathermap.org weather name, such as "CLOUDS"
 * "DAY-DARK" when weather data indicates heavy clouds
 
-## Event Handler Shortcodes
+# Event Handler Shortcodes
+
+## Device command shortcodes
 
 In the "e_code" field of the events table, you can use short device command codes to control your devices. Use one line per device. The general format is:
 
@@ -117,6 +119,8 @@ In the "e_code" field of the events table, you can use short device command code
 For example, if you want to activate a light called "HallwayLight":
 
 > :HallwayLight:STATE:1
+
+### Using the reverse value
 
 If you also used a reverse event address, you can give a second value to take care of that event:
 
@@ -130,9 +134,31 @@ e_address_rev = "BTN2-PRESSED"
 e_code = ":HallwayLight:STATE:1:0" 
 ```
 
+### Neutral value
+
+Sometimes, you don't want to set a state at all. To avoid splitting up multiple shortcode lines, you can simply give an empty value in these cases:
+
+> :MyDevice:STATE::1
+
+In this example, only the reverse address sets the state of the device.
+
+## Invoke a timer
+
+If a shortcode event handler line starts with the ">" (greater-than) sign, it's a system command. In contrast to device commands which address specific devices directly, system commands affect the state of the HomeOverlord system.
+
+The timer command serves to queue an event for the near future. The timer command can be used to invoke an event by name:
+
+> >TIMER:[minutes]:[event address]
+
+The amount of [minutes] can be a floating point value.
+
+The timer command can also execute a specific device command directly:
+
+> >TIMER:[minutes]:deviceCommand:[DeviceID]:[PARAM]:[value]
+
 ## Event Handler Code
 
-Instead of device commands, you can also use PHP code in the event handler.
+Instead of device commands, you can also use PHP code in the event handler. You can't mix PHP code and event shortcodes.
 
 
 

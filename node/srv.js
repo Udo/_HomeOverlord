@@ -74,6 +74,19 @@ http.createServer(function (req, res) {
       wss.broadcast(params.query);
   
   }
+  else if(params.query.cmd == 'timedevent') {
+  
+    if(!params.query.minutes || params.query.minutes <= 0)
+      params.query.minutes = 60;
+      
+    setTimeout(function() {
+      cmdHttpPost({ 
+        controller : 'svc', 
+        action : 'ajax_notify', 
+        data : JSON.stringify(params.query)});
+      }, params.query.minutes*1000*60);
+  
+  }
   else if(params.query.cmd == 'update') {
     
     params.query.type = 'devicestatus';

@@ -108,6 +108,13 @@ function reviewParams($ds, $commandType, $value)
   return($value);
 }
 
+function sendToNode($cmd, $params)
+{
+  $params['cmd'] = $cmd;
+  $reqUrl = 'http://localhost:1080/?'.http_build_query($params);
+  cqrequest(array(array('url' => $reqUrl)));
+}
+
 function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
   $device = o(db)->getDS('devices', $deviceKey, 'd_alias');

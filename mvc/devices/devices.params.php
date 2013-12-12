@@ -81,7 +81,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   ?><table width="100%" style="max-width: 600px;" class="border-bottom"><?
   foreach($pdes as $k => $ps)
   {
-    $ps['WRITABLE'] = ($ps['OPERATIONS'] & 2) == 2;
+    $ps['WRITABLE'] = ($psetType != 'VALUES') && ($ps['OPERATIONS'] & 2) == 2;
     if($ps['WRITABLE'] && $doSave)
     {
       $fVal = parseParam($_POST[$k], $ps);
