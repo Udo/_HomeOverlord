@@ -9,6 +9,8 @@ $doSave = isset($_POST['controller']);
 
 $ds = o(db)->getDS('devices', $_REQUEST['key']);
 
+?><h2><?= $ds['d_id'] ?> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?> | <?= first($ds['d_name']) ?></h2><?
+
   function showParam($val, $p)
   {
     switch($p['TYPE'])

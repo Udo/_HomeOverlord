@@ -21,15 +21,22 @@ execHandler = function (error, stdout, stderr) {
 eventQueue = [];
 
 // add now command to queue
-queueEvent = function(ev) {
+queueEvent = function(ev, times) {
+  
+  if(!times) times = 1;
+  var eventQueueIsEmpty = eventQueue.length == 0;
+  
   if(ev.id > 0) {
-    eventQueue.push(ev);
-    //console.log('queue length='+eventQueue.length);
+    for(var tc = 0; tc < times; tc++)
+      eventQueue.push(ev);
+    // restart timer 
+    if(eventQueueIsEmpty) {
+      queueWorkStep();
+    }
   }
 }
 
-// ticker function which executes the queue
-setInterval(function() {
+queueWorkStep = function() {
 
   if(eventQueue.length > 0 && child == null) {
     
@@ -38,12 +45,16 @@ setInterval(function() {
     // if item.value isn't defined, use the global device state
     if(!item.value && deviceState['d'+item.id]) item.value = deviceState['d'+item.id].state;
     
-    //console.log('queue item id='+item.id+' value='+item.value+' queue length='+eventQueue.length);
     child = exec('sh /srv/www/htdocs/hc/bin/switch.sh '+(0+item.id)+' '+(0+item.value), 
       execHandler);
+      
   }
 
-}, 1000);
+  if(eventQueue.length > 0) {
+    setTimeout(queueWorkStep, 1000);
+  }
+
+};
 
 cmdHttpPost = function(params) {
 
@@ -104,9 +115,7 @@ http.createServer(function (req, res) {
       if(deviceState['d'+params.query.id])
         deviceState['d'+params.query.id].state = params.query.value;
   
-      queueEvent({ id : params.query.id });
-      queueEvent({ id : params.query.id });
-      queueEvent({ id : params.query.id });
+      queueEvent({ id : params.query.id }, 3);
     }
     else if(params.query.bus == 'HM') {
       if(params.query.value == 'true') params.query.value = true;

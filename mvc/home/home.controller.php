@@ -16,6 +16,11 @@ class HomeController extends H2Controller
   {
   
   }
+  
+  function test()
+  {
+  
+  }
 
 }
 

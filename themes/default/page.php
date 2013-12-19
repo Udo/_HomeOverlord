@@ -16,7 +16,7 @@ foreach($GLOBALS['menu'] as $m)
 {
   $mainMenu[] = '<a class="'.($m['controller'] == $_REQUEST['controller'] ? 'selected' : '').'" href="'.
     actionUrl($m['action'], $m['controller']).'">'.l10n($m['text']).'</a>';
-  if($m['controller'] == $_REQUEST['controller'])
+  if($m['controller'] == $_REQUEST['controller'] && sizeof($GLOBALS['submenu']) > 0)
     foreach($GLOBALS['submenu'] as $sm)
       $mainMenu[] = '<a class="indented '.($sm['action'] == $_REQUEST['action'] ? 'selected' : '').'" href="'.
         actionUrl($sm['action'], $sm['controller']).'">'.l10n($sm['text']).'</a>';

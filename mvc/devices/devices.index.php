@@ -9,15 +9,25 @@ foreach($this->devices as $dtype => $dt)
     if(!file_exists($iconFile))
       $iconFile = 'icons/default.png';
     if($ds['d_type'] == 'Light' || $ds['d_type'] == 'IT') 
-    {
-      ?><div class="device_line highlightable" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
-        onclick="toggleDevice(<?= $ds['d_key'] ?>);">
-        <div id="icon_<?= $ds['d_key'] ?>" class="device_icon2 state_<?= $ds['d_state'] ?>" 
+    { ?>
+    
+      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
+        xonclick="toggleDevice(<?= $ds['d_key'] ?>);">
+        
+        <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
+
+        <div id="icon_<?= $ds['d_key'] ?>" class="device_icon2 highlightable state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
-          data-onclick="toggleDevice(<?= $ds['d_key'] ?>);"></div>
+          onclick="toggleDevice(<?= $ds['d_key'] ?>);">
+        </div>
+        
+        <div class="device_line_text">
           <div><?= so($ds['d_name']) ?> </div>
           <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
-            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; </div>
+            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
+          </div>
+        </div>
+        
       </div><?  
     }
     else if($ds['d_type'] == 'Blinds')
@@ -29,24 +39,36 @@ foreach($this->devices as $dtype => $dt)
         $options[] = array('value' => (($closedValue/4)*($oc+1)), 'caption' => ((100/4)*(3-$oc)).'% open ');
       }
       $options[] = array('value' => $closedValue, 'caption' => 'closed');
-      ?><div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
+      ?>
+      
+      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
+        <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
+
         <div id="icon_<?= $ds['d_key'] ?>"  
           data-state="<?= $ds['d_state'] ?>"
-          style="background-image: url(<?= $iconFile ?>);background-size: 100%;opacity:0.7;" class="device_icon2"></div>
+          style="background-image: url(<?= $iconFile ?>);background-size: 100%;opacity:0.7;" class="device_icon2">
+        </div>
+
+        <div class="device_line_text">
           <div>
-            <?= so($ds['d_name']) ?> 
-            <select onchange="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', $(this).val());">
-            <?
-            foreach($options as $o) 
-            {
-              ?><option <?= $ds['d_state'] == $o['value'] ? 'selected' : '' ?> value="<?= $o['value'] ?>"><?= $o['caption'] ?></option><?
-            }
-            ?>
-            </select>
+              <?= so($ds['d_name']) ?> 
+              <select onchange="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', $(this).val());">
+              <?
+              foreach($options as $o) 
+              {
+                ?><option <?= $ds['d_state'] == $o['value'] ? 'selected' : '' ?> value="<?= $o['value'] ?>"><?= $o['caption'] ?></option><?
+              }
+              ?>
+              </select>
           </div>
           <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
-            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; </div>
-      </div><?  
+            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
+          </div>
+        </div>
+      
+      </div>
+      
+      <?  
     }
   }
 }
@@ -170,73 +192,14 @@ wsConnect = function() {
 };
 
 wsReconnect = function() {
-  setTimeout(function() {  wsConnect(); }, 1000);
+  //setTimeout(function() {  wsConnect(); }, 1000);
+  window.location.reload(true);
 }
 
-leadingZero = function(v) {
-  if(v < 10) v = '0'+v;
-  return(v);
-}
+wsConnect();
 
-weatherInfoState = 0;
-weatherInfo = [];
 
-weatherAndTimeUpdate = function() {
-
-  if(weatherInfo.length == 0) return;
-  
-  weatherInfoState++;
-  if(weatherInfoState >= weatherInfo.length) weatherInfoState = 0;
-  
-  var d = new Date();
-  $('#lefthdr').html(leadingZero(d.getHours())+':'+leadingZero(d.getMinutes())+
-    '   <img src="'+document.weather.icon+'" height="28" align="absmiddle" style="margin-bottom: -8px;margin-top: -8px;"/> '+
-    weatherInfo[weatherInfoState]
-    );
-
-}
-
-wsReconnect();
-
-document.weather = <?= file_get_contents('data/weather.json') ?>;
-weatherAndTimeUpdate();
-
-updateWeatherInfo = function() {
-  $.get('data/weather.json?v='+Math.random(), {}, function(data) {
-    
-    document.weather = data;
-    weatherInfo = [
-      document.weather.tecur+'°C | '+document.weather.wscur+'km/h',
-      document.weather.description,
-      ];
-      
-    var dt = new Date();
-    var currentMinutes = dt.getMinutes()+dt.getHours()*60;
-    if(currentMinutes > sunSet - 120 && currentMinutes < sunSet + 120)
-    {
-      if(currentMinutes > sunSet)
-        weatherInfo.push('sunset '+(currentMinutes-sunSet)+' min ago');
-      else
-        weatherInfo.push('sunset in '+(sunSet-currentMinutes)+'min');
-    }
-    else if(currentMinutes > sunRise - 120 && currentMinutes < sunRise + 120)
-    {
-      if(currentMinutes > sunRise)
-        weatherInfo.push('sunrise '+(currentMinutes-sunRise)+' min ago');
-      else
-        weatherInfo.push('sunrise in '+(sunRise-currentMinutes)+'min');
-    }
-
-  if(currentSunState == 'night')
-    weatherInfo.push('moon '+document.weather.moonlight+'% '+document.weather.moonstage);
-
-  }, 'json');
-  };
-
-setInterval(weatherAndTimeUpdate, 3000);
-  
-setInterval(updateWeatherInfo, 60*1000);
-
-updateWeatherInfo();
 
 </script>
+
+<? include('templates/weatherinfo.php'); ?>

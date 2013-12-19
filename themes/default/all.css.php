@@ -74,6 +74,7 @@ switch($_REQUEST['scheme'])
     $background = '#fed';
     $hlColor = '#000';
     $barBackground = css_color($b);
+    $barBackground2 = '#cba';
     $textColor2 = '#876';
     $barText = '#fed';
     break;
@@ -84,6 +85,7 @@ switch($_REQUEST['scheme'])
     $background = '#000';
     $hlColor = '#ff0';
     $barBackground = '#036';
+    $barBackground2 = '#024';
     $textColor2 = '#987';
     $barText = css_color($b, 20);
     break;

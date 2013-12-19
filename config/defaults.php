@@ -9,10 +9,17 @@ $GLOBALS['config'] = array(
     'wsport' => '1081',
     'url_rewrite' => false,
   ),
+  'hal' => array(
+    'Light' => 'OnOff',
+    'IT' => 'OnOff',
+    'Blinds' => 'Blinds',
+    'Key' => 'Sender',
+    'MOTION_DETECTOR' => 'Motion',
+    'MAINTENANCE' => 'Maintenance',
+    ),
   'language' => 'en',
   'debug' => true,
   );
   
 $GLOBALS['config']['dbinfo']['messages']['keys'] = array('m_key');
-
 

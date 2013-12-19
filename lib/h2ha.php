@@ -115,6 +115,84 @@ function sendToNode($cmd, $params)
   cqrequest(array(array('url' => $reqUrl)));
 }
 
+function recordDeviceStatus($device, $commandType, $value, $reason)
+{
+  $sds = array(
+    'si_bus' => $device['d_bus'],
+    'si_name' => $device['d_id'],
+    'si_param' => $commandType,
+    'si_value' => $value,
+    'si_time' => time(),
+    'si_devicekey' => $device['d_key'],
+    'si_by' => $by,
+    'si_event' => $GLOBALS['command-source'],
+    'si_mode' => 'TX',
+    'si_uid' => $_SESSION['uid']+0,
+    'si_ip' => first($_SERVER['HTTP_X_FORWARDED_FOR'], $_SERVER['REMOTE_ADDR']),
+    );
+  o(db)->commit('stateinfo', $sds);
+  $device['d_state'] = $value;
+  $device['d_statustext'] = $reason;
+  $device['d_statuschanged'] = time();
+  o(db)->commit('devices', $device);
+}
+
+function sendHECommand($device, $commandType, $value, $reason = 'unknown')
+{
+  if(sizeof($device) > 0 && $device['d_state'] != $value)
+  {
+    $pv = $value+0;
+    $pv = reviewParams($device, $commandType, $pv);
+    $reqUrl = 'http://localhost:1080/?cmd=update&bus='.$device['d_bus'].
+      '&param='.$commandType.
+      '&key='.($device['d_key']).
+      '&stxt='.urlencode($reason).
+      '&id='.($device['d_id']).
+      '&value='.($pv);
+      cqrequest(array(array('url' => $reqUrl)));
+    recordDeviceStatus($device, $commandType, $pv, $reason);
+  }
+}
+
+function sendGPIOCommand($device, $commandType, $value, $reason = 'unknown')
+{
+  if(sizeof($device) > 0 && $device['d_state'] != $value)
+  {
+    $pv = $value+0;
+    $pv = reviewParams($device, $commandType, $pv);
+    $reqUrl = 'http://localhost:1080/?cmd=gpio&bus='.$device['d_bus'].
+      '&param='.$commandType.
+      '&key='.($device['d_key']).
+      '&stxt='.urlencode($reason).
+      '&id='.($device['d_id']).
+      '&value='.($pv);
+      cqrequest(array(array('url' => $reqUrl)));
+    recordDeviceStatus($device, $commandType, $pv, $reason);
+  }
+}
+
+function sendHMCommand($device, $commandType, $value, $reason = 'unknown')
+{
+  if(sizeof($device) > 0 && $device['d_state'] != $value)
+  {
+    $pv = $value;
+    $pv = reviewParams($device, $commandType, $pv);
+    // send HM commands directly, to save time
+    $result = HMRPC('setValue', array($device['d_id'], $commandType, $pv));
+    // notify clients
+    $reqUrl = 'http://localhost:1080/?cmd=broadcast&bus='.$device['d_bus'].
+      '&param='.$commandType.
+      '&type=devicestatus'.
+      '&stxt='.urlencode($reason).
+      '&key='.($device['d_key']).
+      '&id='.($device['d_id']).
+      '&value='.($pv);
+    cqrequest(array(array('url' => $reqUrl)));
+    recordDeviceStatus($device, $commandType, $pv, $reason);
+  }
+  return($result);
+}
+
 function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
   $device = o(db)->getDS('devices', $deviceKey, 'd_alias');
