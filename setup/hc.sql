@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 19, 2013 at 07:12 PM
+-- Generation Time: Dec 23, 2013 at 02:27 AM
 -- Server version: 5.5.31-0+wheezy1
 -- PHP Version: 5.4.4-14+deb7u5
 
@@ -22,7 +22,6 @@ USE `hc`;
 -- Table structure for table `accounts`
 --
 
-DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE IF NOT EXISTS `accounts` (
   `a_key` int(11) NOT NULL AUTO_INCREMENT,
   `a_username` varchar(64) NOT NULL,
@@ -39,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 -- Table structure for table `devices`
 --
 
-DROP TABLE IF EXISTS `devices`;
 CREATE TABLE IF NOT EXISTS `devices` (
   `d_key` int(11) NOT NULL AUTO_INCREMENT,
   `d_bus` varchar(6) NOT NULL,
@@ -47,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `d_room` varchar(32) NOT NULL,
   `d_name` varchar(32) NOT NULL,
   `d_id` varchar(32) NOT NULL,
+  `d_visible` varchar(1) DEFAULT 'Y',
   `d_state` varchar(32) NOT NULL,
   `d_auto` varchar(1) NOT NULL DEFAULT 'A',
   `d_config` longtext,
@@ -65,7 +64,6 @@ CREATE TABLE IF NOT EXISTS `devices` (
 -- Table structure for table `events`
 --
 
-DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `e_key` int(11) NOT NULL AUTO_INCREMENT,
   `e_type` varchar(1) NOT NULL DEFAULT 'C',
@@ -87,7 +85,6 @@ CREATE TABLE IF NOT EXISTS `events` (
 -- Table structure for table `groups`
 --
 
-DROP TABLE IF EXISTS `groups`;
 CREATE TABLE IF NOT EXISTS `groups` (
   `g_key` int(11) NOT NULL AUTO_INCREMENT,
   `g_name` varchar(32) NOT NULL,
@@ -102,7 +99,6 @@ CREATE TABLE IF NOT EXISTS `groups` (
 -- Table structure for table `messages`
 --
 
-DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
   `m_key` bigint(20) NOT NULL AUTO_INCREMENT,
   `m_type` varchar(16) NOT NULL,
@@ -119,7 +115,6 @@ CREATE TABLE IF NOT EXISTS `messages` (
 -- Table structure for table `stateinfo`
 --
 
-DROP TABLE IF EXISTS `stateinfo`;
 CREATE TABLE IF NOT EXISTS `stateinfo` (
   `si_bus` varchar(8) NOT NULL,
   `si_name` varchar(32) NOT NULL,

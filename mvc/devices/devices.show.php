@@ -13,12 +13,15 @@ function getCellCheckbox($ds, $fname)
   return('<input type="checkbox" value="Y" onchange="saveCheckbox(\''.$cellId.'\')" data-key="'.$ds['d_key'].'" data-field="'.$fname.'" id="'.$cellId.'" '.($ds[$fname] == 'Y' ? 'checked' : '').'/>');
 }
 
+$deviceFlags = getServiceFlags();
+
 ?>
 <table class="devicetable">
 <thead>
   <tr>
     <th>#</th>
     <th>Address</th>
+    <th></th>
     <th>Type</th>
     <th>Visible</th>
     <th>Alias</th>
@@ -29,9 +32,24 @@ function getCellCheckbox($ds, $fname)
 
   foreach(o(db)->get('SELECT * FROM devices ORDER BY d_room,d_name') as $ds) 
   {
+    $id = $ds['d_id'];
+    $did = CutSegment(':', $id);
+    $info = '';
+    if($deviceFlags[$did])
+    {
+      $flags = array();
+      $img = 'error';
+      foreach($deviceFlags[$did] as $f) 
+      {
+        $flags[] = $f[1];
+        if($f[1] == 'LOWBAT') $img = 'laptop_battery';
+      }
+      $info = '<img src="icons/'.$img.'.png" width="22" style="margin:-4px;" title="'.implode(', ', $flags).'"/>';
+    }
     ?><tr>
       <td>#<?= $ds['d_key'] ?></td>
       <td><?= $ds['d_bus'].':'.$ds['d_id'] ?></td>
+      <td><?= $info ?></td>
       <td><?= $ds['d_type'] ?></td>
       <td><?= getCellCheckbox($ds, 'd_visible') ?></td>
       <td><?= getCellEditor($ds, 'd_alias') ?></td>
@@ -40,7 +58,7 @@ function getCellCheckbox($ds, $fname)
       <td><?
       
       if($ds['d_bus'] == 'HM')
-        print('<a href="'.actionUrl('params', 'devices', array('key' => $ds['d_key'])).'">Parameters</a>');
+        print('<a class="small" href="'.actionUrl('params', 'devices', array('key' => $ds['d_key'])).'">&gt; Parameters</a>');
       
       ?></td>
     </tr><? 

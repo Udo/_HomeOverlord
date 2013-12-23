@@ -68,6 +68,18 @@ function systemMessage($msgType, $text = '(no text)', $data = array())
   return($mds);
 }
 
+function getServiceFlags()
+{
+  $hmSvc = array();
+  foreach(HMRPC('getServiceMessages') as $svc)
+  {
+    $id = $svc[0];
+    $did = CutSegment(':', $id);
+    $hmSvc[$did][] = $svc; 
+  }
+  return($hmSvc);
+}
+
 function HMRPC($method, $cmd)
 {
   require_once("ext/HM-XMLRPC-Client/Client.php");

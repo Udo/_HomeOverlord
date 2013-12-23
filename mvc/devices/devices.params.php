@@ -17,7 +17,7 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
     {
       case('BOOL'):
       {
-        if($p['WRITABLE'])
+        if($p['WRITABLE'] && $p['ID'] != 'AES_ACTIVE')
           return('<select name="'.$p['ID'].'"><option'.($val === true ? ' selected' : '').'>Yes</option><option'.($val != true ? ' selected' : '').'>No</option></select>');
         else
           return($val === true ? 'Yes' : 'No');
@@ -83,7 +83,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   ?><table width="100%" style="max-width: 600px;" class="border-bottom"><?
   foreach($pdes as $k => $ps)
   {
-    $ps['WRITABLE'] = ($psetType != 'VALUES') && ($ps['OPERATIONS'] & 2) == 2;
+    $ps['WRITABLE'] = ($psetType != 'VALUES') && ($ps['OPERATIONS'] & 2) == 2 && $k != 'AES_ACTIVE';
     if($ps['WRITABLE'] && $doSave)
     {
       $fVal = parseParam($_POST[$k], $ps);
