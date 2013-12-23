@@ -1,10 +1,42 @@
-http = require('http');
-sys = require('sys');
-request = require('request');
-exec = require('child_process').exec;
-child = null;
+console.log('- loading <http>');
+var http = require('http');
+console.log('- loading <sys>');
+var sys = require('sys');
+console.log('- loading <request>');
+var request = require('request');
+console.log('- loading <child_process>');
+var exec = require('child_process').exec;
+console.log('- loading <xmlrpc>');
+var xmlrpc = require('xmlrpc');
+console.log('- loading <ws>');
+var WebSocketServer = require('ws').Server;
+console.log('- loading <util>');
+var util = require('util')
+console.log('- loading <rpi-gpio>');
+var gpio = require('rpi-gpio');
 
-deviceState = {};
+var memStats = process.memoryUsage();
+console.log('- mem stats '+util.inspect(memStats).replace(/\n/g, '')+' // '+Math.round(memStats.heapUsed/(1024*1024))+' MB heap size');
+
+var runtimeConfig = {
+  clientsUpdateServerPort : 1081,
+  httpServerUrl : 'http://localhost/hc/',
+  homegearAddress : '127.0.0.1',
+  homegearPort : 2001,
+  xmlrpcServerAddress : '127.0.0.1',
+  xmlrpcServerPort : 9091,
+  commandInterfaceServerPort : 1080,
+  };
+
+var OneMinute = 1000*60;
+var child = null;
+var coolDownTimers = {};
+var registeredDevices = [];
+var deviceState = {};
+var xmlrpcServer = false;
+var xmlrpcClient = false;
+
+console.log('- environment setup complete');
 
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
@@ -69,234 +101,267 @@ cmdHttpPost = function(params) {
 }
 
 /****************************************************************************************/
-// ======================== Command Interface Server
+// ======================== Command Interface Server ====================================
+// listens on runtimeConfig.commandInterfaceServerPort for commands
 /****************************************************************************************/
 
-http.createServer(function (req, res) {
+var commandInterfaceServer = {
 
-  var params = require('url').parse(req.url, true);
+  setup : function() {
+    return(this);
+  },
 
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end();
+  start : function() {
 
-  if(params.query.cmd == 'broadcast') {
-  
-    if(wss)
-      wss.broadcast(params.query);
-  
-  }
-  else if(params.query.cmd == 'timedevent') {
-  
-    if(!params.query.minutes || params.query.minutes <= 0)
-      params.query.minutes = 60;
+    http.createServer(function (req, res) {
+    
+      var params = require('url').parse(req.url, true);
+    
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.end();
+
+      console.log('> commandInterfaceServer.cmd(%s)', util.inspect(params.query).replace(/\n/g, ''));
+    
+      if(params.query.cmd == 'broadcast') {
       
+        if(wss)
+          wss.broadcast(params.query);
+      
+      }
+      else if(params.query.cmd == 'timedevent') {
+      
+        if(!params.query.minutes || params.query.minutes <= 0)
+          params.query.minutes = 60;
+          
+        setTimeout(function() {
+          cmdHttpPost({ 
+            controller : 'svc', 
+            action : 'ajax_notify', 
+            data : JSON.stringify(params.query)});
+          }, params.query.minutes*OneMinute);
+      
+      }
+      else if(params.query.cmd == 'update') {
+        
+        params.query.type = 'devicestatus';
+        
+        res.end(params.query.id+'='+params.query.value+'\n\n');
+      
+        // notify clients about state change
+        if(wss)
+          wss.broadcast(params.query);
+        
+        console.log('> '+JSON.stringify(params.query));
+      
+        if(params.query.bus == 'HE') {
+          // update device state table for HomeEasy
+          if(deviceState['d'+params.query.id])
+            deviceState['d'+params.query.id].state = params.query.value;
+      
+          queueEvent({ id : params.query.id }, 3);
+        }
+        else if(params.query.bus == 'HM') {
+          if(params.query.value == 'true') params.query.value = true;
+          if(params.query.value == 'false') params.query.value = false;
+          if(deviceState['d'+params.query.id])
+            deviceState['d'+params.query.id].state = params.query.value == true ? 1 : 0;
+          xmlrpcClient.methodCall(
+            'setValue', 
+            [ params.query.id, params.query.param, params.query.value ], function (error, value) {});           
+        }
+      } 
+      else if(params.query.cmd == 'hmcall') {
+        xmlrpcClient.methodCall(
+          params.query.method, 
+          params.query.params.split(','), function (error, value) {});           
+      }  
+      
+    }).listen(runtimeConfig.commandInterfaceServerPort);
+    
+    console.log('- commandInterfaceServer.start() on port '+runtimeConfig.commandInterfaceServerPort);
+    },
+
+  };
+
+/****************************************************************************************/
+// ======================== Realtime Client Update Server ===============================
+// websocket server that updates clients in realtime
+/****************************************************************************************/
+
+wss = false;
+var clientsUpdateServer = {
+
+  setup : function() {
+    return(this);
+  },
+
+  start : function() {
+  
+    wss = new WebSocketServer({port: runtimeConfig.clientsUpdateServerPort});
+    
+    wss.on('connection', function(ws) {
+    
+        ws.remoteAddress = ws._socket.remoteAddress;
+        console.log('> clientsUpdateServer.connect(%s) ', JSON.stringify(ws.remoteAddress));
+    
+        ws.on('close', function(sock) {
+          console.log('> clientsUpdateServer.close(%s) ', JSON.stringify(ws.remoteAddress));
+        });
+        
+        ws.on('error', function(sock) {
+          console.log('! clientsUpdateServer.error() '+JSON.stringify(sock));
+        });
+        
+        ws.on('message', function(message) {
+            console.log('> clientsUpdateServer.message(%s)', JSON.stringify(message));
+        });
+    
+    });
+  
+    wss.broadcast = function(data) {
+      console.log('- clientsUpdateServer.broadcast('+data.type+')');
+      var sdata = JSON.stringify(data);
+      for(var i in this.clients)
+        wss.clients[i].send(sdata);
+    };
+    
     setTimeout(function() {
-      cmdHttpPost({ 
-        controller : 'svc', 
-        action : 'ajax_notify', 
-        data : JSON.stringify(params.query)});
-      }, params.query.minutes*1000*60);
-  
-  }
-  else if(params.query.cmd == 'update') {
+      wss.broadcast({ type : 'hello' });
+      }, 1000);
     
-    params.query.type = 'devicestatus';
-    
-    res.end(params.query.id+'='+params.query.value+'\n\n');
-  
-    // notify clients about state change
-    if(wss)
-      wss.broadcast(params.query);
-    
-    console.log('> '+JSON.stringify(params.query));
-  
-    if(params.query.bus == 'HE') {
-      // update device state table for HomeEasy
-      if(deviceState['d'+params.query.id])
-        deviceState['d'+params.query.id].state = params.query.value;
-  
-      queueEvent({ id : params.query.id }, 3);
-    }
-    else if(params.query.bus == 'HM') {
-      if(params.query.value == 'true') params.query.value = true;
-      if(params.query.value == 'false') params.query.value = false;
-      if(deviceState['d'+params.query.id])
-        deviceState['d'+params.query.id].state = params.query.value == true ? 1 : 0;
-      xmlrpcClient.methodCall(
-        'setValue', 
-        [ params.query.id, params.query.param, params.query.value ], function (error, value) {});           
-    }
-  } 
-  else if(params.query.cmd == 'hmcall') {
-    xmlrpcClient.methodCall(
-      params.query.method, 
-      params.query.params.split(','), function (error, value) {});           
-  }  
-  
-}).listen(1080);
+    console.log('- clientsUpdateServer.start() on port '+runtimeConfig.clientsUpdateServerPort);
+    },
 
-console.log('http server started');
+  };
 
+  
 /****************************************************************************************/
-// ======================== Realtime Client Update Server
+// ======================== SERVER TIME TICK ============================================
+// diverse timed tick operations
 /****************************************************************************************/
 
-var WebSocketServer = require('/usr/local/lib/node_modules/ws').Server;
+var serverTickCron = {
 
-wss = new WebSocketServer({port: 1081});
+  self : false,
 
-wss.on('connection', function(ws) {
-
-    ws.remoteAddress = ws._socket.remoteAddress;
-    console.log('client connected '+JSON.stringify(ws.remoteAddress));
-
-    ws.on('close', function(sock) {
-      console.log('client disconnected '+JSON.stringify(ws.remoteAddress));
-    });
-    
-    ws.on('error', function(sock) {
-      console.log('error '+JSON.stringify(sock));
-    });
-    
-    ws.on('message', function(message) {
-        console.log('received: %s', JSON.stringify(message));
-    });
-
-});
-
-wss.broadcast = function(data) {
-  var sdata = JSON.stringify(data);
-  for(var i in this.clients)
-    this.clients[i].send(sdata);
-};
-
-console.log('websocket server started');
-
-/****************************************************************************************/
-// ======================== Device State Cache
-/****************************************************************************************/
-
-// get current device states
-getDeviceStatesFromDB = function() {
-    http.get('http://localhost/hc/?action=ajax_getstate&controller=devices', function(res) {
+  tick : function(ctr, act, doneFunc) {
+    var reqParams = 'action='+act+'&controller='+ctr;
+    http.get(runtimeConfig.httpServerUrl+'?'+reqParams, function(res) {
       var body = '';
-  
       res.on('data', function(chunk) {
           body += chunk;
       });
-  
       res.on('end', function() {
         try {
-          deviceState = JSON.parse(body);
-        } catch(err) {
-        
-        }
+          console.log('> serverTickCron.tick('+ctr+'.'+act+') '+Math.round(body.length/1024)+'kB ['+body.substr(0, 32).replace(/\n/g, '')+'...]');
+          if(doneFunc) doneFunc(body);
+        } catch(err) {}
       });
-    }).on('error', function(e) {
-        console.log("Error, could not retrieve device states: ", e);
-    });
-  };
-
-getDeviceStatesFromDB();
-
-setInterval(function() {
-
-  // periodically update all clients with device states
-  //wss.broadcast({ type : 'globalstate', data : deviceState });
-  wss.broadcast({ type : 'reload' });
-
-  }, 1000*60*60);
-  
-/****************************************************************************************/
-// ======================== SERVER TIME TICK
-/****************************************************************************************/
-
-makeServerTick = function(ctr, act) {
-    getDeviceStatesFromDB();
-    http.get('http://localhost/hc/?action='+act+'&controller='+ctr, function(res) {
-      res.on('end', function() {});
     }).on('error', function(e) {
         console.log("Error, could not execute "+act+" command: ", e);
     });
-  };
+  },
   
-setInterval(function() {
-  makeServerTick('svc', 'ajax_tick');
-  }, 1000*60);
+  tickCron : function() {
+    self.tick('svc', 'ajax_tick');
+    setTimeout(self.tickCron, OneMinute);
+  },
+  
+  tickWeather : function() {
+    self.tick('svc', 'weather');
+    setTimeout(self.tickWeather, 10*OneMinute);
+  },
+  
+  tickDeviceStates : function() {
+    self.tick('devices', 'ajax_getstate', function(data) {
+      deviceState = JSON.parse(data);
+      });
+    setTimeout(self.tickDeviceStates, OneMinute*10);
+  },
+  
+  tickClientReload : function() {
+    wss.broadcast({ type : 'reload' });
+    setTimeout(self.tickClientReload, OneMinute*60);
+  },
+  
+  setup : function() {
+    self = this;
+    return(self);
+  },
 
-setInterval(function() {
-  makeServerTick('svc', 'weather');
-  }, 1000*60*10);  
+  start : function() {
+    self.tickDeviceStates();
+    setTimeout(self.tickCron, OneMinute);   
+    setTimeout(self.tickWeather, OneMinute*0.5);   
+    setTimeout(self.tickClientReload, OneMinute*60);   
+    console.log('- serverTickCron.start()');
+    },
 
+  };
+
+  
 /****************************************************************************************/
-// ======================== XML RPC Connection to Homematic Control
+// ======================== XML RPC Connection to Homematic Control =====================
+// interface to the homegear XMLRPC daemon
 /****************************************************************************************/
 
-//XMLRPC
-var homegearAddress = '127.0.0.1';
-var homegearPort = 2001;
-var xmlrpcServerAddress = '127.0.0.1';
-var xmlrpcServerPort = 9091;
-var xmlrpc = require('xmlrpc');
-var xmlrpcServer = xmlrpc.createServer({ host: '0.0.0.0', port: xmlrpcServerPort });
-xmlrpcClient = xmlrpc.createClient({ host: homegearAddress, port: homegearPort, path: '/'});
- 
-/*
-HM Supported Parameters:
+/* HM Supported Parameters:
+    PRESS_LONG, PRESS_LONG_RELEASE, TEMPERATURE, PRESS_SHORT, HUMIDITY, LEVEL, STATE, BRIGHTNESS, MOTION, SETPOINT, VALVE_STATE, STOP, 
+    WORKING, INSTALL_TEST, PRESS_CONT, ERROR, UNREACH, LOWBAT, MODE_TEMPERATUR_VALVE */
 
-PRESS_LONG, PRESS_LONG_RELEASE, TEMPERATURE, PRESS_SHORT, HUMIDITY, LEVEL, STATE, BRIGHTNESS, MOTION, SETPOINT, VALVE_STATE, STOP, WORKING, INSTALL_TEST, PRESS_CONT, ERROR, UNREACH, LOWBAT, MODE_TEMPERATUR_VALVE
-*/
- 
-coolDownTimers = {};
- 
-var registeredDevices = [];
- 
-/***************************************/
-/*************** XMLRPC ****************/
-/***************************************/
-xmlrpcServer.on('NotFound', function(method, params) {
-  console.log('Method ' + method + ' does not exist');
-})
- 
-xmlrpcServer.on('system.listMethods', function (err, params, callback) {
-        //console.log('HM XMLRPC Method called: \'system.listMethods\'');
-        console.log('HM XMLRPC Connector online');
-        callback(null, ['system.listMethods', 'system.multicall', 'event']);
-});
- 
-xmlrpcServer.on('system.multicall', function (err, params, callback) {
-        if(params instanceof Array && params[0] instanceof Array) {
-                for(var i = 0; i < params[0].length; i++) {
-                        if(!params[0][i].params || params[0][i].params.length != 4) continue;
-                        //if(params[0][i].methodName == 'event') {
-                        var ct = JSON.stringify(params[0][i]);
-                        var pr = params[0][i].params;
-                        if(!coolDownTimers[ct])
-                        {
-                          var eventData = {
-                            type : 'HM',
-                            device : pr[1],
-                            param : pr[2],
-                            value : pr[3]
-                            };
-                          cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
-                          if(wss) 
-                            wss.broadcast({ type : 'busmessage', data : eventData });
-                          console.log('HM RT CMD -- '+ct);
-                          coolDownTimers[ct] = true;
-                          setTimeout(function(){ coolDownTimers[ct] = false; }, 500);
-                        }                          
-                        //}
-                }
+var homeMaticInterface = {
+
+  setup : function() {
+  
+    xmlrpcServer = xmlrpc.createServer({ host: '0.0.0.0', port: runtimeConfig.xmlrpcServerPort });
+    xmlrpcClient = xmlrpc.createClient({ host: runtimeConfig.homegearAddress, port: runtimeConfig.homegearPort, path: '/'});
+  
+    xmlrpcServer.on('NotFound', function(method, params) {
+      console.log('! homeMaticInterface: Method ' + method + ' does not exist');
+    });
+     
+    xmlrpcServer.on('system.listMethods', function (err, params, callback) {
+      console.log('> homeMaticInterface: Connector online');
+      callback(null, ['system.listMethods', 'system.multicall', 'event']);
+    });
+     
+    xmlrpcServer.on('system.multicall', function (err, params, callback) {
+      if(params instanceof Array && params[0] instanceof Array) {
+        for(var i = 0; i < params[0].length; i++) {
+          if(!params[0][i].params || params[0][i].params.length != 4) continue;
+            var ct = JSON.stringify(params[0][i]);
+            var pr = params[0][i].params;
+            if(!coolDownTimers[ct]) {
+              var eventData = {
+                type : 'HM',
+                device : pr[1],
+                param : pr[2],
+                value : pr[3]
+                };
+              cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
+              if(wss) 
+                wss.broadcast({ type : 'busmessage', data : eventData });
+              console.log('> homeMaticInterface.receive('+ct+')');
+              coolDownTimers[ct] = true;
+              setTimeout(function(){ coolDownTimers[ct] = false; }, 500);
+            }                          
+          }
         }
-        callback(null, null)
-});
- 
-setTimeout(function () {
-        xmlrpcClient.methodCall('init', ['http://' + xmlrpcServerAddress + ':' + xmlrpcServerPort, 'HomegearClient'], function (error, value) {})
-}, 1000);
- 
-setInterval(function () {
-        xmlrpcClient.methodCall('init', ['http://' + xmlrpcServerAddress + ':' + xmlrpcServerPort, 'HomegearClient'], function (error, value) {})
-}, 1000*60*10);
- 
+      callback(null, null);
+      });
+    console.log('- homeMaticInterface.setup() on port '+runtimeConfig.xmlrpcServerPort);
+    return(this);
+    },
+
+  start : function() {
+      xmlrpcClient.methodCall('init', ['http://' + runtimeConfig.xmlrpcServerAddress + ':' + runtimeConfig.xmlrpcServerPort, 'HomeOverlord'], function (error, value) {});
+      setTimeout(this.connect, OneMinute*10);  
+    },
+
+  };
+
+serverTickCron.setup().start();
+homeMaticInterface.setup().start();
+clientsUpdateServer.setup().start();
+commandInterfaceServer.setup().start();
+

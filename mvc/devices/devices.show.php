@@ -30,7 +30,7 @@ $deviceFlags = getServiceFlags();
   </tr>
 </thead><?
 
-  foreach(o(db)->get('SELECT * FROM devices ORDER BY d_room,d_name') as $ds) 
+  foreach(o(db)->get('SELECT * FROM devices ORDER BY d_room,d_id') as $ds) 
   {
     $id = $ds['d_id'];
     $did = CutSegment(':', $id);

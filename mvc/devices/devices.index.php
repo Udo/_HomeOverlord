@@ -192,8 +192,8 @@ wsConnect = function() {
 };
 
 wsReconnect = function() {
-  //setTimeout(function() {  wsConnect(); }, 1000);
-  window.location.reload(true);
+  setTimeout(function() {  wsConnect(); }, 1000);
+  //window.location.reload(true);
 }
 
 wsConnect();

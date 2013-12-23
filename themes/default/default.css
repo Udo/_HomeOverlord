@@ -227,7 +227,8 @@ h1, h2, h3 {
 }
 
 .devicetable tr:hover td {
-  background: <?= $barBackground ?>;
+  background: <?= $barBackground2 ?>;
+  color: <?= $background ?>;
 }
 
 #header_outer {
