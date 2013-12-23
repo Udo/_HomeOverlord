@@ -14,7 +14,7 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
   $related = array();
   $idnr = $ds['d_id'];
   $idroot = CutSegment(':', $idnr);
-  foreach(o(db)->get('SELECT * FROM devices WHERE d_id LIKE "'.$idroot.'%"') as $dds)
+  foreach(o(db)->get('SELECT d_key,d_id,d_alias,d_type FROM devices WHERE d_id LIKE "'.$idroot.'%"') as $dds)
   {     
     $related[] = '<a href="'.actionUrl('params', 'devices', array('key' => $dds['d_key'])).'" style="'.($dds['d_key'] == $ds['d_key'] ? 'font-weight:bold;' : '').'">'.
       htmlspecialchars(first($dds['d_alias'], $dds['d_type'])).' '.$dds['d_id'].'</a>';//array($ds['d_id'] => $ds['d_id'].' ('.first($ds['d_alias'], $ds['d_id']).')');
@@ -89,7 +89,9 @@ foreach(array('MASTER', 'VALUES') as $psetType)
 {
   $saveP = array();
   $p = HMRPC('getParamset', array($ds['d_id'], $psetType));
+  profile_point('getParamset '.$psetType);
   $pdes = HMRPC('getParamsetDescription', array($ds['d_id'], $psetType));
+  profile_point('getParamsetDescription '.$psetType);
     
   ?><table width="100%" style="max-width: 600px;" class="border-bottom"><?
   foreach($pdes as $k => $ps)
