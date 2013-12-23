@@ -168,7 +168,7 @@ function sendHECommand($device, $commandType, $value, $reason = 'unknown')
 
 function sendGPIOCommand($device, $commandType, $value, $reason = 'unknown')
 {
-  if(sizeof($device) > 0 && $device['d_state'] != $value)
+  if(sizeof($device) > 0)
   {
     $pv = $value+0;
     $pv = reviewParams($device, $commandType, $pv);
@@ -179,7 +179,7 @@ function sendGPIOCommand($device, $commandType, $value, $reason = 'unknown')
       '&id='.($device['d_id']).
       '&value='.($pv);
       cqrequest(array(array('url' => $reqUrl)));
-    recordDeviceStatus($device, $commandType, $pv, $reason);
+    //recordDeviceStatus($device, $commandType, $pv, $reason);
   }
 }
 

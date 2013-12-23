@@ -40,8 +40,7 @@ class H2HALDevice
   {
     if($value != null)
     {
-      $result = $this->handler->setState($value, $reason);
-      return($result);
+      return($this->handler->setState($value, $reason));
     }
     else
     {

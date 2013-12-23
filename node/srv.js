@@ -12,11 +12,6 @@ console.log('- loading <ws>');
 var WebSocketServer = require('ws').Server;
 console.log('- loading <util>');
 var util = require('util')
-console.log('- loading <rpi-gpio>');
-var gpio = require('rpi-gpio');
-
-var memStats = process.memoryUsage();
-console.log('- mem stats '+util.inspect(memStats).replace(/\n/g, '')+' // '+Math.round(memStats.heapUsed/(1024*1024))+' MB heap size');
 
 var runtimeConfig = {
   clientsUpdateServerPort : 1081,
@@ -26,17 +21,24 @@ var runtimeConfig = {
   xmlrpcServerAddress : '127.0.0.1',
   xmlrpcServerPort : 9091,
   commandInterfaceServerPort : 1080,
+  enableGPIO : true,
   };
+
+if(runtimeConfig.enableGPIO) {
+  console.log('- loading <rpi-gpio>');
+  var gpio = require('rpi-gpio');
+}
 
 var OneMinute = 1000*60;
 var child = null;
 var coolDownTimers = {};
 var registeredDevices = [];
-var deviceState = {};
+deviceState = {};
 var xmlrpcServer = false;
 var xmlrpcClient = false;
 
-console.log('- environment setup complete');
+var memStats = process.memoryUsage();
+console.log('- mem stats '+util.inspect(memStats).replace(/\n/g, '')+' // '+Math.round(memStats.heapUsed/(1024*1024))+' MB heap size');
 
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
@@ -141,6 +143,11 @@ var commandInterfaceServer = {
           }, params.query.minutes*OneMinute);
       
       }
+      else if(params.query.cmd == 'gpio' && runtimeConfig.enableGPIO) {
+
+        gpioInterface.impulse(params.query.param, params.query.value);
+      
+      }
       else if(params.query.cmd == 'update') {
         
         params.query.type = 'devicestatus';
@@ -242,8 +249,6 @@ var clientsUpdateServer = {
 
 var serverTickCron = {
 
-  self : false,
-
   tick : function(ctr, act, doneFunc) {
     var reqParams = 'action='+act+'&controller='+ctr;
     http.get(runtimeConfig.httpServerUrl+'?'+reqParams, function(res) {
@@ -263,37 +268,36 @@ var serverTickCron = {
   },
   
   tickCron : function() {
-    self.tick('svc', 'ajax_tick');
-    setTimeout(self.tickCron, OneMinute);
+    serverTickCron.tick('svc', 'ajax_tick');
+    setTimeout(serverTickCron.tickCron, OneMinute);
   },
   
   tickWeather : function() {
-    self.tick('svc', 'weather');
-    setTimeout(self.tickWeather, 10*OneMinute);
+    serverTickCron.tick('svc', 'weather');
+    setTimeout(serverTickCron.tickWeather, 10*OneMinute);
   },
   
   tickDeviceStates : function() {
-    self.tick('devices', 'ajax_getstate', function(data) {
+    serverTickCron.tick('devices', 'ajax_getstate', function(data) {
       deviceState = JSON.parse(data);
       });
-    setTimeout(self.tickDeviceStates, OneMinute*10);
+    setTimeout(serverTickCron.tickDeviceStates, OneMinute*10);
   },
   
   tickClientReload : function() {
     wss.broadcast({ type : 'reload' });
-    setTimeout(self.tickClientReload, OneMinute*60);
+    setTimeout(serverTickCron.tickClientReload, OneMinute*60);
   },
   
   setup : function() {
-    self = this;
-    return(self);
+    return(this);
   },
 
   start : function() {
-    self.tickDeviceStates();
-    setTimeout(self.tickCron, OneMinute);   
-    setTimeout(self.tickWeather, OneMinute*0.5);   
-    setTimeout(self.tickClientReload, OneMinute*60);   
+    serverTickCron.tickDeviceStates();
+    setTimeout(serverTickCron.tickCron, OneMinute);   
+    setTimeout(serverTickCron.tickWeather, OneMinute*0.5);   
+    setTimeout(serverTickCron.tickClientReload, OneMinute*60);   
     console.log('- serverTickCron.start()');
     },
 
@@ -341,7 +345,7 @@ var homeMaticInterface = {
               cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
               if(wss) 
                 wss.broadcast({ type : 'busmessage', data : eventData });
-              console.log('> homeMaticInterface.receive('+ct+')');
+              console.log('> homeMaticInterface.receive('+util.inspect(params[0][i]).replace(/\n/g, '')+')');
               coolDownTimers[ct] = true;
               setTimeout(function(){ coolDownTimers[ct] = false; }, 500);
             }                          
@@ -360,8 +364,53 @@ var homeMaticInterface = {
 
   };
 
+/****************************************************************************************/
+// ======================== Raspberry Pi GPIO ===========================================
+/****************************************************************************************/
+
+var gpioInterface = {
+
+  setup : function() {
+    gpio.on('export', function(channel) {
+      console.log('> gpioInterface.export() ' + channel);
+      });
+    return(this);
+    },
+    
+  start : function() {
+    console.log('- gpioInterface.start()');
+    },
+    
+  pinConfig : {},
+
+  impulse : function(pin, value, forTime) {
+    console.log('> gpioInterface.impulse(%s)', pin);
+    if(!forTime) forTime = 500;
+    if(gpioInterface.pinConfig[pin] && gpioInterface.pinConfig[pin].out) {
+      gpio.write(pin, value, function() {
+        setTimeout(gpio.write(pin, value ? 0 : 1), forTime);
+        });
+    } else {
+      gpio.setup(pin, gpio.DIR_OUT, function() {
+        gpioInterface.pinConfig[pin] = { out : true };
+        gpio.write(pin, value, function() {
+          setTimeout(gpio.write(pin, value ? 0 : 1), forTime);
+          });
+        });     
+    }
+    },
+
+  }; 
+
+
+/****************************************************************************************/
+// ======================== Initialize Objects ==========================================
+/****************************************************************************************/
+
+
 serverTickCron.setup().start();
 homeMaticInterface.setup().start();
 clientsUpdateServer.setup().start();
 commandInterfaceServer.setup().start();
-
+if(runtimeConfig.enableGPIO) 
+  gpioInterface.setup().start();
