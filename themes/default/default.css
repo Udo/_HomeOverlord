@@ -28,6 +28,10 @@ body, td, input, div, p, textarea {
   border-bottom: <?= $borderColor ?>;
 }
 
+.editable:hover {
+  color: <?= $hlColor ?>;
+}
+
 a {
   color: <?= $linkColor ?>;
 }

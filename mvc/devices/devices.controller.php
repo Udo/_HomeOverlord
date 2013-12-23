@@ -23,6 +23,18 @@ class DevicesController extends H2Controller
   
   function admin()
   {
+  
+  }
+  
+  function ajax_savefield()
+  {
+    o(db)->query('UPDATE devices SET '.$_REQUEST['f'].'=? WHERE d_key=?', array($_REQUEST['v'], $_REQUEST['key']));
+    WriteToFile('log/debug.log', json_encode($_REQUEST).chr(10));
+  }
+  
+  function show()
+  {
+  
   }
   
   function ajax_pairHmStart()
@@ -128,7 +140,7 @@ class DevicesController extends H2Controller
   function _getSubmenu2()
   {
     foreach(array(
-      'admin', 'cli', 'pairhm', 'groups',
+      'admin', 'show', 'cli', 'pairhm', 'groups',
       ) as $act)
       $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
         actionUrl($act).

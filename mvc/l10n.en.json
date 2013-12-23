@@ -8,6 +8,7 @@
   "devices.groups" : "Groups",
   "devices.group" : "Group",
   "devices.admin" : "Admin",
+  "devices.show" : "List",
   "devices.cli" : "Command Line",
   "devices.pairhm" : "Pair New Device",
   "devices.params" : "Device Parameters",
