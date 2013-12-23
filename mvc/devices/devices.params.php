@@ -11,6 +11,17 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
 
 ?><h2><?= $ds['d_id'] ?> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?> | <?= first($ds['d_name']) ?></h2><?
 
+  $related = array();
+  $idnr = $ds['d_id'];
+  $idroot = CutSegment(':', $idnr);
+  foreach(o(db)->get('SELECT * FROM devices WHERE d_id LIKE "'.$idroot.'%"') as $dds)
+  {     
+    $related[] = '<a href="'.actionUrl('params', 'devices', array('key' => $dds['d_key'])).'" style="'.($dds['d_key'] == $ds['d_key'] ? 'font-weight:bold;' : '').'">'.
+      htmlspecialchars(first($dds['d_alias'], $dds['d_type'])).' '.$dds['d_id'].'</a>';//array($ds['d_id'] => $ds['d_id'].' ('.first($ds['d_alias'], $ds['d_id']).')');
+  }
+
+  print('Compound: '.implode(', ', $related).'<br/><br/>');
+
   function showParam($val, $p)
   {
     switch($p['TYPE'])
@@ -83,7 +94,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   ?><table width="100%" style="max-width: 600px;" class="border-bottom"><?
   foreach($pdes as $k => $ps)
   {
-    $ps['WRITABLE'] = ($psetType != 'VALUES') && ($ps['OPERATIONS'] & 2) == 2 && $k != 'AES_ACTIVE';
+    $ps['WRITABLE'] = /*($psetType != 'VALUES') &&*/ ($ps['OPERATIONS'] & 2) == 2 && $k != 'AES_ACTIVE';
     if($ps['WRITABLE'] && $doSave)
     {
       $fVal = parseParam($_POST[$k], $ps);

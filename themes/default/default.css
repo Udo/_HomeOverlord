@@ -36,10 +36,6 @@ body, td, input, div, p, textarea {
   color: <?= $hlColor ?>;
 }
 
-a {
-  color: <?= $linkColor ?>;
-}
-
 .bottomborder {
   padding: 2px;
   margin-bottom: 2px;
@@ -173,6 +169,8 @@ a {
 
 a {
   text-decoration: none;
+  border-bottom: 1px dotted <?= $baseColor ?>;
+  padding: 2px;
   color: <?= $baseColor ?>;
   cursor: pointer;
 }
@@ -280,7 +278,7 @@ h1, h2, h3 {
 }
 
 .highlightable:hover div, a:hover {
-  text-decoration: underline;
+  border-bottom: 1px dotted <?= $hlColor ?>;
   color: <?= $hlColor ?>;
 }
 
