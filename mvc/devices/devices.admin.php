@@ -13,7 +13,7 @@
       <td><?
       
       if($ds['d_bus'] == 'HM')
-        print('<a href="?action=params&controller=devices&key='.$ds['d_key'].'">Parameters</a>');
+        print('<a href="'.actionUrl('params', 'devices', array('key' => $ds['d_key'])).'">Parameters</a>');
       
       ?></td>
     </tr><? 

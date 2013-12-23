@@ -40,7 +40,7 @@ class H2Controller
     
     if(!$canAccess)
     {
-      header('location: ?controller=accounts&action=signin');
+      header('location: '.actionUrl('signin', 'account'));
       die();
     }
     

@@ -32,6 +32,18 @@ class H2Dispatcher
    */
   function receiveData()
   {
+    if(substr($_SERVER['QUERY_STRING'], 0, 1) == '/')
+    {
+      $qry = substr($_SERVER['QUERY_STRING'], 1);
+      $_REQUEST['controller'] = CutSegment('/', $qry);
+      $_REQUEST['action'] = CutSegment('/', $qry);
+      if($qry != '')
+      {
+        parse_str($qry, $r);
+        foreach($r as $k => $v)
+          $_REQUEST[$k] = $v;
+      } 
+    }
     return($this);
   }
   

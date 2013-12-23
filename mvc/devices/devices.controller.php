@@ -65,7 +65,9 @@ class DevicesController extends H2Controller
       print_r(HMRPC(substr($method, 3), $cmd));
       if($method == 'hm.setInstallMode')
       {
-        print('You have 60 seconds to pair your device. After completing the pairing, click here to create an entry for it: <a href="?controller=devices&action=pair">Pairing Complete</a>.');
+        print('You have 60 seconds to pair your device. After completing the pairing, click here to create an entry for it: <a href="'.
+          actionUrl('pair', 'devices').
+          '">Pairing Complete</a>.');
       }
     }
     else
@@ -128,8 +130,9 @@ class DevicesController extends H2Controller
     foreach(array(
       'admin', 'cli', 'pairhm', 'groups',
       ) as $act)
-      $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" 
-        href="?action='.$act.'&controller='.$_REQUEST['controller'].'">'.l10n($_REQUEST['controller'].'.'.$act).'</a>';
+      $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
+        actionUrl($act).
+        '">'.l10n($_REQUEST['controller'].'.'.$act).'</a>';
     
     return('<div class="submenu2">'.implode(' | ', $submenu).'</div>');
   }

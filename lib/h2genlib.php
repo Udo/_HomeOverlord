@@ -295,19 +295,11 @@ function stringParamsToArray($paramStr)
 /* makes an URL calling a specific controller with a specific action */
 function actionUrl($action = null, $controller = null, $params = array())
 { 
-  if (!is_array($params)) $params = stringParamsToArray($params);
-  if($action == null) $action = $_REQUEST['action'];
-  if($controller == null) $controller = $_REQUEST['controller'];
-  if(cfg('service/url_rewrite'))
-  {
-    return(cfg('service/subdir').'/'.urlencode($controller).URL_CA_SEPARATOR.urlencode($action).
-      (sizeof($params) > 0 ? '?'.http_build_query($params) : ''));
-  }
-  else
-  {
-    $params['action'] = $action;
-    $params['controller'] = $controller;
-    return(cfg('service/subdir').'/?'.http_build_query($params));
-  }
+  $controller = first($controller, $_REQUEST['controller']);
+  $action = first($action, $_REQUEST['action']);
+  $base = '?/'.$controller.'/'.$action;
+  if(sizeof($params) > 0)
+    $base .= '/'.http_build_query($params);
+  return($base);
 }
 

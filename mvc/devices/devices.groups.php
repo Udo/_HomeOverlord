@@ -6,7 +6,7 @@ $grps = o(db)->get('SELECT * FROM groups ORDER BY g_name');
 
 foreach($grps as $g)
 {
-  ?><li><a href="?controller=devices&action=group&id=<?= $g['g_key'] ?>">
+  ?><li><a href="<?= actionUrl('group', 'devices', array('id' => $g['g_key'])) ?>">
     <?= htmlspecialchars($g['g_name']) ?> #<?= $g['g_key'] ?>
     </a> &nbsp; &middot; 
     <a onclick="if(confirm('Are you sure you want to delete this group?')) document.location.href='<?= actionUrl('group_delete', 'devices', array('id' => $g['g_key'])) ?>';">delete</a>

@@ -22,7 +22,7 @@
 <br/><br/>
 <h2>After Installation</h2>
 <div>
-  &gt; <a href="?controller=devices&action=pair">pairing finished</a>
+  &gt; <a href="<?= actionUrl('pair', 'devices') ?>">pairing finished</a>
 </div>
 
 <script>
