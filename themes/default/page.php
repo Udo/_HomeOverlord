@@ -30,7 +30,8 @@ foreach($GLOBALS['menu'] as $m)
     <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/masonry.js"></script>   
     <link type="text/css" id="css_theme" rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/all.css.php?scheme=<?= getSunStatus() ?>"/> 
 		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-		<meta name="viewport" content="width=640, initial-scale=1, maximum-scale=1">
+		<link rel="icon" href="icons/kfm_home.png" type="image/x-icon" />
+		<meta name="viewport" content="width=640, initial-scale=1, maximum-scale=1"><div></div>
   </head>
   <body class="<?= cfg('content/class') ?>">
   

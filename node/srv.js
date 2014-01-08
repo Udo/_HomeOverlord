@@ -79,7 +79,9 @@ queueWorkStep = function() {
     // if item.value isn't defined, use the global device state
     if(!item.value && deviceState['d'+item.id]) item.value = deviceState['d'+item.id].state;
     
-    child = exec('sh /srv/www/htdocs/hc/bin/switch.sh '+(0+item.id)+' '+(0+item.value), 
+    var cmdStr = __dirname+'/he853 '+(item.id)+' '+(item.value);
+    console.log('> command: '+cmdStr);
+    child = exec(cmdStr, 
       execHandler);
       
   }
