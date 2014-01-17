@@ -14,12 +14,13 @@ body, td, input, div, p, textarea {
 * {
   font-size: 14px;
 }
-
 .smalltext {
   color: <?= $textColor2 ?>;
   font-size: 11px;
 }
-
+.faint {
+  color: <?= $textColor2 ?>;
+}
 #table1_info, dataTables_filter {
   color: <?= $barBackground ?>;
 }

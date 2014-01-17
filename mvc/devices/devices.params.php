@@ -8,9 +8,21 @@
 $doSave = isset($_POST['controller']);
 
 $ds = o(db)->getDS('devices', $_REQUEST['key']);
+$dev = HMRPC('getDeviceDescription', array($ds['d_id']));
 
-?><h2><?= $ds['d_id'] ?> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?> | <?= first($ds['d_name']) ?></h2><?
-
+?><h2><?= first($ds['d_name']) ?></h2>
+<table style="margin-top: -8px; margin-bottom: 12px;">
+  <tr>
+    <td style="text-align:right">
+      <span class="faint">Type</span>   
+    </td>
+    <td width="*">
+      <?= first($dev['TYPE'], $ds['d_type']) ?>
+      <span class="faint">ID</span> <?= $ds['d_id'] ?> 
+      <span class="faint">Alias</span> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?>  
+      <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
+    </td>  
+  </tr><?
   $related = array();
   $idnr = $ds['d_id'];
   $idroot = CutSegment(':', $idnr);
@@ -20,7 +32,7 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
       htmlspecialchars(first($dds['d_alias'], $dds['d_type'])).' '.$dds['d_id'].'</a>';//array($ds['d_id'] => $ds['d_id'].' ('.first($ds['d_alias'], $ds['d_id']).')');
   }
 
-  print('Compound: '.implode(', ', $related).'<br/><br/>');
+  print('<tr><td valign="top"><span class="faint">Compound</span></td><td>'.implode(', ', $related).'</td></tr></table>');
 
   function showParam($val, $p)
   {
@@ -93,7 +105,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   $pdes = HMRPC('getParamsetDescription', array($ds['d_id'], $psetType));
   profile_point('getParamsetDescription '.$psetType);
     
-  ?><table width="100%" style="max-width: 600px;" class="border-bottom"><?
+  ?><table width="100%" style="max-width: 700px;" class="border-bottom"><?
   foreach($pdes as $k => $ps)
   {
     $ps['WRITABLE'] = /*($psetType != 'VALUES') &&*/ ($ps['OPERATIONS'] & 2) == 2 && $k != 'AES_ACTIVE';
@@ -108,16 +120,16 @@ foreach(array('MASTER', 'VALUES') as $psetType)
     }
     ?><tr>
     
-      <td width="240"><div align="right">
-        <?= $k ?>
+      <td width="200"><div align="right">
+        <span class="faint"><?= $k ?></span>
       </div></td>
-      <td width="20%">
+      <td width="200">
         <b><?= showParam($p[$k], $ps) ?></b> 
       </td>
-      <td width="20%">
+      <td width="80">
         (<?= $ps['MIN']+0 ?>-<?= $ps['MAX']+0 ?>)
       </td>
-      <td width="20%">
+      <td width="*">
         <?= getOps($ps['OPERATIONS']) ?>
       </td>
     
