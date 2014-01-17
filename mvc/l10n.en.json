@@ -12,5 +12,7 @@
   "devices.cli" : "Command Line",
   "devices.pairhm" : "Pair New Device",
   "devices.params" : "Device Parameters",
-  "devices" : "Devices"
+  "devices" : "Devices",
+  "events" : "Events",
+  "events.index" : "Event List"
 }

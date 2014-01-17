@@ -263,7 +263,10 @@ class H2Database
         $c = substr($query, $a, 1);
         if ($c == '?')
         {
-          $result .= '"'.$this->safe($parameters[$pctr]).'"';
+          if(substr($parameters[$pctr], 0, 1) == '$')
+            $result .= '`'.$this->safe(substr($parameters[$pctr], 1)).'`';
+          else
+            $result .= '"'.$this->safe($parameters[$pctr]).'"';
           $pctr++;
         }
         else

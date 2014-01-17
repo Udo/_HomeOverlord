@@ -20,6 +20,23 @@ body, td, input, div, p, textarea {
   font-size: 11px;
 }
 
+#table1_info, dataTables_filter {
+  color: <?= $barBackground ?>;
+}
+
+.datatable thead {
+  background: <?= $barBackground ?>;
+  color: <?= $background ?>;
+}
+
+.datatable td {
+  border-bottom: 1px dotted <?= $barBackground ?>; 
+}
+
+.datatable tr:hover td {
+  color: <?= $hlColor ?>;
+}
+
 .submenu2 {
   margin-top: -12px;
   margin-bottom: 12px;

@@ -38,11 +38,20 @@ class SvcController extends H2Controller
         if(substr($code, 0, 1) == ':')
         {
           $seg = explode(':', substr($line, 1));
-          $dval = rev($seg[2], $seg[3]);
-          if(trim($seg[0]) != '' && sizeof($seg) > 2 && $dval != '' && $dval != '-')
+          if($seg[0] == 'HAL') 
           {
-            deviceCommand($seg[0], $seg[1], $dval);
-            print($seg[0].'='.$dval.', ');
+            $dev = new H2HALDevice($seg[1]);
+            $dval = rev($seg[2], $seg[3]);
+            $dev->state($dval, $GLOBALS['command-source']);
+          }
+          else 
+          {
+            $dval = rev($seg[2], $seg[3]);
+            if(trim($seg[0]) != '' && sizeof($seg) > 2 && $dval != '' && $dval != '-')
+            {
+              deviceCommand($seg[0], $seg[1], $dval);
+              print($seg[0].'='.$dval.', ');
+            }
           }
         }
         else if(substr($code, 0, 1) == '>')
