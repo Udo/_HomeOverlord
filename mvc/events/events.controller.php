@@ -11,11 +11,16 @@ class EventsController extends H2Controller
   {
 
   }
+
+  function manual()
+  {
+  
+  }
   
   function _getSubmenu2()
   {
     foreach(array(
-      'index',
+      'index', 'manual',
       ) as $act)
       $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
         actionUrl($act).

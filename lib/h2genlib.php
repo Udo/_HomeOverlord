@@ -76,6 +76,19 @@ function http_parse_request($result, $headerMode = true)
     'body' => $body));
 }
 
+function getModel($modelName, $initNew = false)
+{
+  if(!$initNew && $GLOBALS['models'][$modelName])
+    return($GLOBALS['models'][$modelName]);
+  $modelFilename = 'models/'.$modelName.'.model.php';
+  if(!file_exists($modelFilename)) die('Model not found: '.$modelName);
+  include_once($modelFilename);
+  $modelClassname = $modelName.'Model';
+  $model = new $modelClassname();
+  if(!$initNew) $GLOBALS['models'][$modelName] = &$model;
+  return($model);
+}
+
 /* another convenience function, test if a string starts with another */
 function strStartsWith($haystack, $needle)
 {

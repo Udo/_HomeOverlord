@@ -97,7 +97,7 @@ body, td, input, div, p, textarea {
 }
 
 .device_line_text {
-  width: 170px;
+  width: 150px;
   overflow: hidden;
 }
 
@@ -178,7 +178,8 @@ body, td, input, div, p, textarea {
 .device_icon2 {
   width: 32px;
   height: 32px;
-  margin-right: 8px;
+  margin-right: 18px;
+  margin-left: 10px;
   float:left;
   background-size: 64px;
   border-radius: 6px;
@@ -589,5 +590,11 @@ footer {
 
 }
 
-
-
+.upDownArrow {
+  vertical-align:middle;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.upDownArrow:hover {
+  opacity: 1;
+}

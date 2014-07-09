@@ -265,6 +265,8 @@ class H2Database
         {
           if(substr($parameters[$pctr], 0, 1) == '$')
             $result .= '`'.$this->safe(substr($parameters[$pctr], 1)).'`';
+          else if(substr($parameters[$pctr], 0, 1) == '!')
+            $result .= $this->safe(substr($parameters[$pctr], 1));
           else
             $result .= '"'.$this->safe($parameters[$pctr]).'"';
           $pctr++;

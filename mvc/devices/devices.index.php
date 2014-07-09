@@ -1,75 +1,14 @@
 <div id="wstate"></div>
 <div id="container"><?
+
+$renderer = getModel('devicerenderer');
+
 foreach($this->devices as $dtype => $dt)  
 {  
   ?><div class="smalltext bottomborder"><?= htmlspecialchars($dtype) ?></div><?
   foreach($dt as $ds)
   {
-    $iconFile = 'icons/'.strtolower($ds['d_type']).'.png';
-    if(!file_exists($iconFile))
-      $iconFile = 'icons/default.png';
-    if($ds['d_type'] == 'Light' || $ds['d_type'] == 'IT') 
-    { ?>
-    
-      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
-        xonclick="toggleDevice(<?= $ds['d_key'] ?>);">
-        
-        <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
-
-        <div id="icon_<?= $ds['d_key'] ?>" class="device_icon2 highlightable state_<?= $ds['d_state'] ?>" 
-          data-state="<?= $ds['d_state'] ?>"
-          onclick="toggleDevice(<?= $ds['d_key'] ?>);">
-        </div>
-        
-        <div class="device_line_text">
-          <div><?= so($ds['d_name']) ?> </div>
-          <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
-            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
-          </div>
-        </div>
-        
-      </div><?  
-    }
-    else if($ds['d_type'] == 'Blinds')
-    {
-      $closedValue = 0.5;
-      $options = array(array('value' => 0, 'caption' => 'open'));
-      for($oc = 0; $oc < 3; $oc++)
-      {
-        $options[] = array('value' => (($closedValue/4)*($oc+1)), 'caption' => ((100/4)*(3-$oc)).'% open ');
-      }
-      $options[] = array('value' => $closedValue, 'caption' => 'closed');
-      ?>
-      
-      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
-        <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
-
-        <div id="icon_<?= $ds['d_key'] ?>"  
-          data-state="<?= $ds['d_state'] ?>"
-          style="background-image: url(<?= $iconFile ?>);background-size: 100%;opacity:0.7;" class="device_icon2">
-        </div>
-
-        <div class="device_line_text">
-          <div>
-              <?= so($ds['d_name']) ?> 
-              <select onchange="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', $(this).val());">
-              <?
-              foreach($options as $o) 
-              {
-                ?><option <?= $ds['d_state'] == $o['value'] ? 'selected' : '' ?> value="<?= $o['value'] ?>"><?= $o['caption'] ?></option><?
-              }
-              ?>
-              </select>
-          </div>
-          <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
-            <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
-          </div>
-        </div>
-      
-      </div>
-      
-      <?  
-    }
+    $renderer->display($ds);
   }
 }
 ?></div><script>
@@ -92,6 +31,18 @@ setDeviceState = function(deviceKey, paramName, paramValue) {
     
     });
 
+}
+
+HALCommand = function(deviceKey, command) {
+  $('#indicator_'+deviceKey).html('<img src="icons/ajax-loader.gif" height="8"/>');
+  
+  $.post('./', 
+    { controller : 'devices', action : 'ajax_halcommand', key : deviceKey, command : command, by : 'UI' }, 
+    function(data) { 
+    
+      $('#indicator_'+deviceKey).text(' ');
+    
+    });
 }
 
 toggleDevice = function(deviceId) {

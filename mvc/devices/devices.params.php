@@ -4,11 +4,11 @@
 <input type="hidden" name="action" value="<?= $_REQUEST['action'] ?>"/>
 <input type="hidden" name="key" value="<?= $_REQUEST['key'] ?>"/>
 <?
-
 $doSave = isset($_POST['controller']);
 
 $ds = o(db)->getDS('devices', $_REQUEST['key']);
 $dev = HMRPC('getDeviceDescription', array($ds['d_id']));
+$_REQUEST['actionEvents'] = array();
 
 ?><h2><?= first($ds['d_name']) ?></h2>
 <table style="margin-top: -8px; margin-bottom: 12px;">
@@ -34,8 +34,9 @@ $dev = HMRPC('getDeviceDescription', array($ds['d_id']));
 
   print('<tr><td valign="top"><span class="faint">Compound</span></td><td>'.implode(', ', $related).'</td></tr></table>');
 
-  function showParam($val, $p)
+  function showParam($val, $p, $k)
   {
+    global $actionEvents;
     switch($p['TYPE'])
     {
       case('BOOL'):
@@ -60,6 +61,13 @@ $dev = HMRPC('getDeviceDescription', array($ds['d_id']));
           return('<input type="text" name="'.$p['ID'].'" value="'.number_format($val, 3).'"/>');
         else
           return(number_format($val, 3));
+        break;
+      }
+      case('ACTION'):
+      {
+        $_REQUEST['actionEvents'][] = $k;
+        if($k == 'PRESS_SHORT') $_REQUEST['actionEvents'][] = 'PRESSED';
+        return('-');
         break;
       }
     }
@@ -124,7 +132,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
         <span class="faint"><?= $k ?></span>
       </div></td>
       <td width="200">
-        <b><?= showParam($p[$k], $ps) ?></b> 
+        <b><?= showParam($p[$k], $ps, $k) ?></b> 
       </td>
       <td width="80">
         (<?= $ps['MIN']+0 ?>-<?= $ps['MAX']+0 ?>)
@@ -150,6 +158,56 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   ?></pre>--><?
 }
 
+?><input type="submit" value="Save"/></form><?
+
+if(sizeof($_REQUEST['actionEvents']) > 0)
+{
+  ?><br/><br/><h2>Event Info</h2>
+  <div>
+    This device emits the following events:
+    <?= implode(', ', $_REQUEST['actionEvents']) ?>
+  </div>
+  <?
+}
+
+$eventHandlers = o(db)->get('SELECT * FROM events WHERE e_address LIKE "HM-?%" OR e_address_rev LIKE "HM-?%"', array('!'.$ds['d_id'], '!'.$ds['d_id']));
+if(sizeof($eventHandlers) > 0)
+{
+  ?><br/><br/><h2>Event Handlers</h2>
+  <div>
+  <?
+  foreach($eventHandlers as $eh)
+  {
+    //...
+  }
+  ?>
+  </div><?
+}
 
 
-?><input type="submit" value="Save"/></form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+?>

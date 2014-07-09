@@ -137,6 +137,13 @@ class DevicesController extends H2Controller
     deviceCommand($_REQUEST['key'], first($_REQUEST['p'], 'STATE'), $_REQUEST['v'], first($_REQUEST['by'], 'EXT'));
   }
   
+  function ajax_halcommand()
+  {
+    $this->skipView = true;
+    $device = new H2HALDevice($_REQUEST['key']);
+    $device->state($_REQUEST['command'], first($_REQUEST['by'], 'EXT'));
+  }
+  
   function _getSubmenu2()
   {
     foreach(array(
