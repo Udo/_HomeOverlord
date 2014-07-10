@@ -159,8 +159,10 @@ class DevicesController extends H2Controller
   function ajax_halcommand()
   {
     $this->skipView = true;
-    $device = new H2HALDevice($_REQUEST['key']);
-    $device->state($_REQUEST['command'], first($_REQUEST['by'], 'EXT'));
+    WriteToFile('log/hal.command.log', json_encode($_POST).chr(10));
+    $device = new H2HALDevice($_POST['key']);
+    $call = first($_POST['call'], 'state');
+    $device->{$call}($_POST['command'], first($_POST['by'], 'EXT'));
   }
   
   function _getSubmenu2()

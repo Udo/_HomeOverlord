@@ -17,13 +17,18 @@ class H2DeviceRenderer
     #  print('<div class="device_line">'.$ds['d_type'].'</div>');
   } 
   
+  function autoConfig($ds)
+  {
+    return('<div class="leftblock knub '.($ds['d_auto'] == 'A' ? 'green' : 'red').' dparam_auto"
+      onclick="HALCommand('.$ds['d_key'].', \'dparam\', \'auto=\'+($(this).text() == \'A\' ? \'M\' : \'A\'));">'.$ds['d_auto'].'</div>');
+  }
+  
   function displayLight($ds, $iconFile)
   {
     ?>
       <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
         xonclick="toggleDevice(<?= $ds['d_key'] ?>);">
-        
-        <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
+        <?= $this->autoConfig($ds) ?>
 
         <div id="icon_<?= $ds['d_key'] ?>" class="device_icon2 highlightable state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
@@ -51,15 +56,15 @@ class H2DeviceRenderer
     ?>
     
     <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
-      <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
+      <?= $this->autoConfig($ds) ?>
 
       <div id="icon_<?= $ds['d_key'] ?>"  
         data-state="<?= $ds['d_state'] ?>"
         style="float:left;width:60px;margin-top:2px;">
         <img class="upDownArrow" src="icons/1uparrow.png" width="24" height="32"
-          onclick="HALCommand(<?= $ds['d_key'] ?>, 'open');"/>
+          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'open');"/>
         <img class="upDownArrow" src="icons/1downarrow.png" width="24" height="32"
-          onclick="HALCommand(<?= $ds['d_key'] ?>, 'closed');"/>
+          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'closed');"/>
       </div>
 
       <div class="device_line_text">
@@ -87,7 +92,7 @@ class H2DeviceRenderer
     ?>
     
     <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
-      <div class="leftblock knub green"><?= $ds['d_auto'] ?></div>
+      <?= $this->autoConfig($ds) ?>
 
       <div id="icon_<?= $ds['d_key'] ?>"  
         data-state="<?= $ds['d_state'] ?>"

@@ -17,3 +17,11 @@ foreach($clientList as $client)
 }
 
 ?></table>
+
+<hr/>
+<input type="button" value="reload"
+  onclick="document.location.href='<?= actionUrl('clients', 'devices', array('do' => 'reload')) ?>';"/> all screens
+<?
+if($_REQUEST['do'] == 'reload')
+  broadcast(array('type' => 'reload'));
+?>

@@ -23,6 +23,7 @@ class SvcController extends H2Controller
   
   function execTriggerScript($code, $data, $noExec = true)
   {
+    $GLOBALS['command-mode'] = 'trigger';
     $ds = $data['ds'];
     if(isset($ds))
       $GLOBALS['command-source'] = '#'.$ds['e_key'].' '.first($data['emitter_name'], $data['event']);

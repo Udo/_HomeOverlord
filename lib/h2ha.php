@@ -49,6 +49,12 @@ function hours($h)
   return($h*60);
 }
 
+function broadcast($msg)
+{
+  $msg['cmd'] = 'broadcast';
+  cqrequest(array(array('url' => 'http://localhost:1080/?'.http_build_query($msg))));
+}
+
 function systemMessage($msgType, $text = '(no text)', $data = array())
 {
   $mds = array(
@@ -208,6 +214,7 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown')
 function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
   $device = o(db)->getDS('devices', $deviceKey, 'd_alias');
+  if($device['d_auto'] != 'A' && $GLOBALS['command-mode'] == 'trigger') return;
   if(sizeof($device) == 0)
     $device = o(db)->getDS('devices', $deviceKey);
   if(sizeof($device) > 0 && $device['d_state'] != $value)

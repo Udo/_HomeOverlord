@@ -65,9 +65,6 @@ foreach($GLOBALS['menu'] as $m)
       </div>
     </footer>
     
-    <style> 
-    </style>
-    
     <script>
     
       menuVisible = false;

@@ -39,11 +39,11 @@ setDeviceState = function(deviceKey, paramName, paramValue) {
 
 }
 
-HALCommand = function(deviceKey, command) {
+HALCommand = function(deviceKey, call, command) {
   $('#indicator_'+deviceKey).html('<img src="icons/ajax-loader.gif" height="8"/>');
   
   $.post('./', 
-    { controller : 'devices', action : 'ajax_halcommand', key : deviceKey, command : command, by : 'UI' }, 
+    { controller : 'devices', action : 'ajax_halcommand', key : deviceKey, call : call, command : command, by : 'UI' }, 
     function(data) { 
     
       $('#indicator_'+deviceKey).text(' ');
@@ -113,6 +113,17 @@ displayMessage = function(data) {
   
 }
 
+messageHandlers = {
+  devicestatus : function(data) { updateDeviceWidget(data); },
+  reload : function(data) { window.location.reload(true); },
+  message : function(data) { displayMessage(data); },
+  dparam_auto : function(data) { 
+    var indicator = $('#dvc_'+data.device+' > .dparam_auto');
+    indicator.text(data.value).removeClass('green').removeClass('red'); 
+    indicator.addClass(data.value == 'A' ? 'green' : 'red');
+    },
+  };
+
 wsConnect = function() {
   
   ws = new WebSocket('ws://<?= cfg('service/server').':'.cfg('service/wsport') ?>/ws');
@@ -123,18 +134,8 @@ wsConnect = function() {
   
     //console.log('ws: '+evt.data);
     var data = JSON.parse(evt.data);
-    
-    // single device status update
-    if(data.type == 'devicestatus') {
-      updateDeviceWidget(data);
-    }    
-    else if(data.type == 'reload') {
-      window.location.reload(true);
-    }    
-    else if(data.type == 'message') {
-      displayMessage(data);
-    }    
-    
+    if(messageHandlers[data.type]) 
+       messageHandlers[data.type](data);
     
   };
   ws.onclose = function() {

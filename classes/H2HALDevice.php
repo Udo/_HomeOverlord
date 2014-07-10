@@ -50,4 +50,12 @@ class H2HALDevice
     }
   }
   
+  function dparam($value)
+  {
+    $key = CutSegment('=', $value);
+    $this->deviceDS['d_'.$key] = $value;
+    $this->save();
+    broadcast(array('type' => 'dparam_'.$key, 'device' => $this->deviceDS['d_key'], 'value' => $value));
+  }
+  
 }

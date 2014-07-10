@@ -77,6 +77,7 @@ switch($_REQUEST['scheme'])
     $barBackground2 = '#cba';
     $textColor2 = '#876';
     $barText = '#fed';
+    $timeCSS = 'day.css';
     break;
   }
   default:
@@ -88,6 +89,7 @@ switch($_REQUEST['scheme'])
     $barBackground2 = '#024';
     $textColor2 = '#987';
     $barText = css_color($b, 20);
+    $timeCSS = 'night.css';
     break;
   }
 }
@@ -113,5 +115,5 @@ $borderBanner = '1px solid '.$darkerColor;
 
 include('default.css');
 include('masonry.css');
-
+include($timeCSS);
 ?>
