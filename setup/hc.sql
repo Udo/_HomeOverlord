@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 23, 2013 at 02:27 AM
+-- Generation Time: Jul 09, 2014 at 09:46 PM
 -- Server version: 5.5.31-0+wheezy1
 -- PHP Version: 5.4.4-14+deb7u5
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `devices` (
   KEY `d_bus` (`d_bus`),
   KEY `d_type` (`d_type`),
   KEY `d_alias` (`d_alias`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2050 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2053 ;
 
 -- --------------------------------------------------------
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   KEY `e_type` (`e_type`),
   KEY `e_address` (`e_address`),
   KEY `e_lastcalled` (`e_lastcalled`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
 
 -- --------------------------------------------------------
 
@@ -108,6 +108,19 @@ CREATE TABLE IF NOT EXISTS `messages` (
   PRIMARY KEY (`m_key`),
   KEY `m_time` (`m_time`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=47 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `nvstore`
+--
+
+CREATE TABLE IF NOT EXISTS `nvstore` (
+  `nv_key` varchar(64) NOT NULL,
+  `nv_data` longtext,
+  `nv_lastupdate` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`nv_key`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 

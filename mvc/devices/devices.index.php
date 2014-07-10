@@ -1,9 +1,15 @@
 <div id="wstate"></div>
 <div id="container"><?
 
-$renderer = getModel('devicerenderer');
+$renderer = new H2DeviceRenderer();
+$nv = new H2NVStore();
 
-foreach($this->devices as $dtype => $dt)  
+$clientIdentifier = 'client/'.$_SERVER['REMOTE_ADDR'];
+$clientSettings = $nv->get($clientIdentifier);
+$clientSettings['lastseen'] = time();
+$nv->set($clientIdentifier, $clientSettings);
+
+foreach($this->devices as $dtype => $dt) if(!$clientSettings['hide'.$dtype])
 {  
   ?><div class="smalltext bottomborder"><?= htmlspecialchars($dtype) ?></div><?
   foreach($dt as $ds)
@@ -19,7 +25,7 @@ wsConnection = null;
 
 setDeviceState = function(deviceKey, paramName, paramValue) {
 
-  console.log('setDeviceState '+deviceKey +' '+ paramName +' '+ paramValue);
+  //console.log('setDeviceState '+deviceKey +' '+ paramName +' '+ paramValue);
 
   $('#indicator_'+deviceKey).html('<img src="icons/ajax-loader.gif" height="8"/>');
   
@@ -115,7 +121,7 @@ wsConnect = function() {
   };
   ws.onmessage = function(evt) {
   
-    console.log('ws: '+evt.data);
+    //console.log('ws: '+evt.data);
     var data = JSON.parse(evt.data);
     
     // single device status update

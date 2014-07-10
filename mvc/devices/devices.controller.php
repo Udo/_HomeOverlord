@@ -97,6 +97,25 @@ class DevicesController extends H2Controller
   
   }
   
+  function clients()
+  {
+    
+  }
+  
+  function client_settings()
+  {
+    $this->setupDeviceList();
+  }
+  
+  function ajax_client_update()
+  {
+    $nv = new H2NVStore();
+    $clientIdentifier = $_POST['id'];
+    $clientSettings = $nv->get($clientIdentifier);
+    $clientSettings[$_POST['key']] = $_POST['value'];
+    $nv->set($clientIdentifier, $clientSettings);
+  }
+  
   function ajax_getstate()
   {
     $r = array();
@@ -147,7 +166,7 @@ class DevicesController extends H2Controller
   function _getSubmenu2()
   {
     foreach(array(
-      'admin', 'show', 'cli', 'pairhm', 'groups',
+      'admin', 'clients', 'show', 'cli', 'pairhm', 'groups',
       ) as $act)
       $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
         actionUrl($act).

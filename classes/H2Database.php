@@ -10,12 +10,18 @@ function so($s)
   return(mysql_real_escape_string($s));
 }
 
+function db() 
+{
+  if(!$GLOBALS['dbInstance']) $db = new H2Database();
+  return($GLOBALS['dbInstance']);
+}
+
 class H2Database
 {
 
   function __construct()
   {
-    
+    $GLOBALS['dbInstance'] = $this;
   }
   
   function connect()

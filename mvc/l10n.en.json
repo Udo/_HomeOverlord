@@ -14,5 +14,6 @@
   "devices.params" : "Device Parameters",
   "devices" : "Devices",
   "events" : "Events",
-  "events.index" : "Event List"
+  "events.index" : "Event List",
+  "devices.clients" : "Clients"
 }

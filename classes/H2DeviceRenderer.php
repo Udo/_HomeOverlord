@@ -1,6 +1,6 @@
 <?php
 
-class DeviceRendererModel
+class H2DeviceRenderer
 {
   function display($ds)
   {
