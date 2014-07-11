@@ -12,5 +12,10 @@ class CamController extends H2Controller
 
   }
   
+  function single()
+  {
+
+  }
+  
 }
 

@@ -1,13 +1,15 @@
 <?
-$panelSize = first($_REQUEST['zoom'], 250);
+$panelSize = first($_REQUEST['zoom'], 640);
 ?>
 <div id="camsPanel"><?
 
-foreach(cfg('cameras/cams') as $cam)
+$camTitle = '';
+foreach(cfg('cameras/cams') as $cam) if($cam['id'] == $_REQUEST['id'])
 {
+  $camTitle = htmlspecialchars(first($cam['title'], $cam['id']));
   ?><div>
-    <div style="text-align:center;padding:4px;"><?= htmlspecialchars(first($cam['title'], $cam['id']))?></div>
-    <a href="<?= actionUrl('single', 'cam', array('id' => $cam['id'])) ?>">
+    <div style="text-align:center;padding:4px;"><?= $camTitle ?></div>
+    <a href="<?= actionUrl('index', 'cam', array('id' => $cam['id'])) ?>">
       <img src="data/cam/<?= $cam['id'] ?>_mid.jpg" width="100%"/>
     </a>
   </div><?
@@ -21,9 +23,16 @@ foreach(cfg('cameras/cams') as $cam)
     window.location.reload(true);
   };
   
+  $('#lefthdr').text('<?= $camTitle ?>');
+  
 </script>
 
 <style>
+#camsPanel {
+  margin-top: -52px;
+  margin-left: -15px;
+}
+
 #camsPanel > div {
   display: inline-block;
   width: <?= $panelSize ?>px;

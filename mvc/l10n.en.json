@@ -17,5 +17,6 @@
   "events.index" : "Event List",
   "devices.clients" : "Clients",
   "cam" : "Cameras",
-  "cam.index" : "Surveillance Cameras"
+  "cam.index" : "Surveillance Cameras",
+  "cam.single" : "Camera"
 }

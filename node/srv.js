@@ -303,6 +303,7 @@ var serverTickCron = {
   
   tickCams : function() {
     console.log('- cam poll ../data/cam/getdata.sh');
+    if(wss) wss.broadcast({ type : 'camtick' });
     exec('/bin/sh ../data/cam/getdata.sh', function(){});
     setTimeout(serverTickCron.tickCams, OneMinute*0.5);
   },
