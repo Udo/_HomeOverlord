@@ -19,3 +19,10 @@ $GLOBALS['config']['geo'] = array(
   
 // your server's address
 $GLOBALS['config']['service']['server'] = '10.32.0.10';
+
+$GLOBALS['config']['cameras'] = array(
+  'cams' => array(
+    array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01', 'title' => ''),
+    array('photoUrl' => 'http://10.32.4.107:8080/photo.jpg', 'id' => 'cam02', 'title' => 'Office Cam'),  
+    ),
+  );

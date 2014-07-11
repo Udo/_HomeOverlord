@@ -116,17 +116,6 @@ class DevicesController extends H2Controller
     $nv->set($clientIdentifier, $clientSettings);
   }
   
-  function ajax_getstate()
-  {
-    $r = array();
-    foreach(o(db)->get('SELECT * FROM devices
-      ORDER BY d_room, d_key') as $d)
-    {
-      $r['d'.$d['d_id']] = array('id' => $d['d_id'], 'state' => $d['d_state'], 'd_name' => $d['d_name']);    
-    }    
-    print(json_encode($r));
-  }
-  
   function groups()
   {
   

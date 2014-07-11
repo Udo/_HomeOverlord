@@ -15,5 +15,7 @@
   "devices" : "Devices",
   "events" : "Events",
   "events.index" : "Event List",
-  "devices.clients" : "Clients"
+  "devices.clients" : "Clients",
+  "cam" : "Cameras",
+  "cam.index" : "Surveillance Cameras"
 }

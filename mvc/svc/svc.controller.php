@@ -93,6 +93,11 @@ class SvcController extends H2Controller
     $this->skipView = false;
   }
   
+  function ajax_camscript() 
+  {
+    $this->skipView = false;
+  }
+  
   function weather()
   {
   
@@ -125,6 +130,17 @@ class SvcController extends H2Controller
           o(db)->query('UPDATE events SET e_lastcalled = '.time().' WHERE e_key = '.$eds['e_key']);
       }
     }
+  }
+  
+  function ajax_getstate()
+  {
+    $r = array();
+    foreach(o(db)->get('SELECT * FROM devices
+      ORDER BY d_room, d_key') as $d)
+    {
+      $r['d'.$d['d_id']] = array('id' => $d['d_id'], 'state' => $d['d_state'], 'd_name' => $d['d_name']);    
+    }    
+    print(json_encode($r));
   }
   
   function ajax_notify()

@@ -26,8 +26,7 @@ foreach($GLOBALS['menu'] as $m)
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"> 
   <head>
     <title><?php echo htmlspecialchars(cfg('page/title', 'unnamed')).' &middot; '.cfg('service/name', 'UdoHome') ?></title>
-    <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/jquery-1.9.1.min.js"></script>   
-    <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/masonry.js"></script>   
+    <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/js.php"></script>   
     <link type="text/css" id="css_theme" rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/all.css.php?scheme=<?= getSunStatus() ?>"/> 
 		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
 		<link rel="icon" href="icons/kfm_home.png" type="image/x-icon" />
@@ -49,6 +48,7 @@ foreach($GLOBALS['menu'] as $m)
     </div>
 	  
     <div id="content_outer">
+      <div id="msgheader"></div>
       <div id="content">
       <table width="100%">
         <tr>
@@ -61,8 +61,6 @@ foreach($GLOBALS['menu'] as $m)
     </div>
     
     <footer>
-      <div id="msgheader">
-      </div>
     </footer>
     
     <script>

@@ -53,6 +53,13 @@ execHandler = function (error, stdout, stderr) {
 }
 
 eventQueue = [];
+parseJSON = function(raw, defaultValue) {
+  try {
+    return(JSON.parse(raw));
+  } catch(err) {
+    return(defaultValue);
+  }
+}
 
 // add now command to queue
 queueEvent = function(ev, times) {
@@ -81,8 +88,7 @@ queueWorkStep = function() {
     
     var cmdStr = __dirname+'/he853 '+(item.id)+' '+(item.value);
     console.log('> command: '+cmdStr);
-    child = exec(cmdStr, 
-      execHandler);
+    child = exec(cmdStr, execHandler);
       
   }
 
@@ -251,6 +257,8 @@ var clientsUpdateServer = {
 
 var serverTickCron = {
 
+  extConfig : {},
+
   tick : function(ctr, act, doneFunc) {
     var reqParams = 'action='+act+'&controller='+ctr;
     http.get(runtimeConfig.httpServerUrl+'?'+reqParams, function(res) {
@@ -270,7 +278,9 @@ var serverTickCron = {
   },
   
   tickCron : function() {
-    serverTickCron.tick('svc', 'ajax_tick');
+    serverTickCron.tick('svc', 'ajax_tick', function(data) {
+      serverTickCron.extConfig = parseJSON(data, serverTickCron.extConfig);
+      });
     setTimeout(serverTickCron.tickCron, OneMinute);
   },
   
@@ -280,8 +290,8 @@ var serverTickCron = {
   },
   
   tickDeviceStates : function() {
-    serverTickCron.tick('devices', 'ajax_getstate', function(data) {
-      deviceState = JSON.parse(data);
+    serverTickCron.tick('svc', 'ajax_getstate', function(data) {
+      deviceState = parseJSON(data, deviceState);
       });
     setTimeout(serverTickCron.tickDeviceStates, OneMinute*10);
   },
@@ -289,6 +299,12 @@ var serverTickCron = {
   tickClientReload : function() {
     wss.broadcast({ type : 'reload' });
     setTimeout(serverTickCron.tickClientReload, OneMinute*60);
+  },
+  
+  tickCams : function() {
+    console.log('- cam poll ../data/cam/getdata.sh');
+    exec('/bin/sh ../data/cam/getdata.sh', function(){});
+    setTimeout(serverTickCron.tickCams, OneMinute*0.5);
   },
   
   setup : function() {
@@ -300,6 +316,7 @@ var serverTickCron = {
     setTimeout(serverTickCron.tickCron, OneMinute);   
     setTimeout(serverTickCron.tickWeather, OneMinute*0.5);   
     setTimeout(serverTickCron.tickClientReload, OneMinute*60);   
+    setTimeout(serverTickCron.tickCams, 10000);   
     console.log('- serverTickCron.start()');
     },
 
