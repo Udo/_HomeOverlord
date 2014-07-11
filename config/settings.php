@@ -19,6 +19,7 @@ $GLOBALS['config']['geo'] = array(
   
 // your server's address
 $GLOBALS['config']['service']['server'] = '10.32.0.10';
+$GLOBALS['config']['service']['wserverurl'] = '10.32.0.10:1081';
 
 $GLOBALS['config']['cameras'] = array(
   'cams' => array(

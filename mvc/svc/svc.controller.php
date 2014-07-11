@@ -169,4 +169,8 @@ class SvcController extends H2Controller
   {
     $this->skipView = false;
   }
+  function ajax_nodesrv()
+  {
+    $this->skipView = false;
+  }
 }

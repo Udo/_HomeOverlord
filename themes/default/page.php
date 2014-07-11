@@ -65,6 +65,8 @@ foreach($GLOBALS['menu'] as $m)
     
     <script>
     
+      wsConnect();
+    
       menuVisible = false;
       
       toggleMenu = function() {
