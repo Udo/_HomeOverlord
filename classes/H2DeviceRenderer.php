@@ -30,10 +30,12 @@ class H2DeviceRenderer
         xonclick="toggleDevice(<?= $ds['d_key'] ?>);">
         <?= $this->autoConfig($ds) ?>
 
-        <div id="icon_<?= $ds['d_key'] ?>" class="device_icon2 highlightable state_<?= $ds['d_state'] ?>" 
+        <i id="icon_<?= $ds['d_key'] ?>" 
+          class="asCharacter fa fa-lightbulb-o fa-3x state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
+          style="float:left;width:44px;padding-left:16px;"
           onclick="toggleDevice(<?= $ds['d_key'] ?>);">
-        </div>
+        </i>
         
         <div class="device_line_text">
           <div><?= so($ds['d_name']) ?> </div>
@@ -61,10 +63,10 @@ class H2DeviceRenderer
       <div id="icon_<?= $ds['d_key'] ?>"  
         data-state="<?= $ds['d_state'] ?>"
         style="float:left;width:60px;margin-top:2px;">
-        <img class="upDownArrow" src="icons/1uparrow.png" width="24" height="32"
-          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'open');"/>
-        <img class="upDownArrow" src="icons/1downarrow.png" width="24" height="32"
-          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'closed');"/>
+        <i class="asCharacter fa fa-chevron-circle-up fa-2x clickable state_0" 
+          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'open');"></i>
+        <i class="asCharacter fa fa-chevron-circle-down fa-2x  clickable state_0" 
+          onclick="HALCommand(<?= $ds['d_key'] ?>, 'state', 'closed');"></i>
       </div>
 
       <div class="device_line_text">
@@ -97,10 +99,10 @@ class H2DeviceRenderer
       <div id="icon_<?= $ds['d_key'] ?>"  
         data-state="<?= $ds['d_state'] ?>"
         style="float:left;width:60px;margin-top:2px;">
-        <img class="upDownArrow" src="icons/1uparrow.png" width="24" height="32"
-          onclick="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', 0);"/>
-        <img class="upDownArrow" src="icons/1downarrow.png" width="24" height="32"
-          onclick="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', <?= $closedValue ?>);"/>
+        <i class="asCharacter fa fa-chevron-circle-up fa-2x clickable state_0" 
+          onclick="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', 0);"></i>
+        <i class="asCharacter fa fa-chevron-circle-down fa-2x  clickable state_0" 
+          onclick="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', <?= $closedValue ?>);"></i>
       </div>
 
       <div class="device_line_text">

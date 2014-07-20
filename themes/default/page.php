@@ -28,6 +28,7 @@ foreach($GLOBALS['menu'] as $m)
     <title><?php echo htmlspecialchars(cfg('page/title', 'unnamed')).' &middot; '.cfg('service/name', 'UdoHome') ?></title>
     <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/js.php"></script>   
     <link type="text/css" id="css_theme" rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/all.css.php?scheme=<?= getSunStatus() ?>"/> 
+    <link rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/font-awesome/css/font-awesome.min.css">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
 		<link rel="icon" href="icons/kfm_home.png" type="image/x-icon" />
 		<meta name="viewport" content="width=800"><div></div>
@@ -40,10 +41,11 @@ foreach($GLOBALS['menu'] as $m)
   
     <div id="header_outer">
       <div id="header">
-        <a onclick="toggleMenu();">▶</a>
-        <span id="lefthdr">
-          Home Control <?= $GLOBALS['pagetitle'] ?>
-        </span><span id="lefthdr2"></span>
+        <a href="<?= actionUrl('index', 'home') ?>">▶
+          <span id="lefthdr">
+            Home Control <?= $GLOBALS['pagetitle'] ?>
+          </span><span id="lefthdr2"></span>
+        </a>
       </div>
     </div>
 	  

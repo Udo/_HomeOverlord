@@ -3,15 +3,17 @@ header('content-type: text/plain');
 ob_start();
 
 $camConfig = cfg('cameras');
+$sensorConfig = cfg('sensors');
 /*$nv->get('cameras');
 if(!$camConfig['cams']) $camConfig['cams'] = array(
   array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01'),
   );*/
 
 @mkdir('data/cam/', 0775, true);
+@mkdir('data/sensors/', 0775, true);
 
 ?>
-cd "<?= $GLOBALS['APP.BASEDIR'].'/data/cam/' ?>"
+cd "<?= $GLOBALS['APP.BASEDIR'].'/data/' ?>"
 
 # polling camera photos
 
@@ -19,16 +21,24 @@ cd "<?= $GLOBALS['APP.BASEDIR'].'/data/cam/' ?>"
 foreach($camConfig['cams'] as $cam)
 {
 ?>
-curl -s -m 7 --retry 1 <?= $cam['photoUrl'] ?> > <?= $cam['id'] ?>_full.jpg & 
+curl -s -m 15 <?= $cam['photoUrl'] ?> > cam/<?= $cam['id'] ?>_full.jpg & 
+<?
+}
+?>
+
+# sensor data
+
+<?
+foreach($sensorConfig['sensors'] as $sen)
+{
+?>
+curl -s -m 15 <?= $sen['jsonUrl'] ?> > sensors/<?= $sen['id'] ?>.json & 
 <?
 }
 ?>
 
 # wait until all data should be saved
-sleep 15
-
-# remove empty files
-# find ./ -size 0 -print0 |xargs -0 rm
+sleep 20
 
 <? /*
 function saveToArchive(){
@@ -42,13 +52,13 @@ function saveToArchive(){
 foreach($camConfig['cams'] as $cam) if($cam['resize'])
 {
 ?>
-convert <?= $cam['id'] ?>_full.jpg -quiet -normalize -auto-level -resize 720 <?= $cam['id'] ?>_mid.jpg
+convert cam/<?= $cam['id'] ?>_full.jpg -quiet -normalize -auto-level -resize 720 cam/<?= $cam['id'] ?>_mid.jpg
 <?
 } 
 else 
 {
 ?>
-cp <?= $cam['id'] ?>_full.jpg <?= $cam['id'] ?>_mid.jpg
+cp cam/<?= $cam['id'] ?>_full.jpg cam/<?= $cam['id'] ?>_mid.jpg
 <?
 }
 ?>

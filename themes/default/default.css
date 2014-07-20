@@ -15,11 +15,11 @@ body, td, input, div, p, textarea {
   font-size: 14px;
 }
 .smalltext {
-  color: <?= $textColor2 ?>;
+  color: rgba(<?= $bgBase ?>, 0.5);
   font-size: 11px;
 }
 .faint {
-  color: <?= $textColor2 ?>;
+  color: rgba(<?= $bgBase ?>, 0.5);
 }
 #table1_info, dataTables_filter {
   color: <?= $barBackground ?>;
@@ -35,7 +35,7 @@ body, td, input, div, p, textarea {
 }
 
 .datatable tr:hover td {
-  color: <?= $hlColor ?>;
+  color: rgba(<?= $bgBase ?>, 0.2);
 }
 
 .submenu2 {
@@ -51,7 +51,7 @@ body, td, input, div, p, textarea {
 }
 
 .editable:hover {
-  color: <?= $hlColor ?>;
+  color: rgba(<?= $bgBase ?>, 0.2);;
 }
 
 .bottomborder {
@@ -133,25 +133,17 @@ body, td, input, div, p, textarea {
 }
 
 .device_line:hover {
-  background: <?= $barBackground2 ?>;
+  background: rgba(<?= $bgBase ?>, 0.2);
 }
 
 .state_0 {
-  background: url('/hc/icons/glow_inactive_s.jpg');
-  opacity: 0.7;
-}
-
-.state_0 > img {
-  opacity: 0.3;
+  cursor: pointer;
+  opacity: 0.5;
 }
 
 .state_1 {
-  background: url('/hc/icons/glow_active_s.jpg');
-  box-shadow: 0px 0px 10px <?= $baseColor ?>;
-}
-
-.state_1 > img {
-  opacity: 1;
+  cursor: pointer;
+  color: <?= $onColor ?>;
 }
 
 .messageline {
@@ -218,7 +210,7 @@ input[type=text], input[type=password], textarea {
 }
 
 .device_line:hover select {
-   color: <?= $hlColor ?>;
+   color: rgba(<?= $bgBase ?>, 0.2);;
 }
 
 th {
@@ -246,7 +238,7 @@ h1, h2, h3 {
 }
 
 .devicetable tr:hover td {
-  background: <?= $barBackground2 ?>;
+  background: rgba(<?= $bgBase ?>, 0.2);
   color: <?= $background ?>;
 }
 
@@ -298,8 +290,8 @@ h1, h2, h3 {
 }
 
 .highlightable:hover div, a:hover {
-  border-bottom: 1px dotted <?= $hlColor ?>;
-  color: <?= $hlColor ?>;
+  border-bottom: 1px dotted rgba(<?= $bgBase ?>, 0.2);;
+  color: rgba(<?= $bgBase ?>, 0.2);;
 }
 
 #menu a.selected {
@@ -590,11 +582,41 @@ footer {
 
 }
 
-.upDownArrow {
-  vertical-align:middle;
-  cursor: pointer;
-  opacity: 0.5;
+
+.iconOpt {
+  vertical-align: middle;
+  text-align: center;
 }
-.upDownArrow:hover {
-  opacity: 1;
+
+.iconOpt > div {
+  display: inline-block;
+  vertical-align: middle;
+  width: 128px;
+  height: 96px;
+  margin-left: 16px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(<?= $bgBase ?>, 0.2);
+  background: rgba(<?= $bgBase ?>, 0.1);
+  padding: 8px;
+  cursor: pointer;
+}
+
+.iconOpt > div:hover {
+  background: rgba(<?= $bgBase ?>, 0.2);
+}  
+
+.asCharacter {
+  display: inline-block;
+}
+
+.clickable {
+  cursor:pointer;
+}
+.clickable:hover {
+  background: rgba(<?= $bgBase ?>, 0.2);
+}
+
+.onColor {
+  color: <?= $onColor ?>;
 }

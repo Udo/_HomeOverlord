@@ -55,28 +55,16 @@ function css_box_shadow($color = 'aaa', $size = 5)
     -webkit-box-shadow: '.$boxShadowDef.';');
 }
 
-/*$colorSchemes = array(
-  'default'  => array('basecolor' => array(0x80, 0xa0, 0xff), 'linkcolor' => 0),
-  'green'    => array('basecolor' => array(0x00, 0x90, 0x00), 'linkcolor' => -50),
-  'orange'   => array('basecolor' => array(0xFF, 0x60, 0x00), 'linkcolor' => -50),
-  'gray'     => array('basecolor' => array(0x80, 0x80, 0x80), 'linkcolor' => -50),
-  'pink'     => array('basecolor' => array(0xCC, 0x50, 0xCC), 'linkcolor' => -50),
-  'graphite' => array('basecolor' => array(0x60, 0x70, 0x90), 'linkcolor' => -50),
-  'blue'     => array('basecolor' => array(0x00, 0x40, 0xA0), 'linkcolor' => 0),
-  );
-*/
-
 switch($_REQUEST['scheme'])
 {
   case('day'): 
   {
     $b = array(0x66, 0x55, 0x44);
     $background = '#fed';
-    $hlColor = '#000';
     $barBackground = css_color($b);
-    $barBackground2 = '#cba';
-    $textColor2 = '#876';
-    $barText = '#fed';
+    $bgBase = $b[0].','.$b[1].','.$b[2].'';
+    $barText = $background;
+    $onColor = '#08d';
     $timeCSS = 'day.css';
     break;
   }
@@ -84,10 +72,9 @@ switch($_REQUEST['scheme'])
   {
     $b = array(0x80, 0xa0, 0xff);
     $background = '#000';
-    $hlColor = '#ff0';
     $barBackground = '#036';
-    $barBackground2 = '#024';
-    $textColor2 = '#987';
+    $bgBase = '0,51,102';
+    $onColor = '#ee7';
     $barText = css_color($b, 20);
     $timeCSS = 'night.css';
     break;
@@ -103,7 +90,6 @@ $lighterColor = css_color($b, +30);
 $lighterColorHighlight = css_color($b, +70);
 $washedOutColor = css_color($b, +120);
 $darkerColor = css_color($b, -100);
-$lightGrayBackground = '#f6f6f6';
 $linkColor = $baseColor;
 $stdMargin = '6px';
 $bigMargin = '16px';

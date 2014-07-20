@@ -23,7 +23,14 @@ $GLOBALS['config']['service']['wserverurl'] = '10.32.0.10:1081';
 
 $GLOBALS['config']['cameras'] = array(
   'cams' => array(
-    array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01', 'title' => ''),
-    array('photoUrl' => 'http://10.32.4.107:8080/photo.jpg', 'id' => 'cam02', 'title' => 'Office Cam'),  
+    array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01', 'title' => 'Cat 1'),
+    array('photoUrl' => 'http://10.32.4.103:8080/photo.jpg', 'id' => 'cam04', 'title' => 'Cat 2'),  
+    array('photoUrl' => 'http://10.32.4.104:8080/photo.jpg', 'id' => 'cam02', 'title' => 'Office'),  
+    array('photoUrl' => 'http://10.32.4.110:8080/photo.jpg', 'id' => 'cam03', 'title' => 'Porch'),  
+    ),
+  );
+  
+$GLOBALS['config']['sensors'] = array(
+  'sensors' => array(
     ),
   );

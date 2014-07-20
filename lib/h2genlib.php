@@ -76,6 +76,31 @@ function http_parse_request($result, $headerMode = true)
     'body' => $body));
 }
 
+
+/* makes a Unix timestamp human-friendly, web-trendy and supercool */
+function ageToString($unixDate, $new = 'new', $ago = 'ago')
+{
+  if($unixDate == 0) return('-');
+  $result = '';
+  $oneMinute = 60;
+  $oneHour = $oneMinute*60;
+  $oneDay = $oneHour*24;
+    $difference = time() - $unixDate;
+  if ($difference < $oneMinute)
+    $result = $new;
+  else if ($difference < $oneHour)
+    $result = round($difference/$oneMinute).' min '.$ago;
+  else if ($difference < $oneDay)
+    $result = floor($difference/$oneHour).' h '.$ago;
+  else if ($difference < $oneDay*5)
+    $result = gmdate(cfg('service/dateformat-week', 'l - H:i'), $unixDate);
+  else if ($difference < $oneDay*365)
+    $result = gmdate(cfg('service/dateformat-year', 'M dS - H:i'), $unixDate);
+  else
+    $result = date(cfg('service/dateformat', 'd. M Y - H:i'), $unixDate);
+  return($result);
+}
+
 function getModel($modelName, $initNew = false)
 {
   if(!$initNew && $GLOBALS['models'][$modelName])

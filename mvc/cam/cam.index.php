@@ -20,7 +20,11 @@ foreach(cfg('cameras/cams') as $cam)
   messageHandlers.camtick = function() {
     window.location.reload(true);
   };
-  
+
+  setTimeout(function() {
+    window.location.reload(true);
+    }, 1000*70);
+    
 </script>
 
 <style>
@@ -33,5 +37,9 @@ foreach(cfg('cameras/cams') as $cam)
   border: 1px solid rgba(0,0,0,0.3);
   box-shadow: 0px 0px 12px rgba(0,0,0,0.25);
   overflow: hidden;
+  vertical-align: middle;
+}
+#camPanel {
+  vertical-align: middle;
 }
 </style>

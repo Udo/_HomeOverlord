@@ -11,6 +11,9 @@
   require('lib/h2config.php'); 
   require('lib/h2ha.php'); 
   
+  if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
   o(new H2User(), 'user');
 
   profile_point('libraries loaded');
