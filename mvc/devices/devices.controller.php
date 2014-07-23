@@ -37,6 +37,11 @@ class DevicesController extends H2Controller
   
   }
   
+  function edit()
+  {
+  
+  }
+  
   function ajax_pairHmStart()
   { 
     HMRPC('setInstallMode', array(true));

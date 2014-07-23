@@ -239,7 +239,9 @@ h1, h2, h3 {
 
 .devicetable tr:hover td {
   background: rgba(<?= $bgBase ?>, 0.2);
-  color: <?= $background ?>;
+}
+.devicetable a:hover {
+  color: <?= $baseColor ?>;
 }
 
 #header_outer {

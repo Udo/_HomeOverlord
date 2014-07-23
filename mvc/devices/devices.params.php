@@ -10,8 +10,16 @@ $ds = o(db)->getDS('devices', $_REQUEST['key']);
 $dev = HMRPC('getDeviceDescription', array($ds['d_id']));
 $_REQUEST['actionEvents'] = array();
 
-?><h2><?= first($ds['d_name']) ?></h2>
-<table style="margin-top: -8px; margin-bottom: 12px;">
+?>
+<table style="margin-top: -8px; margin-bottom: 12px; max-width: 800px; width: 100%;">
+  <tr>
+    <td style="text-align:right">
+      <span class="faint">HomeMatic</span>   
+    </td>
+    <td width="*">
+      <b><?= first($ds['d_name']) ?></b> | <a href="<?= actionUrl('edit', 'devices', array('key' => $_REQUEST['key'])) ?>">edit</a>
+    </td>
+  </tr>
   <tr>
     <td style="text-align:right">
       <span class="faint">Type</span>   

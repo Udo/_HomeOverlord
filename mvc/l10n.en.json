@@ -10,7 +10,7 @@
   "devices.group" : "Group",
   "devices.admin" : "Admin",
   "devices.show" : "Device List",
-  "devices.cli" : "Command Line",
+  "devices.cli" : "HM Command Line",
   "devices.pairhm" : "Pair HM Device",
   "devices.params" : "Device Parameters",
   "devices" : "Devices",

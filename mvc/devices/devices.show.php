@@ -15,18 +15,27 @@ function getCellCheckbox($ds, $fname)
 
 $deviceFlags = getServiceFlags();
 
+$deviceIcons = array(
+  'default' => 'code-fork',
+  'LIGHT' => 'lightbulb-o',
+  'BLINDS' => 'arrows-v',
+  'MOTION_DETECTOR' => 'child',
+  'KEY' => 'keyboard-o',
+  'MAINTENANCE' => 'history',
+  );
+
 ?>
 <table class="devicetable">
 <thead>
   <tr>
-    <th>#</th>
-    <th>Address</th>
     <th></th>
     <th>Type</th>
-    <th>Visible</th>
+    <th>#</th>
+    <th>Vis.</th>
+    <th>Address</th>
+    <th>Name</th>
     <th>Alias</th>
     <th>Room</th>
-    <th>Name</th>
   </tr>
 </thead><?
 
@@ -46,19 +55,23 @@ $deviceFlags = getServiceFlags();
       }
       $info = '<img src="icons/'.$img.'.png" width="22" style="margin:-4px;" title="'.implode(', ', $flags).'"/>';
     }
-    ?><tr>
-      <td>#<?= $ds['d_key'] ?></td>
-      <td><?= $ds['d_bus'].':'.$ds['d_id'] ?></td>
+    $icon = $deviceIcons[strtoupper($ds['d_type'])];
+    if(!$icon) $icon = $deviceIcons['default'];
+    $editUrl = actionUrl('edit', 'devices', array('key' => $ds['d_key']));
+    $adtlFontClass = $icon == $deviceIcons['default'] || $ds['d_type'] == 'MAINTENANCE' ? 'faint' : '';
+    ?><tr class="<?= $ds['d_room'] == 'unknown' ? 'faintrow' : '' ?>">
       <td><?= $info ?></td>
-      <td><?= $ds['d_type'] ?></td>
-      <td><?= getCellCheckbox($ds, 'd_visible') ?></td>
-      <td><?= getCellEditor($ds, 'd_alias') ?></td>
-      <td><?= getCellEditor($ds, 'd_room') ?></td>
-      <td><?= getCellEditor($ds, 'd_name') ?></td>
+      <td style="text-align:center;"><a href="<?= $editUrl ?>" title="<?= $ds['d_type'] ?>" class="fa fa-lg fa-<?= $icon ?> <?= $adtlFontClass ?>"></a></td>
+      <td><a href="<?= $editUrl ?>" class="<?= $adtlFontClass ?>">#<?= $ds['d_key'] ?></a></td>
+      <td style="text-align:center;"><?= getCellCheckbox($ds, 'd_visible') ?></td>
+      <td class="<?= $adtlFontClass ?>"><?= $ds['d_bus'].':'.$ds['d_id'] ?></td>
+      <td class="<?= $adtlFontClass ?>"><?= getCellEditor($ds, 'd_name') ?></td>
+      <td class="<?= $adtlFontClass ?>"><?= getCellEditor($ds, 'd_alias') ?></td>
+      <td class="<?= $adtlFontClass ?>"><?= getCellEditor($ds, 'd_room') ?></td>
       <td><?
       
       if($ds['d_bus'] == 'HM')
-        print('<a class="small" href="'.actionUrl('params', 'devices', array('key' => $ds['d_key'])).'">&gt; Parameters</a>');
+        print('<a class="small" href="'.actionUrl('params', 'devices', array('key' => $ds['d_key'])).'">HM</a>');
       
       ?></td>
     </tr><? 

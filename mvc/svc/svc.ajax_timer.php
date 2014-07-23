@@ -13,6 +13,7 @@ if(sizeof($device) > 0)
   if($tmr)
   {
     WriteToFile('log/switch.log', 'timer trigger found: '.$timerConfig['trigger'].chr(10));
+    $GLOBALS['command-mode'] = 'trigger';
     deviceCommand($timerConfig['key'], $timerConfig['param'], $tmr['value'], first($tmr['stxt'], 'API'));
   }
   else
