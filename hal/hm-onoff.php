@@ -22,7 +22,7 @@ class HMOnOff extends H2Actuator
   
   function setState($value, $reason = 'unknown')
   {
-    SendHMCommand($this->deviceDS, 'STATE', $value == 'on' ? true : false, $reason);
+    SendHMCommand($this->deviceDS, 'STATE', $value == 'on' ? true : false, $reason, $this->config);
     return(true);
   }
 

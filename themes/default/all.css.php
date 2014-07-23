@@ -64,7 +64,7 @@ switch($_REQUEST['scheme'])
     $barBackground = css_color($b);
     $bgBase = $b[0].','.$b[1].','.$b[2].'';
     $barText = $background;
-    $onColor = '#08d';
+    $onColor = '#06d';
     $timeCSS = 'day.css';
     break;
   }
@@ -74,6 +74,7 @@ switch($_REQUEST['scheme'])
     $background = '#000';
     $barBackground = '#036';
     $bgBase = '0,51,102';
+    $bgBase = $b[0].','.$b[1].','.$b[2].'';
     $onColor = '#ee7';
     $barText = css_color($b, 20);
     $timeCSS = 'night.css';

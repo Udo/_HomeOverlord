@@ -120,6 +120,7 @@ var commandInterfaceServer = {
   setup : function() {
     return(this);
   },
+  namedTimers : {},
 
   start : function() {
 
@@ -138,17 +139,13 @@ var commandInterfaceServer = {
           wss.broadcast(params.query);
       
       }
-      else if(params.query.cmd == 'timedevent') {
+      else if(params.query.cmd == 'timer') {
       
-        if(!params.query.minutes || params.query.minutes <= 0)
-          params.query.minutes = 60;
-          
-        setTimeout(function() {
-          cmdHttpPost({ 
-            controller : 'svc', 
-            action : 'ajax_notify', 
-            data : JSON.stringify(params.query)});
-          }, params.query.minutes*OneMinute);
+        if(params.query.countDown == 0)
+          delete commandInterfaceServer.namedTimers[params.query.name];
+        else
+          commandInterfaceServer.namedTimers[params.query.name] = params.query;
+        console.log('> timer '+JSON.stringify(params.query));
       
       }
       else if(params.query.cmd == 'gpio' && runtimeConfig.enableGPIO) {
@@ -308,6 +305,23 @@ var serverTickCron = {
     setTimeout(serverTickCron.tickCams, OneMinute*0.5);
   },
   
+  tickHeartbeat : function() {
+    Object.keys(commandInterfaceServer.namedTimers).forEach(function(key) {
+        var tmr = commandInterfaceServer.namedTimers[key];
+        tmr.countDown -= 1;
+        if(tmr.countDown <= 0) {
+          console.log('- timer ended: '+key);
+          cmdHttpPost({ controller : 'svc', action : 'ajax_timer', data : JSON.stringify(tmr)});
+          wss.broadcast({ type : 'timerState', deviceKey : tmr.key, countDown : 0 })
+          delete commandInterfaceServer.namedTimers[key];
+        } else if(tmr.countDown % 5 == 0) {
+          console.log('- timer active... '+key+' '+tmr.countDown+'sec');
+          wss.broadcast({ type : 'timerState', deviceKey : tmr.key, countDown : tmr.countDown })
+        }
+      });
+    setTimeout(serverTickCron.tickHeartbeat, 1000);
+  },
+  
   setup : function() {
     return(this);
   },
@@ -318,6 +332,7 @@ var serverTickCron = {
     setTimeout(serverTickCron.tickWeather, OneMinute*0.5);   
     setTimeout(serverTickCron.tickClientReload, OneMinute*60);   
     setTimeout(serverTickCron.tickCams, 10000);   
+    setTimeout(serverTickCron.tickHeartbeat, 1000);
     console.log('- serverTickCron.start()');
     },
 

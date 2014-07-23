@@ -54,7 +54,7 @@ class HMBlinds extends H2Actuator
         break;
       }
     }
-    print_r(SendHMCommand($this->deviceDS, 'LEVEL', $result, $reason));
+    print_r(SendHMCommand($this->deviceDS, 'LEVEL', $result, $reason, $this->config));
     return(true);
   }
 

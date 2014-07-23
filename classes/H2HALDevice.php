@@ -13,6 +13,7 @@ class H2HALDevice
     $this->type = $this->deviceDS['d_type'];
     $this->bus = $this->deviceDS['d_bus'];
     $this->address = $this->deviceDS['d_id'];
+    $this->config = json_decode($this->deviceDS['d_config'], true);
     $this->deviceHandlerClass = $this->bus.cfg('hal/'.$this->type);
     $this->deviceHandlerFile = strtolower('hal/'.$this->bus.'-'.cfg('hal/'.$this->type).'.php');
     if(!class_exists($this->deviceHandlerClass))
@@ -23,6 +24,7 @@ class H2HALDevice
         include($this->deviceHandlerFile);
         $this->handler = new $dh($this);
         $this->handler->deviceDS = &$this->deviceDS;
+        $this->handler->config = &$this->config;
         $this->states = $this->handler->listStates();
       }
       else

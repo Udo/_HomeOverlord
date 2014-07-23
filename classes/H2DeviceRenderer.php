@@ -39,8 +39,9 @@ class H2DeviceRenderer
         
         <div class="device_line_text">
           <div><?= so($ds['d_name']) ?> </div>
-          <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
+          <div class="smalltext"> 
             <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
+            <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
           </div>
         </div>
         
@@ -74,8 +75,9 @@ class H2DeviceRenderer
             <div style="display:inline-block;vertical-align:middle;"><?= so($ds['d_name']) ?> </div>
             
         </div>
-        <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
+        <div class="smalltext">
           <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
+          <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
         </div>
       </div>
     
@@ -117,8 +119,9 @@ class H2DeviceRenderer
             ?>
             </select>
         </div>
-        <div class="smalltext"><span id="indicator_<?= $ds['d_key'] ?>"></span> 
+        <div class="smalltext">
           <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
+          <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
         </div>
       </div>
     

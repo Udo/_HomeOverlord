@@ -98,6 +98,11 @@ class SvcController extends H2Controller
     $this->skipView = false;
   }
   
+  function ajax_timer() 
+  {
+    $this->skipView = false;
+  }
+  
   function weather()
   {
   

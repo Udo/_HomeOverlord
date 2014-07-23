@@ -26,8 +26,8 @@ foreach($GLOBALS['menu'] as $m)
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"> 
   <head>
     <title><?php echo htmlspecialchars(cfg('page/title', 'unnamed')).' &middot; '.cfg('service/name', 'UdoHome') ?></title>
-    <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/js.php"></script>   
-    <link type="text/css" id="css_theme" rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/all.css.php?scheme=<?= getSunStatus() ?>"/> 
+    <script type="text/javascript" src="<?= cfg('service/subdir') ?>/lib/js.php?v=3"></script>   
+    <link type="text/css" id="css_theme" rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/all.css.php?v=3&scheme=<?= getSunStatus() ?>"/> 
     <link rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/font-awesome/css/font-awesome.min.css">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
 		<link rel="icon" href="icons/kfm_home.png" type="image/x-icon" />
@@ -41,7 +41,7 @@ foreach($GLOBALS['menu'] as $m)
   
     <div id="header_outer">
       <div id="header">
-        <a href="<?= actionUrl('index', 'home') ?>">▶
+        <a href="<?= actionUrl('index', 'home') ?>">▶ &nbsp;
           <span id="lefthdr">
             Home Control <?= $GLOBALS['pagetitle'] ?>
           </span><span id="lefthdr2"></span>

@@ -56,7 +56,7 @@ class DevicesController extends H2Controller
   {
     $this->devices = array();
     foreach(o(db)->get('SELECT * FROM devices
-      ORDER BY d_room, d_key') as $d)
+      ORDER BY d_room, d_type, d_name, d_key') as $d)
     {
       if($d['d_room'] != 'unknown')
         $this->devices[$d[$by]][] = $d;
