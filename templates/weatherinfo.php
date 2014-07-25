@@ -54,7 +54,7 @@ updateWeatherInfo = function() {
 
   if(currentSunState == 'night')
     weatherInfo.push('moon '+document.weather.moonlight+'% '+document.weather.moonstage);
-
+    
   }, 'json');
   };
 
