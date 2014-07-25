@@ -3,7 +3,7 @@ HomeOverlord
 
 HomeOverlord is a simple web-based home automation interface for HomeEasy (HE853) and HomeMatic (CUL/Homegear)
 
-![](https://raw.github.com/Udo/HomeOverlord/master/doc/home.png)
+![](https://raw.github.com/Udo/HomeOverlord/master/doc/devices.png)
 
 This is (for the time being) the main screen of HomeOverlord, the panel where you can control devices directly. The UI switches automatically between a day and night color scheme. Beyond that, HomeOverlord provides a neat system of event triggers to make your little device minions do whatever you want, behind the scenes. 
 
@@ -170,11 +170,15 @@ The timer command can also execute a specific device command directly:
 
 Instead of device commands, you can also use PHP code in the event handler. You can't mix PHP code and event shortcodes.
 
+# Client Settings by IP
 
+![](https://raw.github.com/Udo/HomeOverlord/master/doc/clients.png)
 
+HomeOverlord allows you to assign specific settings on a per-IP-address basis, so you can for example control what a specific panel device will display.
 
+Bring up the clients list to see a list of clients that have recently accessed the HomeOverlord user interface. Click on a specific client to change its settings. As of now, on that screen you can choose a common name for the client and select which rooms of your house apply to the client.
 
-
+On the clients list screen you can also trigger a screen reload of all connected devices.
 
 
 
