@@ -70,10 +70,12 @@ Once a device exists, you can edit its properties by selecting the device from t
 
 # How to add a HomeMatic device
 
-* In HomeMatic go to the Devices ] Command Line screen, and enter "hm.setInstallMode true", hit return. Homegear should now give you 60 seconds to pair.
-* Activate pairing mode on the device. If the device requires pairing to be confirmed, do that again.
-* After pairing, follow the link on the Command Line screen to create a dataset for the device.
-* Use phpMyAdmin to fill in the missing details about the device.
+* In HomeMatic go to the Pair HM Device screen, and click "Start Pairing Mode". Homegear should now give you 60 seconds to pair.
+* During this time, Homematic messages will be displayed in the window. Once a device is successfully paired, appropriate messages should appear, depending on the device type.
+* Activate pairing mode on the device. Some devices require the pairing to be confirmed, so you have to hit the switch on the device once more to complete the pairing.
+* After pairing, click on "pairing finished" to save the new device settings
+* Use the device list to make necessary adjustments to the device's settings
+* By clicking on "HM" from the device list, you can also change a device's HomeMatic system settings (refer to the HomeMatic documentation for info about your device parameters).
 
 ![](https://raw.github.com/Udo/HomeOverlord/master/doc/device.pair.hm.png)
 
