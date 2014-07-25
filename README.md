@@ -70,7 +70,7 @@ Once a device exists, you can edit its properties by selecting the device from t
 
 # How to add a HomeMatic device
 
-* In HomeMatic go to the Pair HM Device screen, and click "Start Pairing Mode". Homegear should now give you 60 seconds to pair.
+* Go to the Pair HM Device screen, and click "Start Pairing Mode". Homegear should now give you 60 seconds to pair.
 * During this time, Homematic messages will be displayed in the window. Once a device is successfully paired, appropriate messages should appear, depending on the device type.
 * Activate pairing mode on the device. Some devices require the pairing to be confirmed, so you have to hit the switch on the device once more to complete the pairing.
 * After pairing, click on "pairing finished" to save the new device settings
