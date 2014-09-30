@@ -4,15 +4,14 @@ class H2DeviceRenderer
 {
   function display($ds)
   {
-    $renderFunc = 'display'.$ds['d_type'];
+    $renderType = cfg('deviceTypeAliases/'.$ds['d_type']);
+    if(!$renderType) $renderType = $ds['d_type'];
+    $renderFunc = 'display'.$renderType;
     $renderFuncBus = $renderFunc.$ds['d_bus'];
-    $iconFile = 'icons/'.strtolower($ds['d_type']).'.png';
-    if(!file_exists($iconFile))
-      $iconFile = 'icons/default.png';
     if(method_exists($this, $renderFuncBus))
-      $this->{$renderFuncBus}($ds, $iconFile);
+      $this->{$renderFuncBus}($ds);
     else if(method_exists($this, $renderFunc))
-      $this->{$renderFunc}($ds, $iconFile);
+      $this->{$renderFunc}($ds);
     #else
     #  print('<div class="device_line">'.$ds['d_type'].'</div>');
   } 
@@ -23,7 +22,49 @@ class H2DeviceRenderer
       onclick="HALCommand('.$ds['d_key'].', \'dparam\', \'auto=\'+($(this).text() == \'A\' ? \'M\' : \'A\'));">'.$ds['d_auto'].'</div>');
   }
   
-  function displayLight($ds, $iconFile)
+  function displayThermostat($ds)
+  {
+    $thermState = array();
+    foreach(o(db)->get('SELECT si_param,si_value FROM stateinfo WHERE si_name LIKE "'.so($ds['d_id']).'%"') as $tds)
+      $thermState[$tds['si_param']] = $tds['si_value'];
+    ?>
+      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
+
+        <span 
+          class="asCharacter state_<?= $ds['d_state'] ?>" 
+          data-state="<?= $ds['d_state'] ?>"
+          style="text-align:center;float:left;width:68px;padding-left:16px;">
+          <div  id="temp_<?= $ds['d_key'] ?>"><?= $thermState['TEMPERATURE'] ?>°C</div>
+          <div class="smalltext" id="settemp_<?= $ds['d_key'] ?>"><?= $thermState['SET_TEMPERATURE'] ?>°C</div>
+        </span>
+        
+        <div class="device_line_text">
+          <div><?= so($ds['d_name']) ?> </div>
+          <div class="smalltext"> 
+            <span class="smalltext" id="humidity_<?= $ds['d_key'] ?>">Humidity <?= $thermState['HUMIDITY'] ?>%</span>&nbsp; 
+            <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
+          </div>
+        </div>
+        
+      </div>
+      <script>
+        busDataSubscribers['<?= $ds['d_id'] ?>:1'] = function(data) {
+          if(data.param == 'TEMPERATURE')
+            $('#temp_<?= $ds['d_key'] ?>').text(data.value+'°C');
+          else if(data.param == 'HUMIDITY')
+            $('#humidity_<?= $ds['d_key'] ?>').text('Humidity '+data.value+'%');
+        };
+        busDataSubscribers['<?= $ds['d_id'] ?>:2'] = function(data) {
+          if(data.param == 'ACTUAL_TEMPERATURE')
+            $('#temp_<?= $ds['d_key'] ?>').text(data.value+'°C');
+          if(data.param == 'SET_TEMPERATURE' && data.value)
+            $('#settemp_<?= $ds['d_key'] ?>').text(data.value+'°C');
+        };
+      </script>
+    <?
+  }
+  
+  function displayLight($ds)
   {
     ?>
       <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
@@ -31,7 +72,7 @@ class H2DeviceRenderer
         <?= $this->autoConfig($ds) ?>
 
         <i id="icon_<?= $ds['d_key'] ?>" 
-          class="asCharacter fa fa-lightbulb-o fa-3x state_<?= $ds['d_state'] ?>" 
+          class="asCharacter fa fa-<?= first($ds['d_icon'], 'lightbulb-o') ?> fa-3x state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
           style="float:left;width:44px;padding-left:16px;"
           onclick="toggleDevice(<?= $ds['d_key'] ?>);">
@@ -49,12 +90,12 @@ class H2DeviceRenderer
     <?
   }
   
-  function displayIT($ds, $iconFile)
+  function displayIT($ds)
   {
-    $this->displayLight($ds, $iconFile);
+    $this->displayLight($ds);
   }
   
-  function displayBlindsGPIO($ds, $iconFile)
+  function displayBlindsGPIO($ds)
   {
     ?>
     
@@ -86,7 +127,7 @@ class H2DeviceRenderer
     <?    
   }
 
-  function displayBlinds($ds, $iconFile)
+  function displayBlinds($ds)
   {
     $closedValue = 0.5;
     $options = array(array('value' => 0, 'caption' => 'open'));

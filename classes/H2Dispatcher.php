@@ -36,7 +36,7 @@ class H2Dispatcher
     {
       $qry = substr($_SERVER['QUERY_STRING'], 1);
       $_REQUEST['controller'] = CutSegment('/', $qry);
-      $_REQUEST['action'] = CutSegment('/', $qry);
+      $_REQUEST['action'] = CutSegment('&', $qry);
       if($qry != '')
       {
         parse_str($qry, $r);

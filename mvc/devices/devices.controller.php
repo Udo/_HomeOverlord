@@ -16,40 +16,16 @@ class DevicesController extends H2Controller
     $this->setupDeviceList();
   }
   
-  function pairHm()
-  {
-  
-  }
-  
-  function admin()
-  {
-  
-  }
-  
   function ajax_savefield()
   {
     o(db)->query('UPDATE devices SET '.$_REQUEST['f'].'=? WHERE d_key=?', array($_REQUEST['v'], $_REQUEST['key']));
     WriteToFile('log/debug.log', json_encode($_REQUEST).chr(10));
   }
   
-  function show()
-  {
-  
-  }
-  
-  function edit()
-  {
-  
-  }
-  
   function ajax_pairHmStart()
   { 
     HMRPC('setInstallMode', array(true));
     print(HMRPC('getInstallMode', array()));    
-  }
-  
-  function pair()
-  {
   }
   
   function bigicons()
@@ -66,11 +42,6 @@ class DevicesController extends H2Controller
       if($d['d_room'] != 'unknown')
         $this->devices[$d[$by]][] = $d;
     }  
-  }
-  
-  function cli()
-  {
-  
   }
   
   function ajax_cli()
@@ -97,16 +68,6 @@ class DevicesController extends H2Controller
     }
   }
   
-  function params()
-  {
-  
-  }
-  
-  function clients()
-  {
-    
-  }
-  
   function client_settings()
   {
     $this->setupDeviceList();
@@ -119,11 +80,6 @@ class DevicesController extends H2Controller
     $clientSettings = $nv->get($clientIdentifier);
     $clientSettings[$_POST['key']] = $_POST['value'];
     $nv->set($clientIdentifier, $clientSettings);
-  }
-  
-  function groups()
-  {
-  
   }
   
   function group()
@@ -162,7 +118,7 @@ class DevicesController extends H2Controller
   function _getSubmenu2()
   {
     foreach(array(
-      'admin', 'clients', 'show', 'cli', 'pairhm', 'groups',
+      'admin', 'clients', 'show', 
       ) as $act)
       $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
         actionUrl($act).

@@ -14,7 +14,7 @@
 
 <br/><br/>
 <h2>Events</h2>
-<div id="log" class="pane" style="min-height: 60px">
+<div id="log" class="pane" style="height: 300px;overflow:auto;padding: 8px;">
 
 </div>
 
@@ -45,39 +45,11 @@ setInterval(function() {
   $('#timervalue').text(document.timerValue);
   }, 1000);
 
-wsConnect = function() {
-  
-  ws = new WebSocket('ws://<?= cfg('service/server').':'.cfg('service/wsport') ?>/ws');
-  ws.onopen = function() {
-    console.log('web socket connected');
-  };
-  ws.onmessage = function(evt) {
-  
-    console.log('ws: '+evt.data);
-    var data = JSON.parse(evt.data);
-    
-    // single device status update
-    if(data.type == 'busmessage') {
-      var msg = data.data;
-      $('#log').append('<div>'+msg.type+'-'+msg.device+' '+msg.param+'='+msg.value+'</div>');
-    }    
-    
-  };
-  ws.onclose = function() {
-    console.log('web socket connection lost');
-    $('#lefthdr').html('[connection lost]');
-    wsReconnect();  
-  };
-  ws.onerror = function(evt) {
-    console.log('web socket error');
-  };
-
-};
-
-wsReconnect = function() {
-  setTimeout(function() {  wsConnect(); }, 1000);
+messageHandlers.busmessage = function(data) {
+  var msg = data.data;
+  $('#log')
+    .append('<div>'+msg.type+'-'+msg.device+' '+msg.param+'='+msg.value+'</div>')
+    .scrollTop($("#log")[0].scrollHeight);
 }
-
-wsConnect();
 
 </script>

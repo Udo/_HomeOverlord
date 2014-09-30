@@ -615,7 +615,7 @@ footer {
 .clickable {
   cursor:pointer;
 }
-.clickable:hover {
+.shadedBackground, .clickable:hover {
   background: rgba(<?= $bgBase ?>, 0.2);
 }
 

@@ -38,6 +38,7 @@ function dateToMinutes($d)
 
 function getSunStatus()
 {
+  if($_REQUEST['scheme']) return($_REQUEST['scheme']);
   $cm = dateToMinutes(time());
   $sunSet = getSunset();
   $sunRise = getSunrise();

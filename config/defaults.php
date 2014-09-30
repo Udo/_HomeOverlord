@@ -9,6 +9,9 @@ $GLOBALS['config'] = array(
     'wsport' => '1081',
     'url_rewrite' => false,
   ),
+  'deviceTypeAliases' => array(
+    'HM-TC-IT-WM-W-EU' => 'Thermostat',
+    ),
   'hal' => array(
     'Light' => 'OnOff',
     'IT' => 'OnOff',

@@ -88,6 +88,7 @@ foreach($GLOBALS['menu'] as $m)
       currentSunState = '<?= getSunStatus() ?>';
 
       // switches the themes for night and day time
+      if('<?= $_REQUEST['scheme'] ?>' == '')
       setInterval(function() {
       
         var dt = new Date();

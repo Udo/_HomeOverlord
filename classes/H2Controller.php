@@ -57,15 +57,15 @@ class H2Controller
     // since they're intended to be partial content 
     if(substr($action, 0, 5) == 'ajax_')
     {
-      $this->skipView = true;
+      $this->maySkipView = true;
       $GLOBALS['config']['page']['template'] = 'blank';
       //$this->accessPolicy('origin');
     }
         
     if(is_callable(array($this, $action)))
       $output = $this->$action($params);
-    else 
-      logError('Action not defined: '.get_class($this).'->'.$action.'()');
+    /*else 
+      logError('Action not defined: '.get_class($this).'->'.$action.'()');*/
       
     if($output != null) print($output);
       
@@ -80,7 +80,12 @@ class H2Controller
     $action = first($action, cfg('service/defaultaction'));
 		if(!$this->skipView)
 		{
-      require('mvc/'.strtolower($this->name).'/'.strtolower($this->name).'.'.first($this->viewName, $action).'.php');
+		  $nv = new H2NVStore();
+		  $fn = 'mvc/'.strtolower($this->name).'/'.strtolower($this->name).'.'.first($this->viewName, $action).'.php';
+		  if(file_exists($fn))
+        require($fn);
+      else if(!$this->maySkipView)
+        die('view not found: '.htmlspecialchars($action));
 		} 
 
     $this->pageTitle = first($this->pageTitle, l10n($action.'.title', true), l10n($this->name.'.'.$action));

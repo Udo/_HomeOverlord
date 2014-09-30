@@ -1,8 +1,12 @@
 <div id="wstate"></div>
-<div id="container"><?
+<?
+
+include('templates/modeset.php');
+
+?>
+<div id="container" style="margin-left: 60px;"><?
 
 $renderer = new H2DeviceRenderer();
-$nv = new H2NVStore();
 
 $clientIdentifier = 'client/'.$_SERVER['REMOTE_ADDR'];
 $clientSettings = $nv->get($clientIdentifier);
