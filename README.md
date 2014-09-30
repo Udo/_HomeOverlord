@@ -184,6 +184,22 @@ Bring up the clients list to see a list of clients that have recently accessed t
 
 On the clients list screen you can also trigger a screen reload of all connected devices.
 
+# Modes
+
+Modes are a way to change the behavior of devices according to a specific circumstance. For example, the Away mode could be used to make sure all non-essential devices are turned off.
+
+To add or change the available modes, go the the admin screen and then select the "modes" option. On the 
+modes page, you will see a list of modes, separated by line breaks.
+
+## Mode Change Events
+
+When a mode gets activated, HomeOverlord will look for an event handler with the following naming scheme, where [name] is the name of the mode:
+
+> MODE-[name]-ON
+
+the same applies when a mode is turned off:
+
+> MODE-[name]-OFF
 
 
 

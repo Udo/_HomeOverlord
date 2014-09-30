@@ -42,6 +42,11 @@ class H2HALDevice
   
   function state($value = null, $reason = 'unknown')
   {
+    if(!approveAction(array(
+      'type' => 'deviceCommand', 'device' => $this->deviceDS['d_key'],
+      'deviceType' => $this->type, 'ds' => $this->deviceDS, 
+      'command' => $commandType, 'value' => $value, 'by' => $by))) return;
+    if($this->deviceDS['d_auto'] != 'A' && $GLOBALS['command-mode'] == 'trigger') return;
     if($value != null)
     {
       return($this->handler->setState($value, $reason));

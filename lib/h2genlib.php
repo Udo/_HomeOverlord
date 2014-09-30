@@ -76,6 +76,19 @@ function http_parse_request($result, $headerMode = true)
     'body' => $body));
 }
 
+function approveAction($action) 
+{
+  if(is_array($GLOBALS['actionFilters']))
+    foreach($GLOBALS['actionFilters'] as $filterName => $af)
+    {
+      if(!$af($action)) 
+      {
+        $GLOBALS['rejectedActions'][] = array('by' => $filterName, 'action' => $action);
+        return false;
+      }
+    }
+  return(true);
+}
 
 /* makes a Unix timestamp human-friendly, web-trendy and supercool */
 function ageToString($unixDate, $new = 'new', $ago = 'ago')

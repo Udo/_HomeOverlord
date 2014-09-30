@@ -234,6 +234,10 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
   $device = o(db)->getDS('devices', $deviceKey, 'd_alias');
   if(sizeof($device) == 0) $device = o(db)->getDS('devices', $deviceKey);
+  if(!approveAction(array(
+    'type' => 'deviceCommand', 'device' => $deviceKey, 
+    'deviceType' => $device['d_type'], 'ds' => $device,
+    'command' => $commandType, 'value' => $value, 'by' => $by))) return;
   if($device['d_auto'] != 'A' && $GLOBALS['command-mode'] == 'trigger') return;
   $config = json_decode($device['d_config'], true);
   if(sizeof($device) > 0 && $device['d_state'] != $value)
