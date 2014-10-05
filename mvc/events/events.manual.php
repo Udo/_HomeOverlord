@@ -22,9 +22,9 @@
   foreach($triggerList as $tr) if($tr != '')
   {
     ?><div 
-      onclick=""
+      onclick="eventCommand('<?= htmlspecialchars($tr) ?>')"
       class="bigBtn">
-      <a href="?controller=events&action=manual&id=<?= urlencode($tr) ?>"><?= $tr ?></a>
+      <?= $tr ?>
     </div><?
   }
 
@@ -34,6 +34,21 @@
 
 ?><style>
 .bigBtn {
-  display:inline-block; width: 160px; height: 80px; overflow: hidden;margin:12px;padding: 12px;border-radius:8px;border:1px solid gray;text-align:center;
+  display:inline-block; width: 160px; height: 44px; overflow: hidden;margin:12px;padding: 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);text-align:center;
+}
+.bigBtn:hover {
+  background: rgba(255,255,255,0.1);
+  cursor:pointer;
 }
 </style>
+
+<script>
+
+function eventCommand(eventName)
+{
+  $.post('<?= actionUrl('ajax_trigger', 'svc') ?>', 
+    { event : eventName },
+    function(data) { console.log(data); });
+}
+
+</script>

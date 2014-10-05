@@ -1,11 +1,30 @@
 <?php
 
+
 class H2DeviceRenderer
 {
+  function __construct() 
+  {
+    $this->serviceFlags = getServiceFlags();
+  }
+
   function display($ds)
   {
     $renderType = cfg('deviceTypeAliases/'.$ds['d_type']);
     if(!$renderType) $renderType = $ds['d_type'];
+
+    $id = $ds['d_id'];
+    $idRoot = CutSegment(':', $id);
+    $ds['flags'] = $this->serviceFlags[$idRoot];
+    $ds['statusIcons'] = array();
+    if(is_array($this->serviceFlags[$idRoot])) foreach($this->serviceFlags[$idRoot] as $f) 
+    {
+      if($f[1] == 'LOWBAT') $ds['statusIcons'][] = '<i class="fa fa-laptop_battery"></i>';
+      if($f[1] == 'UNREACH') $ds['statusIcons'][] = '<i class="fa fa-exclamation-circle"></i>';
+      if($f[1] == 'STICKY_UNREACH') $ds['statusIcons'][] = '<i class="fa fa-exclamation-triangle"></i>';
+    }
+    $ds['statusIconStr'] = implode(' ', $ds['statusIcons']);
+
     $renderFunc = 'display'.$renderType;
     $renderFuncBus = $renderFunc.$ds['d_bus'];
     if(method_exists($this, $renderFuncBus))
@@ -41,6 +60,7 @@ class H2DeviceRenderer
         <div class="device_line_text">
           <div><?= so($ds['d_name']) ?> </div>
           <div class="smalltext"> 
+            <?= $ds['statusIconStr'] ?>
             <span class="smalltext" id="humidity_<?= $ds['d_key'] ?>">Humidity <?= $thermState['HUMIDITY'] ?>%</span>&nbsp; 
             <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
           </div>
@@ -81,6 +101,7 @@ class H2DeviceRenderer
         <div class="device_line_text">
           <div><?= so($ds['d_name']) ?> </div>
           <div class="smalltext"> 
+            <?= $ds['statusIconStr'] ?>
             <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
             <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
           </div>
@@ -117,6 +138,7 @@ class H2DeviceRenderer
             
         </div>
         <div class="smalltext">
+          <?= $ds['statusIconStr'] ?>
           <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
           <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
         </div>
@@ -161,6 +183,7 @@ class H2DeviceRenderer
             </select>
         </div>
         <div class="smalltext">
+          <?= $ds['statusIconStr'] ?>
           <span class="smalltext" id="stxt_<?= $ds['d_key'] ?>"><?= so($ds['d_statustext']) ?></span>&nbsp; 
           <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
         </div>

@@ -78,6 +78,7 @@ body, td, input, div, p, textarea {
   text-align: center;
   cursor:pointer;
   padding: 4px;
+  width:14px;
 }
 
 .green {

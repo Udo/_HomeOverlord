@@ -6,6 +6,11 @@ $GLOBALS['weekdays'] = array(
 
 define('STATE', 'STATE');
 
+$GLOBALS['config']['defaultParams'] = array(
+  'Light' => 'STATE',
+  'Blinds' => 'LEVEL',
+  );
+
 function timeZoneOffset()
 {
   return($tzOffset = date('O')/100);
@@ -87,14 +92,14 @@ function getServiceFlags()
   return($hmSvc);
 }
 
-function HMRPC($method, $cmd)
+function HMRPC($method, $cmd = false)
 {
   require_once("ext/HM-XMLRPC-Client/Client.php");
   $Client = new \XMLRPC\Client("localhost", 2001);
   try
   {
     $params = array();
-    foreach($cmd as $c) if(!is_array($c))
+    if(is_array($cmd)) foreach($cmd as $c) if(!is_array($c))
     {
       if($c == 'true')
         $params[] = true;
@@ -230,6 +235,21 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
   return($result);
 }
 
+function groupCommand($groupKey, $command, $by = 'API')
+{
+  $g = db()->getDS('groups', $groupKey);
+  $deviceConfig = array();
+  if($g['g_deviceconfig'] != '')
+    $deviceConfig = json_decode($g['g_deviceconfig'], true);
+  $states = explode(',', first($g['g_states'], 'off,on'));
+  
+  foreach($deviceConfig as $deviceKey => $stateValue) if(isset($stateValue[$command]) && trim($stateValue[$command]) != '')
+  {
+    print('SET '.$deviceKey.' '.$commandType.' TO '.$stateValue[$command].chr(10));
+    //deviceCommand($deviceKey, $commandType, $stateValue[$command], $by);
+  }
+}
+
 function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
   $device = o(db)->getDS('devices', $deviceKey, 'd_alias');
@@ -239,6 +259,7 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
     'deviceType' => $device['d_type'], 'ds' => $device,
     'command' => $commandType, 'value' => $value, 'by' => $by))) return;
   if($device['d_auto'] != 'A' && $GLOBALS['command-mode'] == 'trigger') return;
+  $GLOBALS['log'][$device['d_key']] = array('type' => 'deviceCommand', 'device' => $deviceKey, 'param' => $commandType, 'value' => $value);
   $config = json_decode($device['d_config'], true);
   if(sizeof($device) > 0 && $device['d_state'] != $value)
   {

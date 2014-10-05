@@ -350,7 +350,7 @@ function actionUrl($action = null, $controller = null, $params = array())
   $action = first($action, $_REQUEST['action']);
   $base = '?/'.$controller.'/'.$action;
   if(sizeof($params) > 0)
-    $base .= '/'.http_build_query($params);
+    $base .= '&'.http_build_query($params);
   return($base);
 }
 

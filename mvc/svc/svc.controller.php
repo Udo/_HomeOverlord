@@ -37,16 +37,16 @@ class SvcController extends H2Controller
   
   }
 
-  function callEventHandlers($handlers, $data, $onlyCType = true)
+  function callEventHandlers($handlers, $data)
   {
     $evt = new H2Event();
-    $evt->callHandlers($handlers, $data, $onlyCType);
+    $evt->callHandlers($handlers, $data);
   }
   
   function execTriggerScript($code, $data, $noExec = true)
   {
     $evt = new H2Event();
-    $evt->executeScript($code, $data, $noExec);
+    $evt->executeScript($code, $data);
     $this->ignoreExecution = $evt->ignoreExecution;
   }
   

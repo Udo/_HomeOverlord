@@ -14,11 +14,14 @@ class H2Mode
   {
     $evt = new H2Event();
     $oldMode = $this->currentState['mode'];
-    $this->currentState['mode'] = $mode;
-    $this->nv->set('state/current', $this->currentState);
-    $evt->triggerEventByName('MODE-'.$oldMode.'-OFF');
-    $evt->triggerEventByName('MODE-'.$mode.'-ON');
-    broadCast(array('type' => 'modeSwitch', 'currentMode' => $mode, 'oldMode' => $oldMode));
+    if($oldMode != $mode)
+    {
+      $this->currentState['mode'] = $mode;
+      $this->nv->set('state/current', $this->currentState);
+      $evt->triggerEventByName('MODE-'.$oldMode.'-OFF');
+      $evt->triggerEventByName('MODE-'.$mode.'-ON');
+      broadCast(array('type' => 'modeSwitch', 'currentMode' => $mode, 'oldMode' => $oldMode));
+    }
   }
 
 }

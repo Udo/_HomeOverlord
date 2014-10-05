@@ -82,11 +82,6 @@ class DevicesController extends H2Controller
     $nv->set($clientIdentifier, $clientSettings);
   }
   
-  function group()
-  {
-    $this->setupDeviceList();
-  }
-  
   function group_new()
   {
     $gds = array('g_name' => $_REQUEST['name']);
@@ -115,11 +110,13 @@ class DevicesController extends H2Controller
     $device->{$call}($_POST['command'], first($_POST['by'], 'EXT'));
   }
   
-  function _getSubmenu2()
+  function _getSubmenu2($opt = false)
   {
-    foreach(array(
-      'admin', 'clients', 'show', 
-      ) as $act)
+    $items = array(
+      'admin',  
+      );
+    if($opt) $items[] = $opt;
+    foreach($items as $act)
       $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
         actionUrl($act).
         '">'.l10n($_REQUEST['controller'].'.'.$act).'</a>';

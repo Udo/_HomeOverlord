@@ -1,5 +1,5 @@
 #nohup /usr/local/bin/node /srv/www/htdocs/hc/node/srv.js&
-homegear -d
+#homegear -d
 nohup ntpd -q&
 sleep 10
 cd /srv/www/htdocs/hc/node/

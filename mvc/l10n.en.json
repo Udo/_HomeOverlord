@@ -17,6 +17,7 @@
   "devices" : "Devices",
   "events" : "Events",
   "events.index" : "Event Handlers",
+  "events.manual" : "Triggers",
   "devices.clients" : "Clients",
   "cam" : "Cameras",
   "cam.index" : "Surveillance Cameras",

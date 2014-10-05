@@ -1,4 +1,4 @@
-<?= $this->_getSubmenu2() ?>
+<?= $this->_getSubmenu2('show') ?>
 <?
 
 function getCellEditor($ds, $fname)

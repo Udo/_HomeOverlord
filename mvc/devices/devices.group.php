@@ -1,100 +1,53 @@
+<?= $this->_getSubmenu2('groups') ?>
+<h1 style="font-size: 120%;"><?= htmlspecialchars($_REQUEST['id'])?></h1>
 <?
 
-$gds = o(db)->getDS('groups', $_REQUEST['id']);
+$group = H2NVStore::get('group/'.$_REQUEST['id']);
 
-$deviceConfig = array();
-if($gds['g_deviceconfig'] != '')
-  $deviceConfig = json_decode($gds['g_deviceconfig'], true);
-
-$members = array();
-foreach(explode(',', $gds['g_members']) as $m)
-  $members[$m] = true;
-
-$GLOBALS['pagetitle'] = 'Device Group #'.$gds['g_key'];
-
-$states = explode(',', first($gds['g_states'], 'off,on'));
-
-if(isset($_POST['id']))
+if($_POST['cmd'] == 'change')
 {
-  $saveForm = true;
-  $gds['g_name'] = $_POST['g_name'];
-  $gds['g_states'] = $_POST['g_states'];
-}
-
-?><form method="post" action="?">
-  <input type="hidden" name="controller" value="devices"/>
-  <input type="hidden" name="action" value="group"/>
-  <input type="hidden" name="id" value="<?= $gds['g_key'] ?>"/>
-  
-  <div>
-    Group Name:
-    <input type="text" name="g_name" value="<?= htmlspecialchars($gds['g_name']) ?>"/>
-    States:
-    <input type="text" name="g_states" value="<?= htmlspecialchars(implode(',', $states)) ?>"/>
-    <input type="submit" name="s" value="Save"/>
-  </div>
-  
-  <br/>
-  
-  <table>
-  <tr>
-    <th colspan="2">Device</th>
-    <?
-    foreach($states as $state)
-    {
-      ?><th><?= $state ?></th><?
-    }
-    ?>    
-  </tr>
-  
-  <?
-  
-  
-  foreach($this->devices as $dc => $dcg)
+  if($_REQUEST['inGroup'] == 'Y')
+    $group[] = $_REQUEST['device'];
+  else
   {
-    ?><tr><td colspan="100"><div style="color:gray"><?= htmlspecialchars($dc) ?></div></td></tr><?
-    foreach($dcg as $d)
-    {
-      ?><tr>
-        <td>#<?= htmlspecialchars($d['d_id'])?></td>
-        <td><?= htmlspecialchars($d['d_name'])?></td>
-        <?
-        foreach($states as $state)
-        {
-          if($saveForm)
-          {
-            $deviceConfig[$d['d_key']][$state] = $_POST['d'.$d['d_key'].'_'.$state];
-          }
-          ?><td><input type="text" size="4" name="d<?= $d['d_key'] ?>_<?= $state ?>" value="<?= htmlspecialchars($deviceConfig[$d['d_key']][$state]) ?>"/></td><?
-        }
-        ?>
-      </tr><?
-    }
+    $idx = array_search($_REQUEST['device'], $group);
+    if($idx !== false)
+      unset($group[$idx]);
   }
-  
-  ?>
-  </table>
-  
-</form>
-
-<?
-
-if($saveForm)
-{
-  $gds['g_deviceconfig'] = json_encode($deviceConfig);
-  o(db)->commit('groups', $gds);
-  ?><div class="popupmsg">your changes have been saved<div>
-  <script>
-    setTimeout("$('.popupmsg').fadeOut('slow');", 1000);
-  </script><?
+  H2NVStore::set('group/'.$_REQUEST['id'], $group);
+  die();
 }
 
-?><style>
+$evt = new H2Event();
 
-.d_active { color: #ff0; }
-.d_inactive {  }
+$prevRoom = '';
+foreach(db()->get('SELECT * FROM devices WHERE d_visible = "Y" AND d_room != "unknown" ORDER BY d_room,d_name') as $ds)
+{
+  if($prevRoom != $ds['d_room'])
+  {
+    print('<h2 style="margin:0;padding-top: 8px;">'.htmlspecialchars($ds['d_room']).'</h2>');
+    $prevRoom = $ds['d_room'];
+  }
+  ?><div>
+    <input type="checkbox" id="c_<?= $ds['d_key'] ?>" 
+      <?= array_search($ds['d_key'], $group) ? 'checked' : '' ?>
+      onchange="changeGroup(<?= $ds['d_key'] ?>, $(this).is(':checked'))"/>
+    <label for="c_<?= $ds['d_key'] ?>"><?= htmlspecialchars($ds['d_name'].' ('.first($ds['d_alias'], $ds['d_key'])) ?>)</label>
+  </div><?
 
-</style>
+}
+
+?>
+
 <script>
 
+function changeGroup(deviceKey, val)
+{
+  $.post('<?= actionUrl('group', 'devices') ?>',
+    { id : '<?= htmlspecialchars($_REQUEST['id']) ?>', device : deviceKey, 'inGroup' : (val ? 'Y' : 'N'), cmd : 'change' },
+    function(data) {
+    });
+}
+
 </script>
+
