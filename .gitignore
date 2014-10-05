@@ -3,3 +3,4 @@ node/node_modules/
 data/*
 node/nohup.out
 config/settings.php
+bin/he853-remote
