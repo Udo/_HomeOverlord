@@ -1,4 +1,4 @@
-<?
+<?= $this->_getSubmenu2(); ?><?
 
   $triggerList = array();
 

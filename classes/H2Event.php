@@ -56,11 +56,8 @@ class H2Event
   function handleSelectLine($line, $data, $doSelect = true)
   {
     $idx = $this->getAllDevices();
-    if(substr($line, 0, 1) == '>')
-      $this->executeLine($line, $data);
-    else
+    foreach($data['fnParams'] as $select)
     {
-      $select = CutSegment(':', $line);
       if($select == 'ALL') # select all
       {
         if($doSelect) $data['select'] = array();
@@ -116,7 +113,6 @@ class H2Event
       {
         CutSegment('=', $select);
         $list = H2NVStore::get('group/'.$select);
-        $GLOBALS['log'][] = 'SELECT GROUP '.json_encode($list);
         foreach($list as $deviceKey)
           $data['select'][$deviceKey] = $doSelect;
       }
@@ -130,16 +126,13 @@ class H2Event
           if(!$list[$k])
             $data['select'][$k] = $doSelect;
       }
-      $this->handleSelectLine($line, $data, $doSelect);
     }
+    $this->executeLine($data['line'], $data);
   }
   
   function handleBlockLine($line, $data)
   {
-    $value = CutSegment(':', $line);
-    $rvalue = CutSegment(':', $line);
-    if($data['reverseAction']) $value = $rvalue;
-    if($value == '') return;
+    if($data['fnValue'] == '') return;
     $idx = $this->getAllDevices();
     if(is_array($data['select'])) foreach($data['select'] as $k => $enabled)
     if($enabled)
@@ -147,19 +140,19 @@ class H2Event
       db()->get('UPDATE devices 
         SET d_auto = ?
         WHERE d_key = ?', array($value, $k));
-      broadcast(array('type' => 'dparam_auto', 'device' => $k, 'value' => $value));
+      broadcast(array('type' => 'dparam_auto', 'device' => $k, 'value' => $data['fnValue']));
     }
+    $this->executeLine($data['line'], $data);
   }
   
   function handleSetLine($line, $data)
   {
-    $param = CutSegment(':', $line);
-    $value = CutSegment(':', $line);
-    $rvalue = CutSegment(':', $line);
+    $param = $data['fnParams'][0];
+    $value = $data['fnParams'][1];
+    $rvalue = $data['fnParams'][2];
     if($data['reverseAction']) $value = $rvalue;
     if($value == '') return;
     $idx = $this->getAllDevices();
-    $GLOBALS['log'][] = 'SET '.json_encode($data['select']);
     if(is_array($data['select'])) foreach($data['select'] as $k => $enabled)
     if($enabled)
     {
@@ -167,32 +160,51 @@ class H2Event
       deviceCommand($k, $param, $value);
       # todo: broadcast
     }
+    $this->executeLine($data['line'], $data);
+  }
+  
+  function handleModeLine($line, $data)
+  {
+    if($data['fnValue'] == '') return;
+    $mode = new H2Mode();
+    $mode->set($data['fnValue']);
+    $this->executeLine($data['line'], $data);
   }
   
   function executeLine($line, $data)
   {
+    if(trim($line) == '') return;
     # if the line starts with : it's a device command
     if(substr($line, 0, 1) == ':')
     {
       $this->handleDeviceLine($line, $data);
     }
     # if it starts with a > it's an extended command
-    else if(substr($line, 0, 1) == '>')
+    else 
     {
-      $seg = CutSegment(':', $line);
-      switch($seg)
+      $thisCommand = CutSegment('/', $line);
+      $parts = explode(':', $thisCommand);
+      CutSegment(':', $thisCommand);
+      $fn = strtoupper(array_shift($parts));
+      $data['fnParams'] = $parts;
+      $data['line'] = $line;
+      if($data['reverseAction']) $data['fnValue'] = $parts[1]; else $data['fnValue'] = $parts[0];
+
+      $GLOBALS['log'][] = $fn.':'.implode(',', $parts);
+
+      switch($fn)
       {
-        case('>DAY'):
+        case('DAY?'):
         {
           if(getSunStatus() == 'day') $this->executeLine($line, $data);
           break;
         }          
-        case('>NIGHT'):
+        case('NIGHT?'):
         {
           if(getSunStatus() == 'night') $this->executeLine($line, $data);
           break;
         }          
-        case('>REV'):
+        case('REV?'):
         {
           if($data['reverseAction']) 
           {
@@ -201,46 +213,54 @@ class H2Event
           }
           break;
         }          
-        case('>ACTION'):
+        case('ACTION?'):
         {
           if(!$data['reverseAction']) $this->executeLine($line, $data);
           break;
         }          
-        case('>CALL'):
+        case('MODE?'):
         {
-          $this->handleCallLine($line, $data);
+          $mode = new H2Mode();
+          if(strtoupper($mode->current) == strtoupper($thisCommand))
+            $this->executeLine($line, $data);
           break;
         }
-        case('>SELECT'):
+        case('CALL'):
         {
-          $this->handleSelectLine($line, $data, true);
+          $this->handleCallLine($thisCommand, $data);
           break;
         }
-        case('>REMOVE'):
+        case('SELECT'):
         {
-          $this->handleSelectLine($line, $data, false);
+          $this->handleSelectLine($thisCommand, $data, true);
           break;
         }
-        case('>AUTO'):
+        case('REMOVE'):
         {
-          $this->handleBlockLine($line, $data);
+          $this->handleSelectLine($thisCommand, $data, false);
           break;
         }
-        case('>SET'):
+        case('AUTO'):
         {
-          $this->handleSetLine($line, $data);
+          $this->handleBlockLine($thisCommand, $data);
+          break;
+        }
+        case('SET'):
+        {
+          $this->handleSetLine($thisCommand, $data);
+          break;
+        }
+        case('MODE'):
+        {
+          $this->handleModeLine($thisCommand, $data);
           break;
         }
         default: 
         {
-          $GLOBALS['log'][] = 'unknown command: '.$seg;
+          $GLOBALS['log'][] = 'unknown command: '.$fn;
           break;
         }
-      }        
-    }
-    else 
-    {
-      $GLOBALS['log'][] = 'unrecognized: '.$line;
+      } 
     }
   }
 
@@ -253,18 +273,13 @@ class H2Event
     foreach($data as $k => $v) $$k = $v;
     $code = trim($code);
     ob_start();
-    if(substr($code, 0, 1) == ':' || substr($code, 0, 1) == '>')
+
+    $lines = explode(chr(10), $code);
+    foreach($lines as $line)
     {
-      $lines = explode(chr(10), $code);
-      foreach($lines as $line)
-      {
-        $this->executeLine(trim($line), $data);
-      }
+      $this->executeLine(trim($line), $data);
     }
-    else 
-    {
-      eval($code);
-    }
+
     return(ob_get_clean());    
   }
 
@@ -300,7 +315,7 @@ class H2Event
   
   function triggerEventByName($eventName, $data = array())
   {
-    broadcast(array('type' => 'eventTriggered', 'address' => $eventName));
+    //broadcast(array('type' => 'eventTriggered', 'address' => $eventName));
     return($this->callHandlers(array($eventName), $data, true));
   }
 

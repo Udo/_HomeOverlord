@@ -9,4 +9,5 @@
     
   print(json_encode($GLOBALS['log']));
     
+  $_POST['log'] = $GLOBALS['log'];
   WriteToFile('log/event.log', date('Y-m-d H:i:s').' trigger '.json_encode($_POST).chr(10));

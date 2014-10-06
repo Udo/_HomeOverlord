@@ -143,9 +143,9 @@ If you also used a reverse event address, you can give a second value to take ca
 For example, you have two buttons BTN1 and BTN2, and want to use them to switch a light called "HallwayLight" on and off:
 
 ```
-e_address = "BTN1-PRESSED" 
-e_address_rev = "BTN2-PRESSED" 
-e_code = ":HallwayLight:STATE:1:0" 
+Action: BTN1-PRESSED 
+Reverse: BTN2-PRESSED 
+Code: ":HallwayLight:STATE:1:0" 
 ```
 
 ### Neutral value
@@ -156,23 +156,112 @@ Sometimes, you don't want to set a state at all. To avoid splitting up multiple 
 
 In this example, only the reverse address sets the state of the device.
 
-## Invoke a timer
+# Event Handler Commands
 
-If a shortcode event handler line starts with the ">" (greater-than) sign, it's a system command. In contrast to device commands which address specific devices directly, system commands affect the state of the HomeOverlord system.
+In addition to shortcakes, event handlers can also carry out commands that allow for more complex operations. Commands can be chained together in the same line with the slash ("/") character.
 
-The timer command serves to queue an event for the near future. The timer command can be used to invoke an event by name:
+## DAY?
 
-> \>TIMER:[minutes]:[event address]
+Executes the commands that are chained behind it if it's day time. For example:
 
-The amount of [minutes] can be a floating point value.
+```
+DAY?/MODE:Day Mode
+```
 
-The timer command can also execute a specific device command directly:
+## NIGHT?
 
-> \>TIMER:[minutes]:deviceCommand:[DeviceID]:[PARAM]:[value]
+Executes the commands that are chained behind it if it's night time. For example:
 
-## Event Handler Code
+```
+NIGHT?/MODE:Night Mode
+```
 
-Instead of device commands, you can also use PHP code in the event handler. You can't mix PHP code and event shortcodes.
+## ACTION?
+
+Executes the commands that are chained behind it if the action was invoked (as opposed to its reverse action). For example:
+
+```
+ACTION?/:WindowBlinds:LEVEL:1
+```
+
+## REV?
+
+Executes the commands that are chained behind it if the reverse action was invoked (as opposed to its normal action). For example:
+
+```
+REV?/:WindowBlinds:LEVEL:0
+```
+
+## MODE?:X
+
+Executes the commands that are chained behind it if the given mode X is active. For example:
+
+```
+MODE?:Night/:WindowBlinds:LEVEL:0
+```
+
+## CALL:X
+
+Triggers another event X. For example:
+
+```
+CALL:Shutdown
+```
+
+## SELECT:X
+
+Selects a number of devices and calls the command that is chained behind it. For example, the following command selects all devices that are lights and then calls the SET command on them:
+
+```
+SELECT:TYPE=Light/SET:STATE:0
+```
+
+There are different properties you can select devices by:
+
+```
+SELECT:ALL			: select all devices
+SELECT:NONE			: select none
+SELECT:OTHER		: all devices that have not been used so far
+SELECT:TYPE=X		: all devices of type X
+SELECT:TYPE=BUS-X	: all devices of bus BUS and type X
+SELECT:TYPE!=X		: all devices not of type X
+SELECT:PRI=X			: all devices of priority X
+SELECT:PRI>X			: all devices of priority greater than X
+SELECT:PRI<X			: all devices of priority less than X
+SELECT:GROUP=X	: all devices in group X
+SELECT:GROUP!=X	: all devices not in group X
+```
+
+You can chain several of these property selectors together with the colon (":")
+separator, just as you can chain commands together with the slash ("/") separator.
+ 
+## REMOVE:X
+
+The REMOVE command works exactly the same as the SELECT command, except that it removes devices from the list instead of adding them.
+
+## AUTO:X:Y
+
+Sets the automation property to X (or Y for the reverse action) of the selected devices. Valid values for automation are either "M" for manual, or "A" for automatic. For example, the following command switches all lights to manual, and then to automatic for the reverse action:
+
+```
+SELECT:TYPE=Light/AUTO:M:A
+```
+
+## SET:P:X:Y
+
+Sets the property P of the selected devices to value X (or Y for the reverse action). For example, the following command turns on all lights, and switches them off for the reverse action:
+
+```
+SELECT:TYPE=Light/SET:STATE:1:0
+```
+
+## MODE:X
+
+Activates the mode X. For example, the following command switches the house to Night mode:
+
+```
+MODE:Night
+```
 
 # Client Settings by IP
 

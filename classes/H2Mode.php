@@ -7,7 +7,7 @@ class H2Mode
   {
     $this->nv = new H2NVStore();
     $this->currentState = $this->nv->get('state/current');
-    $this->current = &$currentState['mode'];
+    $this->current = &$this->currentState['mode'];
   }
   
   function set($mode)
