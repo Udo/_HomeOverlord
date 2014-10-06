@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 09, 2014 at 09:46 PM
--- Server version: 5.5.31-0+wheezy1
--- PHP Version: 5.4.4-14+deb7u5
+-- Generation Time: Oct 06, 2014 at 12:04 PM
+-- Server version: 5.5.37-0+wheezy1
+-- PHP Version: 5.4.4-14+deb7u12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -48,15 +48,17 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `d_visible` varchar(1) DEFAULT 'Y',
   `d_state` varchar(32) NOT NULL,
   `d_auto` varchar(1) NOT NULL DEFAULT 'A',
+  `d_icon` varchar(32) DEFAULT NULL,
   `d_config` longtext,
   `d_alias` varchar(32) DEFAULT NULL,
   `d_statustext` varchar(128) DEFAULT NULL,
   `d_statuschanged` int(11) DEFAULT NULL,
+  `d_priority` int(11) NOT NULL DEFAULT '50',
   PRIMARY KEY (`d_key`),
   KEY `d_bus` (`d_bus`),
   KEY `d_type` (`d_type`),
   KEY `d_alias` (`d_alias`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2053 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2069 ;
 
 -- --------------------------------------------------------
 
@@ -77,21 +79,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   KEY `e_type` (`e_type`),
   KEY `e_address` (`e_address`),
   KEY `e_lastcalled` (`e_lastcalled`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `groups`
---
-
-CREATE TABLE IF NOT EXISTS `groups` (
-  `g_key` int(11) NOT NULL AUTO_INCREMENT,
-  `g_name` varchar(32) NOT NULL,
-  `g_states` varchar(200) NOT NULL DEFAULT 'off,on',
-  `g_deviceconfig` longtext NOT NULL,
-  PRIMARY KEY (`g_key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=28 ;
 
 -- --------------------------------------------------------
 
