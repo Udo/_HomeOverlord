@@ -21,6 +21,10 @@ body, td, input, div, p, textarea {
 .faint {
   color: rgba(<?= $bgBase ?>, 0.65);
 }
+.bright {
+  color: rgba(<?= $bgBase ?>, 1);
+  font-weight: bold;
+}
 #table1_info, dataTables_filter {
   color: <?= $barBackground ?>;
 }

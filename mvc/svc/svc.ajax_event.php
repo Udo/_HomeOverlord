@@ -10,9 +10,6 @@
       $data['type'].'-'.$data['device'],
       $data['type'].'-'.$data['param'],
       $data['type'].'-'.$data['device'].'-'.$data['param'],
-      $data['type'].'-'.$data['device'].'-'.$data['param'].'-'.$data['value'],
-      $data['type'].'-'.$data['device'].'-'.$dayString.'-'.$data['param'],
-      $data['type'].'-'.$data['device'].'-'.$dayString.'-'.$data['param'].'-'.$data['value'],
       );
   if($data['param'] == 'PRESS_SHORT' || $data['param'] == 'PRESS_LONG_RELEASE')
     $hdl[] = $data['type'].'-'.$data['device'].'-PRESSED';
@@ -27,7 +24,13 @@
   $this->callEventHandlers(
     $hdl, 
     $data);
-  WriteToFile('log/event.log', date('Y-m-d H:i:s').' '.$_REQUEST['data'].chr(10));
+    
+  profile_point('done');
+  WriteToFile('log/event.log', date('Y-m-d H:i:s').' ext event '.$_REQUEST['data'].chr(10)
+    .'- '.json_encode($hdl).chr(10)
+    .'- '.json_encode($GLOBALS['log']).chr(10)
+    #.'- '.json_encode($GLOBALS['profiler_log']).chr(10)
+    );
   
   $sds = array(
     'si_bus' => $data['type'],

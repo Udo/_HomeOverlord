@@ -7,9 +7,7 @@ class H2HALDevice
 
   function __construct($deviceKey) 
   {
-    $this->deviceDS = o(db)->getDS('devices', $deviceKey);
-    if(sizeof($this->deviceDS) == 0)
-      $this->deviceDS = o(db)->getDS('devices', $deviceKey, 'd_alias');
+    $this->deviceDS = getDeviceDS($deviceKey);
     $this->type = $this->deviceDS['d_type'];
     $this->bus = $this->deviceDS['d_bus'];
     $this->address = $this->deviceDS['d_id'];

@@ -22,6 +22,9 @@ $deviceIcons = array(
   'MOTION_DETECTOR' => 'child',
   'KEY' => 'keyboard-o',
   'MAINTENANCE' => 'history',
+  'HM-TC-IT-WM-W-EU' => 'tasks',
+  'THERMALCONTROL_TRANSMIT' => 'tasks',
+  'WEATHER_TRANSMIT' => 'tasks',
   );
 
 ?>
@@ -38,6 +41,8 @@ $deviceIcons = array(
     <th>Room</th>
   </tr>
 </thead><?
+
+  db()->get('UPDATE #devices SET d_added = '.time().' WHERE d_added = 0');
 
   foreach(o(db)->get('SELECT * FROM devices ORDER BY d_room,d_id') as $ds) 
   {
@@ -58,8 +63,10 @@ $deviceIcons = array(
     $icon = $deviceIcons[strtoupper($ds['d_type'])];
     if(!$icon) $icon = $deviceIcons['default'];
     $editUrl = actionUrl('edit', 'devices', array('key' => $ds['d_key']));
-    $adtlFontClass = $icon == $deviceIcons['default'] || $ds['d_type'] == 'MAINTENANCE' ? 'faint' : '';
-    ?><tr class="<?= $ds['d_room'] == 'unknown' ? 'faintrow' : '' ?>">
+    $adtlFontClass = $icon == $deviceIcons['default'] || $ds['d_room'] == 'unknown' || $ds['d_type'] == 'MAINTENANCE' ? 'faint' : '';
+    if($ds['d_added'] > time()-60*30) $adtlFontClass = 'bright';
+    
+    ?><tr class="<?=  $adtlFontClass ?>row">
       <td><?= $info ?></td>
       <td style="text-align:center;"><a href="<?= $editUrl ?>" title="<?= $ds['d_type'] ?>" class="fa fa-lg fa-<?= $icon ?> <?= $adtlFontClass ?>"></a></td>
       <td><a href="<?= $editUrl ?>" class="<?= $adtlFontClass ?>">#<?= $ds['d_key'] ?></a></td>

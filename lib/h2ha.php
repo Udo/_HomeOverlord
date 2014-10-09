@@ -92,6 +92,14 @@ function getServiceFlags()
   return($hmSvc);
 }
 
+function getExtendedDeviceState($deviceId)
+{
+  $stateInfo = array();
+  foreach(o(db)->get('SELECT si_param,si_value FROM stateinfo WHERE si_name LIKE "'.so($deviceId).'%"') as $tds)
+    $stateInfo[$tds['si_param']] = $tds['si_value'];
+  return($stateInfo);
+}
+
 function HMRPC($method, $cmd = false)
 {
   require_once("ext/HM-XMLRPC-Client/Client.php");
@@ -250,10 +258,17 @@ function groupCommand($groupKey, $command, $by = 'API')
   }
 }
 
+function getDeviceDS($deviceIdentifier)
+{
+  $device = o(db)->getDS('devices', $deviceIdentifier);
+  if(sizeof($device) == 0) $device = o(db)->getDS('devices', $deviceIdentifier, 'd_alias');
+  if(sizeof($device) == 0) $device = o(db)->getDS('devices', $deviceIdentifier, 'd_id');
+  return($device);
+}
+
 function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
 {
-  $device = o(db)->getDS('devices', $deviceKey, 'd_alias');
-  if(sizeof($device) == 0) $device = o(db)->getDS('devices', $deviceKey);
+  $device = getDeviceDS($deviceKey);
   if(!approveAction(array(
     'type' => 'deviceCommand', 'device' => $deviceKey, 
     'deviceType' => $device['d_type'], 'ds' => $device,

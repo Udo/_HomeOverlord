@@ -103,9 +103,6 @@ The following event address codes are supported right now for "C" type events. T
 * "[bus]-[id]": activated by all events from that device
 * "[bus]-[param]": activated by all events regarding that parameter
 * "[bus]-[device]-[param]": activated by all events from that device regarding that parameter
-* "[bus]-[device]-[param]-[value]": activated by all events from that device regarding that parameter having that value
-* "[bus]-[device]-[day|night]-[param]": activation on either "day" or "night", as defined by sunset and sunrise of that day
-* "[bus]-[device]-[day|night]-[param]-[value]": selective activation at day or night time
 
 For example, an HomeMatic key device called "KEQ0180768:1" issues a "PRESSED" parameter when it's activated. To catch that, make an event handler with the address "HM-KEQ0180768:1-PRESSED".
 
@@ -119,8 +116,7 @@ The following list described system-driven address codes for "T" type events.
 * "[WD]-[HH]:[MM]" where [WD] is either "WEEKDAY" or "WEEKEND"
 * "SUNRISE" or "SUNSET" for the moment of sunrise, sunset
 * "SUNRISE+[OFFSET]" or "SUNSET+[OFFSET]" or "SUNRISE-[OFFSET]" or "SUNSET-[OFFSET]" where [OFFSET] is the offset in minutes to either sunrise or sunset
-* "DAY-[WEATHER]" where [WEATHER] is an openweathermap.org weather name, such as "CLOUDS"
-* "DAY-DARK" when weather data indicates heavy clouds
+* "[WEATHER]" where [WEATHER] is an openweathermap.org weather name, such as "CLOUDS"
 
 # Event Handler Shortcodes
 
@@ -225,11 +221,15 @@ SELECT:OTHER		: all devices that have not been used so far
 SELECT:TYPE=X		: all devices of type X
 SELECT:TYPE=BUS-X	: all devices of bus BUS and type X
 SELECT:TYPE!=X		: all devices not of type X
-SELECT:PRI=X			: all devices of priority X
-SELECT:PRI>X			: all devices of priority greater than X
-SELECT:PRI<X			: all devices of priority less than X
-SELECT:GROUP=X	: all devices in group X
-SELECT:GROUP!=X	: all devices not in group X
+SELECT:SUBTYPE=X	: all devices of sub-type X
+SELECT:SUBTYPE!=X	: all devices not of sub-type X
+SELECT:PRI=X		: all devices of priority X
+SELECT:PRI>X		: all devices of priority greater than X
+SELECT:PRI<X		: all devices of priority less than X
+SELECT:GROUP=X		: all devices in group X
+SELECT:GROUP!=X		: all devices not in group X
+SELECT:MAP=V			: use variable V to do a map lookup
+SELECT:X				: select device with name/id X
 ```
 
 You can chain several of these property selectors together with the colon (":")
@@ -261,6 +261,53 @@ Activates the mode X. For example, the following command switches the house to N
 
 ```
 MODE:Night
+```
+
+## MAP:X > Y
+
+Maps value X to value Y. This can later be used with the SELECT:MAP statement, or using 
+$this->map[] in a PHP/ line.
+
+```
+MODE:Night
+```
+
+## LOG
+
+Put the current state into the log file log/event.debug.log. The following example selects all lights and puts the result into the log file:
+
+```
+SELECT:TYPE=Light/LOG
+```
+
+## PHP
+
+Executes the rest of the line as PHP code:
+
+```
+PHP/$this->map['bar'] = 'foo'
+```
+
+## THERMOSWITCH:T
+
+This command can be used to drive a simple on/off heating device with a thermostat.
+
+T must be a thermostat device that provides both the SET_TEMPERATURE and TEMPERATURE parameters. If T is omitted, the event emitter is used instead.
+
+THERMOSWITCH then compares both parameter values and determines if commands down the line should use the normal action or the reverse action. If THERMOSWITCH comes to the conclusion that heating should be applied, the normal action is selected - if the heather should be turned off, the reverse action is selected.
+
+The following example selects all devices of subtype "heater", uses thermostat "thermo1", and turns them on or off accordingly:
+
+```
+SELECT:SUBTYPE=heater/THERMOSWITCH:thermo1/SET:STATE:1:0
+```
+
+The following example maps thermostats to heaters and switches them if the current mode is "At Home" (using this method you can use a single event handler to switch all the heaters in different rooms individually):
+
+```
+MAP:OfficeThermo > OfficeHeater
+MAP:LivingRoomThermo > LivingRoomHeater
+MODE?:At Home/SELECT:MAP=emitter_alias/THERMOSWITCH/SET:STATE:1:0
 ```
 
 # Client Settings by IP

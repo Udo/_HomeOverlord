@@ -43,9 +43,7 @@ class H2DeviceRenderer
   
   function displayThermostat($ds)
   {
-    $thermState = array();
-    foreach(o(db)->get('SELECT si_param,si_value FROM stateinfo WHERE si_name LIKE "'.so($ds['d_id']).'%"') as $tds)
-      $thermState[$tds['si_param']] = $tds['si_value'];
+    $thermState = getExtendedDeviceState($ds['d_id']);
     ?>
       <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
 

@@ -265,8 +265,10 @@ function safeName($raw)
 function profile_point($text)
 {
   $thistime = microtime();
-  $GLOBALS['profiler_log'][] = profiler_microtime_diff($thistime, $GLOBALS['profiler_start']).' | '.profiler_microtime_diff($thistime, $GLOBALS['profiler_last']).' msec | '.
-    ceil(memory_get_usage()/1024).' kB | '.$text;
+  $GLOBALS['profiler_log'][] = 
+    profiler_microtime_diff($thistime, $GLOBALS['profiler_start'])
+    .' | '.profiler_microtime_diff($thistime, $GLOBALS['profiler_last']).' msec | '
+    .ceil(memory_get_usage()/1024).' kB | '.$text;
   $GLOBALS['profiler_last'] = $thistime;
 }
 

@@ -2,6 +2,7 @@
 
 function critical($err)
 {
+  WriteToFile('log/error.log', 'MySQL Error: '.$err.chr(10));
   die($err);
 }
 

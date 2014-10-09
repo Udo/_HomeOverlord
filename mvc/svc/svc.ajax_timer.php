@@ -4,7 +4,7 @@ WriteToFile('log/switch.log', 'timer came back: '.$_POST['data'].chr(10));
 
 $timerConfig = json_decode($_POST['data'], true);
 
-$device = o(db)->getDS('devices', $timerConfig['key']);
+$device = getDeviceDS($timerConfig['key']);
 
 if(sizeof($device) > 0)
 {

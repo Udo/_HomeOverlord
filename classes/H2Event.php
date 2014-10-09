@@ -1,33 +1,25 @@
 <?php
 
-function rev($reverseAction, $a, $b)
-{
-  if($reverseAction)
-    return($b);
-  else
-    return($a);
-}
-
 class H2Event 
 {
 
   function handleDeviceLine($line, $data)
   {
-    $reverseAction = $data['reverseAction'];
-    $seg = explode(':', substr($line, 1));
-    if($seg[0] == 'HAL') 
+    CutSegment(':', $line);
+    $deviceId = CutSegment(':', $line);
+    if($deviceId == 'HAL') 
     {
-      $dev = new H2HALDevice($seg[1]);
-      $dval = rev($reverseAction, $seg[2], $seg[3]);
-      $dev->state($dval, $GLOBALS['command-source']);
+      $devId = CutSegment(':', $line);
+      $value = CutSegment(':', $line); if($data['reverseAction']) $value = CutSegment(':', $line);
+      $GLOBALS['log'][] = 'HAL '.$devId.'-'.$value;
+      $dev = new H2HALDevice($devId);
+      $dev->state($value, $GLOBALS['command-source']);
     }
     else 
     {
-      $dval = rev($reverseAction, $seg[2], $seg[3]);
-      if(trim($seg[0]) != '' && sizeof($seg) > 2 && $dval != '' && $dval != '-')
-      {
-        deviceCommand($seg[0], $seg[1], $dval);
-      }
+      $paramName = CutSegment(':', $line);
+      $value = CutSegment(':', $line); if($data['reverseAction']) $value = CutSegment(':', $line);
+      deviceCommand($deviceId, $paramName, $value);
     }
   }
 
@@ -53,6 +45,14 @@ class H2Event
     return($GLOBALS['allDevices']);
   }
   
+  function resolve($symbol, $data)
+  {
+    $vr = $data;
+  	foreach(explode('.', $symbol) as $ni) 
+  	  if(is_array($vr)) $vr = $vr[$ni]; else $vr = '';
+  	return(first($vr, ''));
+  }
+  
   function handleSelectLine($line, $data, $doSelect = true)
   {
     $idx = $this->getAllDevices();
@@ -74,6 +74,17 @@ class H2Event
           if(!isset($GLOBALS['log'][$k]))
             $data['select'][$k] = $doSelect;
       }
+      else if(substr($select, 0, 4) == 'MAP=') 
+      {
+        CutSegment('=', $select);
+        $mapSelect = $this->resolve($select, $data);
+        $mappedDevice = $this->map[trim($mapSelect)];
+        $GLOBALS['log'][] = 'MAP>'.$select.'>'.$mapSelect.'>'.$mappedDevice;
+        if(isset($mappedDevice) && $mappedDevice != '')
+        foreach($idx as $k => $ds)
+          if($ds['d_key'] == $mappedDevice || $ds['d_alias'] == $mappedDevice || $ds['d_id'] == $mappedDevice)
+            $data['select'][$k] = $doSelect;
+      }
       else if(substr($select, 0, 5) == 'TYPE=') 
       {
         CutSegment('=', $select);
@@ -86,6 +97,20 @@ class H2Event
         CutSegment('=', $select);
         foreach($idx as $k => $ds)
           if($ds['d_type'] != $select && $ds['d_bus'].'-'.$ds['d_type'] != $select)
+            $data['select'][$k] = $doSelect;
+      }
+      else if(substr($select, 0, 5) == 'SUBTYPE=') 
+      {
+        CutSegment('=', $select);
+        foreach($idx as $k => $ds)
+          if($ds['d_icon'] == $select || $ds['d_bus'].'-'.$ds['d_icon'] == $select)
+            $data['select'][$k] = $doSelect;
+      }
+      else if(substr($select, 0, 6) == 'SUBTYPE!=') 
+      {
+        CutSegment('=', $select);
+        foreach($idx as $k => $ds)
+          if($ds['d_icon'] != $select && $ds['d_bus'].'-'.$ds['d_icon'] != $select)
             $data['select'][$k] = $doSelect;
       }
       else if(substr($select, 0, 4) == 'PRI=') 
@@ -126,11 +151,17 @@ class H2Event
           if(!$list[$k])
             $data['select'][$k] = $doSelect;
       }
-    }
+      else  
+      {
+        foreach($idx as $k => $ds)
+          if($ds['d_key'] == $select || $ds['d_alias'] == $select || $ds['d_id'] == $select)
+            $data['select'][$k] = $doSelect;
+      }
+   }
     $this->executeLine($data['line'], $data);
   }
   
-  function handleBlockLine($line, $data)
+  function handleAutoLine($line, $data)
   {
     if($data['fnValue'] == '') return;
     $idx = $this->getAllDevices();
@@ -139,13 +170,13 @@ class H2Event
     {
       db()->get('UPDATE devices 
         SET d_auto = ?
-        WHERE d_key = ?', array($value, $k));
+        WHERE d_key = ?', array($data['fnValue'], $k));
       broadcast(array('type' => 'dparam_auto', 'device' => $k, 'value' => $data['fnValue']));
     }
     $this->executeLine($data['line'], $data);
   }
   
-  function handleSetLine($line, $data)
+  function handleSETLine($line, $data)
   {
     $param = $data['fnParams'][0];
     $value = $data['fnParams'][1];
@@ -163,11 +194,37 @@ class H2Event
     $this->executeLine($data['line'], $data);
   }
   
-  function handleModeLine($line, $data)
+  function handleMODELine($line, $data)
   {
     if($data['fnValue'] == '') return;
     $mode = new H2Mode();
     $mode->set($data['fnValue']);
+    $this->executeLine($data['line'], $data);
+  }
+   
+  function handleLOGLine($line, $data)
+  {
+    $data['event-fn'] = $fn;
+    $data['event-params'] = $parts;
+    $data['event-line'] = $line;
+    WriteToFile('log/event.debug.log', json_encode($data).chr(10));
+  }
+  
+  function handleTHERMOSWITCHLine($line, $data)
+  {
+    $emitterName = CutSegment(':', $line);
+    if(trim($emitterName) == '') $emitterName = $data['emitter_root'];
+    $thermoDS = getDeviceDS($emitterName);
+    if(sizeof($thermoDS) == 0) 
+    {
+      $GLOBALS['log'][] = 'THERMOSWITCH device not found: '.$emitterName;
+      return;
+    }
+    $thermostat = getExtendedDeviceState($emitterName);
+    $thermostat[$data['param']] = $data['value'];
+    $data['thermo'] = $thermostat;
+    $data['reverseAction'] = !(floatval($thermostat['SET_TEMPERATURE']) > floatval($thermostat['TEMPERATURE']));
+    $GLOBALS['log'][] = 'THERMOSWITCH '.$thermostat['SET_TEMPERATURE'].' '.$thermostat['TEMPERATURE'].' '.$data['reverseAction'];
     $this->executeLine($data['line'], $data);
   }
   
@@ -190,10 +247,21 @@ class H2Event
       $data['line'] = $line;
       if($data['reverseAction']) $data['fnValue'] = $parts[1]; else $data['fnValue'] = $parts[0];
 
-      $GLOBALS['log'][] = $fn.':'.implode(',', $parts);
+      $GLOBALS['log'][] = '('.$fn.' '.implode(' ', $parts).')';
 
       switch($fn)
       {
+        case('PHP'):
+        {
+          eval($line);
+          break;
+        }          
+        case('MAP'):
+        {
+          $mapKey = CutSegment('>', $thisCommand);
+          $this->map[trim($mapKey)] = trim($thisCommand);
+          break;
+        }          
         case('DAY?'):
         {
           if(getSunStatus() == 'day') $this->executeLine($line, $data);
@@ -225,11 +293,6 @@ class H2Event
             $this->executeLine($line, $data);
           break;
         }
-        case('CALL'):
-        {
-          $this->handleCallLine($thisCommand, $data);
-          break;
-        }
         case('SELECT'):
         {
           $this->handleSelectLine($thisCommand, $data, true);
@@ -240,24 +303,10 @@ class H2Event
           $this->handleSelectLine($thisCommand, $data, false);
           break;
         }
-        case('AUTO'):
-        {
-          $this->handleBlockLine($thisCommand, $data);
-          break;
-        }
-        case('SET'):
-        {
-          $this->handleSetLine($thisCommand, $data);
-          break;
-        }
-        case('MODE'):
-        {
-          $this->handleModeLine($thisCommand, $data);
-          break;
-        }
         default: 
         {
-          $GLOBALS['log'][] = 'unknown command: '.$fn;
+          $fname = 'handle'.$fn.'Line';
+          call_user_method($fname, $this, $thisCommand, $data);
           break;
         }
       } 
@@ -267,7 +316,7 @@ class H2Event
   function executeScript($code, $data)
   {
     $GLOBALS['command-mode'] = 'trigger';
-    $ds = $data['ds'];
+    $ds = $data['eventDS'];
     if(isset($ds))
       $GLOBALS['command-source'] = '#'.$ds['e_key'].' '.first($data['emitter_name'], $data['event']);
     foreach($data as $k => $v) $$k = $v;
@@ -277,6 +326,7 @@ class H2Event
     $lines = explode(chr(10), $code);
     foreach($lines as $line)
     {
+      $data['select'] = array();
       $this->executeLine(trim($line), $data);
     }
 
@@ -295,14 +345,22 @@ class H2Event
         WHERE ('.implode(' OR ', $where).')
         ORDER BY e_order ASC', $handlers) as $eds)
       {
+        $GLOBALS['log'][] = 'event handler called: '.$eds['e_address'.$addressType];
         broadcast(array('type' => 'eventHandled', 'address' => $eds['e_address'.$addressType]));
         $this->ignoreExecution = false;
+        $emitterRoot = $data['device']; $emitterRoot = CutSegment(':', $emitterRoot);  
+        if($emitterRoot != $data['device'])
+          $emitterRootDS = getDeviceDS($emitterRoot); else $emitterRootDS = $data['ds'];
         $this->executeScript($eds['e_code'], array(
           'emitter_id' => $data['device'],
           'emitter_param' => $data['param'],
           'emitter_value' => $data['value'],
-          'emitter_name' => first($data['ds']['d_name'], $data['ds']['d_id']),
-          'ds' => &$eds,
+          'emitter_alias' => $emitterRootDS['d_alias'],
+          'emitter_root' => $emitterRoot,
+          'emitter_name' => first($emitterRootDS['d_name'], $emitterRootDS['d_id']),
+          'emitter' => $data['ds'],
+          'call' => $data,
+          'eventDS' => &$eds,
           'reverseAction' => $reverseAction,
           'event' => $eds['e_address'.$addressType],
           ));

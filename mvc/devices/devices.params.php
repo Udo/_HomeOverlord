@@ -1,4 +1,4 @@
-<?= $this->_getSubmenu2() ?>
+<?= $this->_getSubmenu2('show') ?>
 <form action="?" method="post">
 <input type="hidden" name="controller" value="<?= $_REQUEST['controller'] ?>"/>
 <input type="hidden" name="action" value="<?= $_REQUEST['action'] ?>"/>
@@ -6,7 +6,7 @@
 <?
 $doSave = isset($_POST['controller']);
 
-$ds = o(db)->getDS('devices', $_REQUEST['key']);
+$ds = getDeviceDS($_REQUEST['key']);
 $dev = HMRPC('getDeviceDescription', array($ds['d_id']));
 $_REQUEST['actionEvents'] = array();
 

@@ -5,6 +5,7 @@
   "accounts.signin" : "Sign In",
   "signin" : "Log In",
   "signup" : "Sign Up",
+  "devices.edit" : "Edit",
   "devices.index" : "Device Panel",
   "devices.groups" : "Groups",
   "devices.group" : "Group",

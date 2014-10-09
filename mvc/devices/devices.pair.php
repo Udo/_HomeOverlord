@@ -79,4 +79,8 @@ foreach($this->devices as $d)
   ?><div><?= implode(', ', $di) ?></div><?
 }
 
-?>
+?><script>
+
+document.location.href = '<?= actionUrl('show', 'devices') ?>';
+
+</script>
