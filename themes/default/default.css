@@ -110,6 +110,19 @@ body, td, input, div, p, textarea {
   width: 350px;
 }
 
+@media (max-width:640px) {
+  
+  .device_line {
+    width: 100%;
+    padding: 8px;
+  }
+  
+  .device_line_text {
+    width: 75%;
+  }
+  
+}
+
 .leftblock {
   display: inline-block;
   float: left;

@@ -265,29 +265,35 @@ var serverTickCron = {
       });
       res.on('end', function() {
         try {
-          console.log('> serverTickCron.tick('+ctr+'.'+act+') '+Math.round(body.length/1024)+'kB ['+body.substr(0, 32).replace(/\n/g, '')+'...]');
+          console.log('- serverTickCron.tick('+runtimeConfig.httpServerUrl+'?'+reqParams+')',
+            Math.round(body.length/1024)+'kB ',
+            body.substr(0, 32).replace(/\n/g, ''));
           if(doneFunc) doneFunc(body);
         } catch(err) {}
       });
     }).on('error', function(e) {
-        console.log("Error, could not execute "+act+" command: ", e);
+        console.log("! Error, could not execute "+act+" command: ", e);
     });
   },
   
   tickCron : function() {
     serverTickCron.tick('svc', 'ajax_tick', function(data) {
+      console.log('- server tick', (data || '').substr(0, 128));
       serverTickCron.extConfig = parseJSON(data, serverTickCron.extConfig);
       });
     setTimeout(serverTickCron.tickCron, OneMinute);
   },
   
   tickWeather : function() {
-    serverTickCron.tick('svc', 'weather');
+    serverTickCron.tick('svc', 'weather', function() {
+      console.log('- sync remote weather data');
+    });
     setTimeout(serverTickCron.tickWeather, 10*OneMinute);
   },
   
   tickDeviceStates : function() {
     serverTickCron.tick('svc', 'ajax_getstate', function(data) {
+      console.log('- reload device states from DB', (data || '').data.length);
       deviceState = parseJSON(data, deviceState);
       });
     setTimeout(serverTickCron.tickDeviceStates, OneMinute*10);

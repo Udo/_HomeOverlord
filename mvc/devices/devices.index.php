@@ -5,6 +5,8 @@ include('templates/modeset.php');
 
 ?>
 <div id="container" style="margin-left: 60px;"><?
+  
+include('templates/check-timer-system.php');
 
 $renderer = new H2DeviceRenderer();
 

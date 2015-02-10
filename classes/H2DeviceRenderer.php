@@ -82,7 +82,7 @@ class H2DeviceRenderer
     <?
   }
   
-  function displayLight($ds)
+  function displayLight($ds, $icon = '')
   {
     ?>
       <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>"
@@ -90,7 +90,7 @@ class H2DeviceRenderer
         <?= $this->autoConfig($ds) ?>
 
         <i id="icon_<?= $ds['d_key'] ?>" 
-          class="asCharacter fa fa-<?= first($ds['d_icon'], 'lightbulb-o') ?> fa-3x state_<?= $ds['d_state'] ?>" 
+          class="asCharacter fa fa-<?= first($icon, $ds['d_icon'], 'lightbulb-o') ?> fa-3x state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
           style="float:left;width:44px;padding-left:16px;"
           onclick="toggleDevice(<?= $ds['d_key'] ?>);">
@@ -109,9 +109,9 @@ class H2DeviceRenderer
     <?
   }
   
-  function displayIT($ds)
+  function displayOnOff($ds)
   {
-    $this->displayLight($ds);
+    $this->displayLight($ds, 'power-off');
   }
   
   function displayBlindsGPIO($ds)
