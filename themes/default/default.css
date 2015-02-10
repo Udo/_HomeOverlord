@@ -6,7 +6,7 @@ body {
   background: <?= $background ?>;
 }
 
-body, td, input, div, p, textarea {
+* {
   font-family: Tahoma, Arial, Helvetica;
   line-height: 140%;
 }
@@ -43,10 +43,7 @@ body, td, input, div, p, textarea {
 }
 
 .submenu2 {
-  margin-top: -12px;
-  margin-bottom: 12px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  padding: <?= $stdPadding ?>px;
   border-bottom: <?= $borderColor ?>;
 }
 
@@ -82,7 +79,6 @@ body, td, input, div, p, textarea {
   text-align: center;
   cursor:pointer;
   padding: 4px;
-  width:14px;
 }
 
 .green {
@@ -94,27 +90,42 @@ body, td, input, div, p, textarea {
 }
 
 .device_line {
-  width: 240px;
+  width: 250px;
   min-height: 33px;
-  padding: 4px;
+  padding: <?= $stdPadding/2 ?>px;
   cursor:default;
   display: inline-block;
 }
 
 .device_line_text {
-  width: 150px;
+  width: 160px;
   overflow: hidden;
 }
-
+/*
 .device_line_text > div {
   width: 350px;
+}
+*/
+.device_line:hover {
+  background: rgba(<?= $bgBase ?>, 0.2);
+}
+
+.device_line select {
+   margin: 0;
+   margin-left: -2px;
+   border: none;
+   border-radius: 0;
+   background: transparent;
+   color: <?= $baseColor ?>;
+   -webkit-appearance: none;
+   width: 100%;
 }
 
 @media (max-width:640px) {
   
   .device_line {
     width: 100%;
-    padding: 8px;
+    padding: <?= $stdPadding*2 ?>px;
   }
   
   .device_line_text {
@@ -132,7 +143,7 @@ body, td, input, div, p, textarea {
 
 .submenu > a {
   display: block;
-  padding: 4px;
+  padding: <?= $stdPadding ?>px;
   border-bottom: 1px solid #048;
 }
 
@@ -146,12 +157,7 @@ body, td, input, div, p, textarea {
   background: none;
   border: 1px solid #666;
   text-align: center;
-  padding: 12px;
   margin: 8px;
-}
-
-.device_line:hover {
-  background: rgba(<?= $bgBase ?>, 0.2);
 }
 
 .state_0 {
@@ -169,7 +175,7 @@ body, td, input, div, p, textarea {
   color: #000;
   display:none;
   text-align: center; 
-  padding: 4px;
+  padding: <?= $stdPadding ?>px;
   margin-top: -2px;
 }
 
@@ -178,7 +184,7 @@ body, td, input, div, p, textarea {
   top: 40px;
   left:0;
   right:0;
-  padding:12px;
+  padding:<?= $stdPadding*2 ?>px;
   background: #ff0;
   color: black;
   z-index: 1000;
@@ -212,23 +218,7 @@ input[type=text], input[type=password], textarea {
   border: <?= $borderColor ?>;
   background: <?= $barBackground ?>;
   color: <?= $barText ?>;
-  padding: 4px;
-}
-
-.device_line select {
-   padding: 2px;
-   padding-left: 6px;
-   margin: 0;
-   border: none;
-   border-left: 1px solid <?= $baseColor ?>;
-   border-radius: 0;
-   background: transparent;
-   color: <?= $baseColor ?>;
-   -webkit-appearance: none;
-}
-
-.device_line:hover select {
-   color: rgba(<?= $bgBase ?>, 0.2);;
+  padding: <?= $stdPadding ?>px;
 }
 
 th {
@@ -236,7 +226,7 @@ th {
 }
 
 th, td {
-  padding: 4px;
+  padding: <?= $stdPadding ?>px;
 }
 
 .red {
@@ -255,13 +245,6 @@ h1, h2, h3 {
   padding-bottom: <?= $stdMargin ?>;
 }
 
-.devicetable tr:hover td {
-  background: rgba(<?= $bgBase ?>, 0.2);
-}
-.devicetable a:hover {
-  color: <?= $baseColor ?>;
-}
-
 #header_outer {
   background: <?= $barBackground ?>;
   color: <?= $barText ?>;
@@ -275,14 +258,14 @@ h1, h2, h3 {
 }
 
 #content {
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   margin-bottom: <?= $bigMargin ?>;
   padding-bottom: <?= $bigMargin ?>;
 }
 
 #header {
   color: <?= $barText ?>;
-  padding: 8px;
+  padding: <?= $stdPadding ?>px;
   font-weight: normal;  
 }
 
@@ -303,7 +286,7 @@ h1, h2, h3 {
 
 #menu a {
   color: <?= $barText ?>;
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   display: block;
   cursor: pointer;
   border-bottom: <?= $borderColor ?>;
@@ -323,7 +306,7 @@ h1, h2, h3 {
 }
 
 .toolbar {
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   padding-left: 12px;
   background: #eee;
   border-top: <?= $borderColor ?>;
@@ -347,16 +330,16 @@ h1, h2, h3 {
   max-height: 200px;
   background: #fff;
   border: <?= $borderColor ?>;
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
 }
 
 .overlay > div {
-  margin: -<?= $stdPadding ?>;
-  padding: <?= $stdPadding ?>;
+  margin: -<?= $stdPadding ?>px;
+  padding: <?= $stdPadding ?>px;
 }
 
 #site-title > a {
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   padding-left: 12px;
   display: block;
 }
@@ -412,7 +395,7 @@ xx {
 }
 
 #loader {
-  padding: <?= $stdPadding ?>; 
+  padding: <?= $stdPadding ?>px; 
   padding-left: <?= $bigMargin ?>;
 }
 
@@ -420,7 +403,7 @@ input[type=button], input[type=submit], button, .btn {
   margin: 0;
   text-align: center;
   display: inline-block;
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   color: <?= $barText ?>;
   min-width: 80px;
   cursor: pointer;
@@ -439,7 +422,7 @@ input[type=button]:hover, input[type=submit]:hover, button:hover, .btn:hover {
 .banner {
   border: <?= $borderBanner ?>;
   background: <?= $bgAttention ?>;
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   margin-top: <?= $stdMargin ?>;
   margin-bottom: <?= $stdMargin ?>;
 }
@@ -460,7 +443,7 @@ input[type=button]:hover, input[type=submit]:hover, button:hover, .btn:hover {
 
 #m-fixed > a {
   display: block;
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   width: 95%;
 }
 
@@ -492,7 +475,7 @@ footer {
 }
 
 .postitem, .commentlist, .entity {
-  padding: <?= $stdPadding ?>;
+  padding: <?= $stdPadding ?>px;
   border: <?= $borderColor ?>;
   background: #ffffff;
 }
@@ -501,7 +484,7 @@ footer {
   width: <?= $colWidth-12 ?>px;
   min-height: 30px;
   margin-bottom: 12px;
-  padding-top: <?= $stdPadding ?>;
+  padding-top: <?= $stdPadding ?>px;
 }
 
 .double {
@@ -551,7 +534,7 @@ footer {
 .readmore {
   display: block;
   padding: 2px;
-  padding-left: <?= $stdPadding ?>;
+  padding-left: <?= $stdPadding ?>px;
   border-top: <?= $borderColor ?>;
   margin-top: 4px;
   background: <?= $defaultBackground ?>;
@@ -618,7 +601,7 @@ footer {
   border-radius: 6px;
   border: 1px solid rgba(<?= $bgBase ?>, 0.2);
   background: rgba(<?= $bgBase ?>, 0.1);
-  padding: 8px;
+  padding: <?= $stdPadding ?>px;
   cursor: pointer;
 }
 
@@ -640,3 +623,24 @@ footer {
 .onColor {
   color: <?= $onColor ?>;
 }
+
+.devicetable {
+	border-collapse: collapse;
+}
+.devicetable td, .devicetable th {
+  vertical-align: top;
+  padding: <?= $stdPadding ?>px;
+}
+.devicetable th {
+  border-bottom: 1px solid rgba(<?= $bgBase ?>, 0.2);
+}
+.devicetable tr > td {
+  border-bottom: 1px solid rgba(<?= $bgBase ?>, 0.2);
+}
+.devicetable tr:hover td {
+  background: rgba(<?= $bgBase ?>, 0.2);
+}
+.devicetable a:hover {
+  color: <?= $baseColor ?>;
+}
+

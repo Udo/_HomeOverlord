@@ -1,5 +1,11 @@
 <?= $this->_getSubmenu2(); ?>
-<table class="devicetable"><?
+<table class="devicetable"><thead>
+  <tr>
+    <th>Action</th>
+    <th>Reverse</th>
+    <th>Skript</th>
+  </tr>
+</thead><?
 
 foreach(o(db)->get('SELECT * FROM events ORDER BY e_address') as $evt)
 {

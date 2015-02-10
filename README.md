@@ -83,7 +83,7 @@ Once a device exists, you can edit its properties by selecting the device from t
 
 # Event Handlers
 
-Right now, there is no UI for event handlers, so you'll have to open phpMyAdmin and use that. All automation logic is in the events table. Open it. The events table has the following fields:
+Go to the home menu and click on Event Handlers.
 
 ## The "events" Table
 

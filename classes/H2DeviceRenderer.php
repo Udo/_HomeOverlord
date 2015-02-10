@@ -50,7 +50,7 @@ class H2DeviceRenderer
         <span 
           class="asCharacter state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
-          style="text-align:center;float:left;width:68px;padding-left:16px;">
+          style="text-align:center;float:left;width:84px;">
           <div  id="temp_<?= $ds['d_key'] ?>"><?= $thermState['TEMPERATURE'] ?>°C</div>
           <div class="smalltext" id="settemp_<?= $ds['d_key'] ?>"><?= $thermState['SET_TEMPERATURE'] ?>°C</div>
         </span>
@@ -170,12 +170,13 @@ class H2DeviceRenderer
 
       <div class="device_line_text">
         <div>
-            <?= so($ds['d_name']) ?> 
             <select onchange="setDeviceState(<?= $ds['d_key'] ?>, 'LEVEL', $(this).val());">
             <?
             foreach($options as $o) 
             {
-              ?><option <?= $ds['d_state'] == $o['value'] ? 'selected' : '' ?> value="<?= $o['value'] ?>"><?= $o['caption'] ?></option><?
+              ?><option <?= $ds['d_state'] == $o['value'] ? 'selected' : '' ?> value="<?= $o['value'] ?>">
+                <?= so($ds['d_name']) ?> <?= $o['caption'] ?>
+              </option><?
             }
             ?>
             </select>
