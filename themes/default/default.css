@@ -112,16 +112,16 @@ body {
 
 .device_line select {
    margin: 0;
-   margin-left: -2px;
    border: none;
    border-radius: 0;
    background: transparent;
+   padding-left: 0;
    color: <?= $baseColor ?>;
    -webkit-appearance: none;
    width: 100%;
 }
 
-@media (max-width:640px) {
+/*@media (max-width:640px) {
   
   .device_line {
     width: 100%;
@@ -132,7 +132,7 @@ body {
     width: 75%;
   }
   
-}
+}*/
 
 .leftblock {
   display: inline-block;

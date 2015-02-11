@@ -31,6 +31,7 @@ foreach($GLOBALS['menu'] as $m)
     <link rel="stylesheet" href="<?= cfg('service/subdir') ?>/themes/default/font-awesome/css/font-awesome.min.css">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
 		<link rel="icon" href="icons/kfm_home.png" type="image/x-icon" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body class="<?= cfg('content/class') ?>">
   

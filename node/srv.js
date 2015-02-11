@@ -84,10 +84,11 @@ queueWorkStep = function() {
     var item = eventQueue.splice(0, 1)[0];
     
     // if item.value isn't defined, use the global device state
-    if(!item.value && deviceState['d'+item.id]) item.value = deviceState['d'+item.id].state;
+    if(deviceState['d'+item.id]) 
+      item.value = deviceState['d'+item.id].state;
     
     var cmdStr = __dirname+'/he853 '+(item.id)+' '+(item.value);
-    console.log('> command: '+cmdStr);
+    console.log('> command: '+cmdStr, JSON.stringify(item));
     child = exec(cmdStr, execHandler);
       
   }
@@ -170,7 +171,7 @@ var commandInterfaceServer = {
           if(deviceState['d'+params.query.id])
             deviceState['d'+params.query.id].state = params.query.value;
       
-          queueEvent({ id : params.query.id }, 3);
+          queueEvent({ id : params.query.id, value : params.query.value }, 3);
         }
         else if(params.query.bus == 'HM') {
           if(params.query.value == 'true') params.query.value = true;
@@ -214,7 +215,9 @@ var clientsUpdateServer = {
     wss.on('connection', function(ws) {
     
         ws.remoteAddress = ws._socket.remoteAddress;
-        console.log('> clientsUpdateServer.connect(%s) ', JSON.stringify(ws.remoteAddress));
+        console.log('> clientsUpdateServer.connect(%s, %s) ', 
+          ws.remoteAddress, 
+          ws.upgradeReq.headers['x-forwarded-for']);
     
         ws.on('close', function(sock) {
           console.log('> clientsUpdateServer.close(%s) ', JSON.stringify(ws.remoteAddress));
@@ -231,7 +234,7 @@ var clientsUpdateServer = {
     });
   
     wss.broadcast = function(data) {
-      console.log('- clientsUpdateServer.broadcast('+data.type+')');
+      //console.log('- clientsUpdateServer.broadcast('+data.type+')');
       var sdata = JSON.stringify(data);
       for(var i in this.clients)
         wss.clients[i].send(sdata);
@@ -265,7 +268,7 @@ var serverTickCron = {
       });
       res.on('end', function() {
         try {
-          console.log('- serverTickCron.tick('+runtimeConfig.httpServerUrl+'?'+reqParams+')',
+          console.log('< serverTickCron.tick('+runtimeConfig.httpServerUrl+'?'+reqParams+')',
             Math.round(body.length/1024)+'kB ',
             body.substr(0, 32).replace(/\n/g, ''));
           if(doneFunc) doneFunc(body);
@@ -278,7 +281,7 @@ var serverTickCron = {
   
   tickCron : function() {
     serverTickCron.tick('svc', 'ajax_tick', function(data) {
-      console.log('- server tick', (data || '').substr(0, 128));
+      console.log('> server tick', (data || '').substr(0, 128));
       serverTickCron.extConfig = parseJSON(data, serverTickCron.extConfig);
       });
     setTimeout(serverTickCron.tickCron, OneMinute);
@@ -286,14 +289,14 @@ var serverTickCron = {
   
   tickWeather : function() {
     serverTickCron.tick('svc', 'weather', function() {
-      console.log('- sync remote weather data');
+      console.log('> sync remote weather data');
     });
     setTimeout(serverTickCron.tickWeather, 10*OneMinute);
   },
   
   tickDeviceStates : function() {
     serverTickCron.tick('svc', 'ajax_getstate', function(data) {
-      console.log('- reload device states from DB', (data || '').data.length);
+      console.log('> reload device states from DB', (data || '').data.length);
       deviceState = parseJSON(data, deviceState);
       });
     setTimeout(serverTickCron.tickDeviceStates, OneMinute*10);
@@ -305,7 +308,7 @@ var serverTickCron = {
   },
   
   tickCams : function() {
-    console.log('- cam poll ../data/cam/getdata.sh');
+    //console.log('- cam poll ../data/cam/getdata.sh');
     if(wss) wss.broadcast({ type : 'camtick' });
     exec('/bin/sh ../data/cam/getdata.sh', function(){});
     setTimeout(serverTickCron.tickCams, OneMinute*0.5);
