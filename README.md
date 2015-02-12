@@ -83,15 +83,6 @@ Once a device exists, you can edit its properties by selecting the device from t
 
 Go to the home menu and click on Event Handlers.
 
-## The "events" Table
-
-* e_key: an automatically generated event handler key
-* e_type: either "C" for externally triggered events such as a HomeMatic key press event, or "T" for timer-based events that are triggered internally
-* e_address: the address of the event. This has a special syntax (more about that below).
-* e_address_rev: the address to reverse the event, this is optional.
-* e_code: the actual event handler code (more about that below).
-* e_lastcalled, e_order, e_cooldown: the system fills these columns, you can ignore them for now.
-
 ## Device-Triggered Event Addresses
 
 The following event address codes are supported right now for "C" type events. These events are triggered from a specific device [id], on a bus [bus] ("HM" for HomeMatic), regarding a parameter [param], and a [value]. 
