@@ -46,8 +46,6 @@ Installing this thing is painful. You're going to need the following:
 # Things That Don't Work Right Now
 
 * Dimmers
-* Creating and editing event handlers (also, phpMyAdmin)
-* Devices acting in groups
 * Flexible settings for blind actuators
 * Sound output
 * Granular admin functions
@@ -99,9 +97,9 @@ Go to the home menu and click on Event Handlers.
 The following event address codes are supported right now for "C" type events. These events are triggered from a specific device [id], on a bus [bus] ("HM" for HomeMatic), regarding a parameter [param], and a [value]. 
 
 * "ALL": this address reacts to all device events
-* "[bus]": activated by all events on that bus, for example "HM" for all HomeMatic events
+* "[bus]-ANY": activated by all events on that bus, for example "HM" for all HomeMatic events
 * "[bus]-[id]": activated by all events from that device
-* "[bus]-[param]": activated by all events regarding that parameter
+* "[bus]-ANY-[param]": activated by all events regarding that parameter
 * "[bus]-[device]-[param]": activated by all events from that device regarding that parameter
 
 For example, an HomeMatic key device called "KEQ0180768:1" issues a "PRESSED" parameter when it's activated. To catch that, make an event handler with the address "HM-KEQ0180768:1-PRESSED".
@@ -292,7 +290,7 @@ PHP/$this->map['bar'] = 'foo'
 
 This command can be used to drive a simple on/off heating device with a thermostat.
 
-T must be a thermostat device that provides both the SET_TEMPERATURE and TEMPERATURE parameters. If T is omitted, the event emitter is used instead.
+T must be a thermostat device that provides both the SET_TEMPERATURE and TEMPERATURE parameters. *If T is omitted, the event emitter is used as the thermostat instead*.
 
 THERMOSWITCH then compares both parameter values and determines if commands down the line should use the normal action or the reverse action. If THERMOSWITCH comes to the conclusion that heating should be applied, the normal action is selected - if the heather should be turned off, the reverse action is selected.
 
@@ -307,6 +305,7 @@ The following example maps thermostats to heaters and switches them if the curre
 ```
 MAP:OfficeThermo > OfficeHeater
 MAP:LivingRoomThermo > LivingRoomHeater
+
 MODE?:At Home/SELECT:MAP=emitter_alias/THERMOSWITCH/SET:STATE:1:0
 ```
 
