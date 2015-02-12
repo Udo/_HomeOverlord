@@ -1,4 +1,4 @@
-<?= $this->_getSubmenu2(); ?>
+<?= H2Configuration::getAdminMenu() ?>
 <?
 
 $ds = db()->getDS('events', $_REQUEST['id']);
@@ -18,7 +18,7 @@ if(isset($_POST['id']))
   <input type="hidden" name="id" value="<?= first($ds['e_key'], '0') ?>"/>
   <tr>
     <td>Action</td>
-    <td><input type="text" name="e_address" value="<?= htmlspecialchars($ds['e_address'])?>"/></td>
+    <td><input type="text" name="e_address" value="<?= htmlspecialchars(@first($ds['e_address'], $_REQUEST['eventaddress']))?>"/></td>
   </tr>
   <tr>
     <td>Reverse</td>

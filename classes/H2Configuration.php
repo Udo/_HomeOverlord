@@ -35,6 +35,20 @@ class H2Configuration
     return($items);
   }
   
+  static function getUserMenu() 
+  {
+    foreach(H2Configuration::getMenuLinks() as $item)
+      $submenu[] = '<a href="'.$item['url'].'">'.$item['title'].'</a>';
+    return('<div class="submenu2">'.implode(' | ', $submenu).'</div>');
+  }
+  
+  static function getAdminMenu() 
+  {
+    foreach(H2Configuration::getAdminLinks() as $item)
+      $submenu[] = '<a href="'.$item['url'].'">'.$item['title'].'</a>';
+    return('<div class="submenu2">'.implode(' | ', $submenu).'</div>');
+  }
+  
   function checkPHP()
   {
     # mandate at least PHP 5.3

@@ -22,6 +22,33 @@
       return($matches);
     }
     
+    static function getEmittableEventsByDevice($deviceDS)
+    {
+      $paramSet = array();
+      if($deviceDS['d_bus'] == 'HM') 
+      {
+        foreach(HMRPC('getParamsetDescription', array($deviceDS['d_id'], 'VALUES')) as $dk => $dp)
+        {
+          $isEvent = ($dp['OPERATIONS'] & 4);
+          if($isEvent) 
+          {
+            $dp['EXTTYPE'] = $dp['TYPE'];
+            if($dp['TYPE'] == 'ENUM')
+            {
+              $exp = array();
+              foreach($dp['VALUE_LIST'] as $ek => $ev)
+                if($ev) $exp[] = $ek.'='.$ev;
+              $dp['EXTTYPE'] = implode(', ', $exp);
+            }
+            $paramSet[$dk] = $dp;
+            if($dk == 'PRESS_SHORT') $paramSet['PRESSED'] = $dp;
+            if($dk == 'SET_TEMPERATURE') $paramSet['THERMOSTAT'] = $dp;
+          }
+        }
+      }
+      return($paramSet);
+    }
+    
     static function getEventsByTarget($deviceDS)
     {
       $where = array('e_code LIKE ?', 'e_code LIKE ?', 'e_code LIKE ?', );
@@ -42,13 +69,16 @@
         $deviceProperties['type'].'-ANY-'.$deviceProperties['param'],
         $deviceProperties['type'].'-'.$deviceProperties['device'].'-'.$deviceProperties['param'],
         );
+        
       if($deviceProperties['param'] == 'PRESS_SHORT' || $deviceProperties['param'] == 'PRESS_LONG_RELEASE')
         $hdl[] = $deviceProperties['type'].'-'.$deviceProperties['device'].'-PRESSED';
+        
       if($deviceProperties['param'] == 'TEMPERATURE' || $deviceProperties['param'] == 'SET_TEMPERATURE')
       {
         $hdl[] = $deviceProperties['type'].'-'.$deviceProperties['device'].'-THERMOSTAT';
         $hdl[] = $deviceProperties['type'].'-ANY-THERMOSTAT';
       }
+      
       return($hdl);
     }
     

@@ -26,6 +26,17 @@
       <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
     </td>  
   </tr><?
+  if ($ds['d_bus'] == 'HM')
+  {
+    ?><tr>
+      <td style="text-align:right">
+        <span class="faint"></span>   
+      </td>
+      <td width="*">
+        <a href="<?= actionUrl('params', 'devices', array('key' => $ds['d_key'])) ?>">Edit HomeMatic Parameters</a>
+      </td>
+    </tr><?    
+  }
 
 print('<tr><td valign="top" style="text-align: right;"><span class="faint">Compound</span></td><td>' . implode(', ', $related) . '</td></tr>');
 
@@ -57,7 +68,28 @@ foreach ($editable as $fn => $fncap)
 <tr>
   <td colspan="10"></td>
 </tr>
-
+<? if(sizeof($paramSet) > 0) { ?>
+<tr>
+  
+  <td style="text-align:right">Events Emitted</td>
+  <td><ul>
+  <?
+  
+  foreach($paramSet as $k => $v)
+  {
+    ?><li>
+      <a href="<?= actionUrl('edit', 'events', array(
+        'eventaddress' => $ds['d_bus'].'-'.@first($ds['d_id']).'-'.$k
+        )) ?>"><i class="fa fa-share-square-o"></i></a>
+      <?= $k ?> (<?= $v['EXTTYPE'] ?>) </li><?
+  }
+  
+  ?> 
+  </ul></td>
+  
+</tr>
+<? }
+if(sizeof($eventList) > 0) { ?>
 <tr>
   
   <td style="text-align:right">Event Binding</td>
@@ -73,7 +105,8 @@ foreach ($editable as $fn => $fncap)
   </ul></td>
   
 </tr>
-
+<? } 
+if(sizeof($eventTargetList) > 0) { ?>
 <tr>
   
   <td style="text-align:right">Targeted By</td>
@@ -89,7 +122,8 @@ foreach ($editable as $fn => $fncap)
   </ul></td>
   
 </tr>
-
+<? } 
+if(sizeof($groupList) > 0) { ?>
 <tr>
   
   <td style="text-align:right">Groups</td>
@@ -105,7 +139,7 @@ foreach ($editable as $fn => $fncap)
   </ul></td>
   
 </tr>
-
+<? } ?>
 <tr>
   
   <td style="text-align:right">Log</td>

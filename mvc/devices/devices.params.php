@@ -17,7 +17,8 @@ $_REQUEST['actionEvents'] = array();
       <span class="faint">HomeMatic</span>   
     </td>
     <td width="*">
-      <b><?= first($ds['d_name']) ?></b> | <a href="<?= actionUrl('edit', 'devices', array('key' => $_REQUEST['key'])) ?>">edit</a>
+      <b><a href="<?= actionUrl('edit', 'devices', array('key' => $_REQUEST['key'])) ?>"><?= first($ds['d_name']) ?></a></b> 
+      | <a href="<?= actionUrl('edit', 'devices', array('key' => $_REQUEST['key'])) ?>">edit</a>
     </td>
   </tr>
   <tr>
@@ -30,7 +31,8 @@ $_REQUEST['actionEvents'] = array();
       <span class="faint">Alias</span> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?>  
       <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
     </td>  
-  </tr><?
+  </tr>
+  <?
   $related = array();
   $idnr = $ds['d_id'];
   $idroot = CutSegment(':', $idnr);
@@ -40,7 +42,7 @@ $_REQUEST['actionEvents'] = array();
       htmlspecialchars(first($dds['d_alias'], $dds['d_type'])).' '.$dds['d_id'].'</a>';//array($ds['d_id'] => $ds['d_id'].' ('.first($ds['d_alias'], $ds['d_id']).')');
   }
 
-  print('<tr><td valign="top"><span class="faint">Compound</span></td><td>'.implode(', ', $related).'</td></tr></table>');
+  print('<tr><td valign="top" style="text-align:right"><span class="faint">Compound</span></td><td>'.implode(', ', $related).'</td></tr></table>');
 
   function showParam($val, $p, $k)
   {
@@ -167,31 +169,6 @@ foreach(array('MASTER', 'VALUES') as $psetType)
 }
 
 ?><input type="submit" value="Save"/></form><?
-
-if(sizeof($_REQUEST['actionEvents']) > 0)
-{
-  ?><br/><br/><h2>Event Info</h2>
-  <div>
-    This device emits the following events:
-    <?= implode(', ', $_REQUEST['actionEvents']) ?>
-  </div>
-  <?
-}
-
-$eventHandlers = o(db)->get('SELECT * FROM events WHERE e_address LIKE "HM-?%" OR e_address_rev LIKE "HM-?%"', array('!'.$ds['d_id'], '!'.$ds['d_id']));
-if(sizeof($eventHandlers) > 0)
-{
-  ?><br/><br/><h2>Event Handlers</h2>
-  <div>
-  <?
-  foreach($eventHandlers as $eh)
-  {
-    //...
-  }
-  ?>
-  </div><?
-}
-
 
 
 

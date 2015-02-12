@@ -1,4 +1,5 @@
-<?= $this->_getSubmenu2(); ?>
+<?= H2Configuration::getAdminMenu() ?>
+
 <table class="devicetable"><thead>
   <tr>
     <th>Action</th>

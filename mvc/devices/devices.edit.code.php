@@ -13,18 +13,14 @@ $editable = array(
 $doSave = isset($_POST['controller']);
 
 $ds = getDeviceDS($_REQUEST['key']);
-$dev = HMRPC('getDeviceDescription', array(
-  $ds['d_id']
-));
+$dev = HMRPC('getDeviceDescription', array($ds['d_id']));
+$paramSet = H2EventManager::getEmittableEventsByDevice($ds);
 
 $_REQUEST['actionEvents'] = array();
 
 $related = array();
 $idnr = $ds['d_id'];
 $idroot = CutSegment(':', $idnr);
-
-if ($ds['d_bus'] == 'HM')
-  $related[] = '<a href="' . actionUrl('params', 'devices', array('key' => $ds['d_key'])) . '">HomeMatic</a>';
   
 foreach (o(db)->get('SELECT d_key,d_id,d_alias,d_type FROM devices WHERE d_id LIKE "' . $idroot . '%" ORDER BY d_id') as $dds)
 {

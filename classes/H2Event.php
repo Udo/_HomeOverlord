@@ -238,7 +238,8 @@ class H2Event
   
   function executeLine($line, $data)
   {
-    if(trim($line) == '') return;
+    $line = trim($line);
+    if($line == '' || substr($line, 0, 1) == '#') return;
     # if the line starts with : it's a device command
     if(substr($line, 0, 1) == ':')
     {
@@ -339,16 +340,33 @@ class H2Event
       $GLOBALS['command-source'] = '#'.$ds['e_key'].' '.first($data['emitter_name'], $data['event']);
     foreach($data as $k => $v) $$k = $v;
     $code = trim($code);
+    
     ob_start();
 
-    $lines = explode(chr(10), $code);
-    foreach($lines as $line)
+    if(strtoupper(substr($code, 0, 4)) == '#PHP')
     {
-      $data['select'] = array();
-      $this->executeLine(trim($line), $data);
+      foreach($data as $k => $v)
+        $$k = &$data[$k];
+      $command = function($line) use ($data) {
+        $this->executeLine($line, $data);
+        };
+      eval($code);
+      $result = ob_get_clean();
+      if($log)
+        WriteToFile('log/event.debug.log', $result.chr(10));
+    }
+    else
+    {
+      $lines = explode(chr(10), $code);
+      foreach($lines as $line)
+      {
+        $data['select'] = array();
+        $this->executeLine($line, $data);
+      }
+      $result = ob_get_clean();
     }
 
-    return(ob_get_clean());    
+    return($result);    
   }
 
   function callHandlers($handlers, $data)

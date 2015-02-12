@@ -17,7 +17,7 @@ Installing this thing is painful. You're going to need the following:
 
 * Hardware: a spare Linux-ready device, preferrably a Raspberry Pi or something similar. For HomeEasy devices, there is a simple HomeEasy USB sender you can buy, plug it in. For HomeMatic devices, use a CUL or really anything that works with Homegear. I'm using both a HE USB controller and a CUL/Homegear since I have both systems deployed at home. 
 
-* A LAMP-style web server supporting PHP and preferrably with websocket forwarding. I use nginx/php-fpm/MySQL. Clone the repository into your web server's htdocs directory. Create a database named hc or similar, import the SQL file  from setup/ and edit the file config/defaults.php with your database credentials. 
+* A LAMP-style web server supporting PHP and preferrably with websocket forwarding. I use nginx/php-fpm/MySQL. Clone the repository into your web server's htdocs directory. Create a database named hc or similar, import the SQL file  from setup/ and ed7it the file config/defaults.php with your database credentials. 
 
 * For HomeMatic support, install https://github.com/hfedcba/Homegear (or download the pre-compiled version). HomeGear is an excellent piece of software that enables HomeOverlord to use XMLRPC to communicate with Homematic devices. Alternatively to the CUL/Homegear combo, you could probably use the HomeMatic CCU1/2 via its XMLRPC interface. Since HomeOverlord sends HM XMLRPC to port 2001 and listens at 9091 on the localhost, you will have to do some port forwarding to the actual CCU. Alternatively, you could edit the source code of node/srv.js to the CCU address. Since I don't have a CCU, I have no idea if this works but it should.
 
@@ -109,11 +109,13 @@ The following list described system-driven address codes for "T" type events.
 
 # Event Handler Shortcodes
 
-## Device command shortcodes
+## Device shortcodes
 
-In the "e_code" field of the events table, you can use short device command codes to control your devices. Use one line per device. The general format is:
+You can use short device command codes to control your devices. Use one line per device. The general format is:
 
-> :[DeviceID/Alias]:[PARAM]:[value]
+> :[DeviceID/Alias]:[PARAM]:[VALUE]
+
+Where DeviceID is a system device ID, Alias is a device alias, PARAM is the name of the parameter that should be changed, and VALUE is the value it should be changed to.
 
 For example, if you want to activate a light called "HallwayLight":
 
@@ -143,7 +145,7 @@ In this example, only the reverse address sets the state of the device.
 
 # Event Handler Commands
 
-In addition to shortcakes, event handlers can also carry out commands that allow for more complex operations. Commands can be chained together in the same line with the slash ("/") character.
+In addition to shortcodes, event handlers can also carry out commands that allow for more complex operations. Commands can be chained together in the same line with the slash ("/") character.
 
 ## DAY?
 
@@ -258,15 +260,24 @@ Maps value X to value Y. This can later be used with the SELECT:MAP statement, o
 $this->map[] in a PHP/ line.
 
 ```
-MODE:Night
+MAP:OfficeThermo > OfficeHeater
 ```
 
 ## LOG
 
-Put the current state into the log file log/event.debug.log. The following example selects all lights and puts the result into the log file:
+Put the current state of the script into the log file log/event.debug.log. The following example selects all lights and puts the result into the log file:
 
 ```
-SELECT:TYPE=Light/LOG
+SELECT:TYPE=Light
+LOG
+```
+
+## LOGLINE
+
+Puts information about the current line into log/event.debug.log. The following example selects all lights and puts the result into the log file:
+
+```
+SELECT:TYPE=Light/LOGLINE
 ```
 
 ## PHP
@@ -298,6 +309,45 @@ MAP:OfficeThermo > OfficeHeater
 MAP:LivingRoomThermo > LivingRoomHeater
 
 MODE?:At Home/SELECT:MAP=emitter_alias/THERMOSWITCH/SET:STATE:1:0
+```
+
+# PHP Scripts as Event Handlers
+
+You can also use plain PHP code in your event handlers for maximum customizability. Pure PHP event scripts start with the line "#PHP".
+
+From within your PHP code, you can call both Event Shortcodes or Commands by using the $command() function.
+
+For example, the following code activates logging to log/event.debug.log, turns on the living room lights if the emitter value was above 10:
+
+```
+#PHP
+$log = true;
+if(emitter_value > 10) $command(':LivingRoomLights:STATE:1');
+```
+
+## PHP Variables
+
+The following pre-defined variables exist for your PHP scripts:
+
+```
+$emitter_id: ID of the device that caused the event
+$emitter_param: name of the event parameter triggered 
+$emitter_value: value of the parameter
+$emitter_alias: alias of the emitter device (if any)
+$emitter_root: name of the root device (if any)
+$emitter_name: human-friendly name of the emitter (if any)
+$reverseAction: if the reverse action has been triggered
+```
+
+## PHP Functions
+
+Theoretically, you can call any HomeOverlord function from your PHP scripts, but then you run the chance of breaking things. Stable API functions you can call from custom event handlers include:
+
+```
+broadcast($msg): broadcasts the array as a message to all clients
+getExtendedDeviceState($deviceID): gets a list of all the device's paramters
+getDeviceDS($deviceID): gets the device data set by its ID (or alias, or key)
+
 ```
 
 # Client Settings by IP
