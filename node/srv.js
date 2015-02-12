@@ -37,9 +37,6 @@ deviceState = {};
 var xmlrpcServer = false;
 var xmlrpcClient = false;
 
-var memStats = process.memoryUsage();
-console.log('- mem stats '+util.inspect(memStats).replace(/\n/g, '')+' // '+Math.round(memStats.heapUsed/(1024*1024))+' MB heap size');
-
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
     return this.replace(/^\s+|\s+$/g, '');
@@ -451,10 +448,19 @@ var gpioInterface = {
 // ======================== Initialize Objects ==========================================
 /****************************************************************************************/
 
+setTimeout(function() { 
+  serverTickCron.setup().start();
+  homeMaticInterface.setup().start();
+  clientsUpdateServer.setup().start();
+  commandInterfaceServer.setup().start();
+  if(runtimeConfig.enableGPIO) 
+    gpioInterface.setup().start();
+}, 10000);
 
-serverTickCron.setup().start();
-homeMaticInterface.setup().start();
-clientsUpdateServer.setup().start();
-commandInterfaceServer.setup().start();
-if(runtimeConfig.enableGPIO) 
-  gpioInterface.setup().start();
+console.log('- spooling up server in 10s');
+
+setInterval(function() {
+  var memStats = process.memoryUsage();
+  console.log(
+    '- mem stats '+util.inspect(memStats).replace(/\n/g, '')+' // '+Math.round(memStats.heapUsed/(1024*1024))+' MB heap size');
+}, 1000*60*5);

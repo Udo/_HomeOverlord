@@ -13,7 +13,7 @@ if(isset($_POST['id']))
 ?>
 
 <form action="<?= actionUrl('edit', 'events') ?>" method="POST">
-<table>
+<table class="settingsTable">
   
   <input type="hidden" name="id" value="<?= first($ds['e_key'], '0') ?>"/>
   <tr>
@@ -33,18 +33,7 @@ if(isset($_POST['id']))
     <td><input type="submit" value="Save"/></td>
   </tr>
 
+
 </table>
 </form>
 
-<style>
-
-input[type=text],textarea {
-  width: 600px;
-  font-family: Consolas, Andale Mono, Lucida Console, Courier;
-}
-
-textarea {
-  height: 250px;
-}
-
-</style>

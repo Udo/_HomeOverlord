@@ -9,7 +9,7 @@
   }
   
 ?>
-<div>
+<div class="iconOpt">
 <?
 
   if(isset($_REQUEST['id']))
@@ -23,8 +23,8 @@
   {
     ?><div 
       onclick="eventCommand('<?= htmlspecialchars($tr) ?>')"
-      class="bigBtn">
-      <?= $tr ?>
+      class="bigBtn"><br/>
+      <?= str_replace('-', '-<br/>', $tr) ?>
     </div><?
   }
 
@@ -32,15 +32,7 @@
 </div>
 <?  
 
-?><style>
-.bigBtn {
-  display:inline-block; width: 160px; height: 44px; overflow: hidden;margin:12px;padding: 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);text-align:center;
-}
-.bigBtn:hover {
-  background: rgba(255,255,255,0.1);
-  cursor:pointer;
-}
-</style>
+?>
 
 <script>
 

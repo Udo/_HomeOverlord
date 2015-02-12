@@ -202,12 +202,20 @@ class H2Event
     $this->executeLine($data['line'], $data);
   }
    
-  function handleLOGLine($line, $data)
+  function handleLINELOGLine($line, $data)
   {
     $data['event-fn'] = $fn;
     $data['event-params'] = $parts;
     $data['event-line'] = $line;
     WriteToFile('log/event.debug.log', json_encode($data).chr(10));
+  }
+  
+  function handleLOGLine($line, $data)
+  {
+    $data['event-fn'] = $fn;
+    $data['event-params'] = $parts;
+    $data['event-line'] = $line;
+    WriteToFile('log/event.debug.log', json_encode($GLOBALS['log']).chr(10));
   }
   
   function handleTHERMOSWITCHLine($line, $data)
@@ -296,6 +304,16 @@ class H2Event
         case('SELECT'):
         {
           $this->handleSelectLine($thisCommand, $data, true);
+          break;
+        }
+        case('LINELOG'):
+        {
+          $this->handleLINELOGLine($thisCommand, $data, true);
+          break;
+        }
+        case('LOG'):
+        {
+          $this->handleLOGLine($thisCommand, $data, true);
           break;
         }
         case('REMOVE'):

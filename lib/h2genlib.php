@@ -23,6 +23,21 @@ function o($object = null, $objectName = null)
   }
 }
 
+function dataCache($key, $genFunc) 
+{
+  $cacheFile = 'data/cache.'.$key.'.json';
+  if(!file_exists($cacheFile) || filemtime($cacheFile) < time() - 60)
+  {
+    $data = $genFunc();
+    file_put_contents($cacheFile, json_encode($data));
+    return($data);
+  }
+  else
+  {
+    return(json_decode($data, true));    
+  }
+}
+
 /* parses an HTTP result and returns it in a nicely filtered array:
    'length' : the size of the response
    'result' : HTTP numeric result code

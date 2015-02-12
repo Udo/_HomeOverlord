@@ -1,7 +1,5 @@
 <?php
 
-
-
 class SvcController extends H2Controller
 {
   function __init()

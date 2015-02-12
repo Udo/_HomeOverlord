@@ -1,0 +1,55 @@
+<?
+  
+  class H2EventManager 
+  {
+    
+    static function getEventsByDevice($deviceDS)
+    {
+      $searchPatterns = array(
+        $deviceDS['d_bus'].'-ANY%',
+        $deviceDS['d_bus'].'-ANY%',
+        $deviceDS['d_bus'].'-'.$deviceDS['d_id'].'%',
+        $deviceDS['d_bus'].'-'.$deviceDS['d_id'].'%',
+        );
+      $where = array(
+        'e_address LIKE ?',
+        'e_address_rev LIKE ?',
+        'e_address LIKE ?',
+        'e_address_rev LIKE ?',
+        );
+      $matches = o(db)->get('SELECT * FROM #events WHERE
+        '.implode(' OR ', $where), $searchPatterns);
+      return($matches);
+    }
+    
+    static function getEventsByTarget($deviceDS)
+    {
+      $where = array('e_code LIKE ?', 'e_code LIKE ?', 'e_code LIKE ?', );
+      $searchPatterns = array(
+        '%'.$deviceDS['d_id'].'%',
+        '%'.@first($deviceDS['d_alias'], 'NOMATCH').'%',
+        );
+      return(o(db)->get('SELECT * FROM #events WHERE
+        '.implode(' OR ', $where), $searchPatterns));
+    }
+    
+    static function getApplicableEventsForDevice($deviceProperties)
+    {
+      $hdl = array(
+        'ALL', 
+        $deviceProperties['type'].'-ANY',
+        $deviceProperties['type'].'-'.$deviceProperties['device'],
+        $deviceProperties['type'].'-ANY-'.$deviceProperties['param'],
+        $deviceProperties['type'].'-'.$deviceProperties['device'].'-'.$deviceProperties['param'],
+        );
+      if($deviceProperties['param'] == 'PRESS_SHORT' || $deviceProperties['param'] == 'PRESS_LONG_RELEASE')
+        $hdl[] = $deviceProperties['type'].'-'.$deviceProperties['device'].'-PRESSED';
+      if($deviceProperties['param'] == 'TEMPERATURE' || $deviceProperties['param'] == 'SET_TEMPERATURE')
+      {
+        $hdl[] = $deviceProperties['type'].'-'.$deviceProperties['device'].'-THERMOSTAT';
+        $hdl[] = $deviceProperties['type'].'-ANY-THERMOSTAT';
+      }
+      return($hdl);
+    }
+    
+  }

@@ -112,14 +112,8 @@ class DevicesController extends H2Controller
   
   function _getSubmenu2($opt = false)
   {
-    $items = array(
-      'admin',  
-      );
-    if($opt) $items[] = $opt;
-    foreach($items as $act)
-      $submenu[] = '<a style="'.($_REQUEST['action'] == $act ? 'font-weight:bold;' : '').'" href="'.
-        actionUrl($act).
-        '">'.l10n($_REQUEST['controller'].'.'.$act).'</a>';
+    foreach(H2Configuration::getAdminLinks() as $item)
+      $submenu[] = '<a href="'.$item['url'].'">'.$item['title'].'</a>';
     
     return('<div class="submenu2">'.implode(' | ', $submenu).'</div>');
   }

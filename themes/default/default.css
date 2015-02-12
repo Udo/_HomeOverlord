@@ -42,9 +42,17 @@ body {
   color: rgba(<?= $bgBase ?>, 0.2);
 }
 
+.settingsTable {
+  max-width: 800px; width: 100%;
+}
+
+.settingsTable td {
+  vertical-align: top;
+}
+
 .submenu2 {
-  padding: <?= $stdPadding ?>px;
-  border-bottom: <?= $borderColor ?>;
+  margin-bottom: <?= $stdPadding*2 ?>px;
+  text-align: center;
 }
 
 .small {
@@ -59,13 +67,6 @@ body {
   padding: 2px;
   margin-bottom: 2px;
   border-bottom: <?= $borderColor ?>;
-}
-
-.submenu {
-}
-
-#container {
-  margin: -8px;
 }
 
 .pane {
@@ -235,7 +236,7 @@ th, td {
 
 #content_outer {
   margin-bottom: <?= $bigMargin ?>;
-  margin-top: 48px;
+  margin-top: 36px;
 }
 
 h1, h2, h3 {
@@ -259,6 +260,7 @@ h1, h2, h3 {
 
 #content {
   padding: <?= $stdPadding ?>px;
+  padding-top: 0;
   margin-bottom: <?= $bigMargin ?>;
   padding-bottom: <?= $bigMargin ?>;
 }
@@ -293,8 +295,7 @@ h1, h2, h3 {
 }
 
 .highlightable:hover div, a:hover {
-  border-bottom: 1px dotted rgba(<?= $bgBase ?>, 0.2);;
-  color: rgba(<?= $bgBase ?>, 0.2);;
+  border-bottom: 1px solid rgba(<?= $bgBase ?>, 0.2);;
 }
 
 #menu a.selected {
@@ -305,7 +306,7 @@ h1, h2, h3 {
   padding-left: 24px;
 }
 
-.toolbar {
+/*.toolbar {
   padding: <?= $stdPadding ?>px;
   padding-left: 12px;
   background: #eee;
@@ -317,7 +318,7 @@ h1, h2, h3 {
   color: gray;
   overflow: hidden;
 }
-
+*/
 .unread {
   background: #ffc;
 }
@@ -378,6 +379,11 @@ h1, h2, h3 {
 
 textarea {
   height: 50px;
+}
+
+pre {
+  margin: 0;
+  padding: 0;
 }
 
 xx {
@@ -491,6 +497,12 @@ footer {
   width: <?= ($colWidth*2) ?>px;
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+  padding-left: 16px;
+}
+
 .ultile {
   width: 100px;
   float: left;
@@ -602,6 +614,7 @@ footer {
   border: 1px solid rgba(<?= $bgBase ?>, 0.2);
   background: rgba(<?= $bgBase ?>, 0.1);
   padding: <?= $stdPadding ?>px;
+  overflow: hidden;
   cursor: pointer;
 }
 
@@ -641,6 +654,14 @@ footer {
   background: rgba(<?= $bgBase ?>, 0.2);
 }
 .devicetable a:hover {
-  color: <?= $baseColor ?>;
+  text-decoration: underline;
 }
 
+input[type=text],textarea {
+  width: 600px;
+  font-family: Consolas, Andale Mono, Lucida Console, Courier;
+}
+
+textarea {
+  height: 250px;
+}

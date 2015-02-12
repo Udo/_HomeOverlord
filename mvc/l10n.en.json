@@ -19,7 +19,7 @@
   "events" : "Events",
   "events.index" : "Event Handlers",
   "events.edit" : "Edit Event",
-  "events.manual" : "Triggers",
+  "events.manual" : "Trigger Manually",
   "devices.clients" : "Clients",
   "cam" : "Cameras",
   "cam.index" : "Surveillance Cameras",

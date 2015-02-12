@@ -82,6 +82,9 @@ class H2Controller
 		{
 		  $nv = new H2NVStore();
 		  $fn = 'mvc/'.strtolower($this->name).'/'.strtolower($this->name).'.'.first($this->viewName, $action).'.php';
+		  $fnCodeBehind = 'mvc/'.strtolower($this->name).'/'.strtolower($this->name).'.'.first($this->viewName, $action).'.code.php';
+      if(file_exists($fnCodeBehind))
+        require($fnCodeBehind);
 		  if(file_exists($fn))
         require($fn);
       else if(!$this->maySkipView)

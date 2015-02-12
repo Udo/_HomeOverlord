@@ -1,4 +1,4 @@
-<div style="margin:-12px;margin-top:-24px;float:left;width:50px;padding:8px;" class="shadedBackground">
+<div style="margin:-12px;margin-top:-12px;float:left;width:50px;padding:8px;" class="shadedBackground">
 
 <?
   $modes = $nv->get('pref/modes');

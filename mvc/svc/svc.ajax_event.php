@@ -4,15 +4,7 @@
   $dayString = $isDay ? 'DAY' : 'NIGHT';
 
   $data = json_decode($_REQUEST['data'], true);
-  $hdl = array(
-      'all', 
-      $data['type'],
-      $data['type'].'-'.$data['device'],
-      $data['type'].'-'.$data['param'],
-      $data['type'].'-'.$data['device'].'-'.$data['param'],
-      );
-  if($data['param'] == 'PRESS_SHORT' || $data['param'] == 'PRESS_LONG_RELEASE')
-    $hdl[] = $data['type'].'-'.$data['device'].'-PRESSED';
+  $hdl = H2EventManager::getApplicableEventsForDevice($data);
 
   $dds = o(db)->getDSMatch('devices', array(
     'd_bus' => $data['type'],

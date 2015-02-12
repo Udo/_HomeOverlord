@@ -25,7 +25,7 @@ $GLOBALS['config']['cameras'] = array(
   'cams' => array(
     array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01', 'title' => 'Cat 1'),
     array('photoUrl' => 'http://10.32.4.103:8080/photo.jpg', 'id' => 'cam04', 'title' => 'Cat 2'),  
-    array('photoUrl' => 'http://10.32.4.104:8080/photo.jpg', 'id' => 'cam02', 'title' => 'Office'),  
+    array('photoUrl' => 'http://10.32.4.104:8080/photo.jpg', 'id' => 'cam02', 'title' => 'Attic', 'room' => 'Other'),  
     array('photoUrl' => 'http://10.32.4.110:8080/photo.jpg', 'id' => 'cam03', 'title' => 'Porch'),  
     ),
   );

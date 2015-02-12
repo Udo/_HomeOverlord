@@ -4,19 +4,9 @@
 <input type="hidden" name="controller" value="<?= $_REQUEST['controller'] ?>"/>
 <input type="hidden" name="action" value="<?= $_REQUEST['action'] ?>"/>
 <input type="hidden" name="key" value="<?= $_REQUEST['key'] ?>"/>
-<?
-$doSave = isset($_POST['controller']);
-
-$ds = getDeviceDS($_REQUEST['key']);
-$dev = HMRPC('getDeviceDescription', array(
-  $ds['d_id']
-));
-$_REQUEST['actionEvents'] = array();
-
-?>
 <form action="<?= actionUrl('edit', 'devices') ?>" method="post">
 <input type="hidden" name="key" value="<?= $_REQUEST['key'] ?>"/>
-<table style="margin-top: -8px; margin-bottom: 12px; max-width: 800px; width: 100%;">
+<table class="settingsTable">
   <tr>
     <td style="text-align:right">
       <span class="faint">Device</span>   
@@ -26,7 +16,7 @@ $_REQUEST['actionEvents'] = array();
     </td>
   </tr>
   <tr>
-    <td style="text-align:right">
+    <td style="text-align:right;">
       <span class="faint">Type</span>   
     </td>
     <td width="*">
@@ -36,31 +26,8 @@ $_REQUEST['actionEvents'] = array();
       <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
     </td>  
   </tr><?
-$related = array();
-$idnr = $ds['d_id'];
-$idroot = CutSegment(':', $idnr);
-if ($ds['d_bus'] == 'HM')
-  $related[] = '<a href="' . actionUrl('params', 'devices', array(
-    'key' => $ds['d_key']
-  )) . '">HomeMatic</a>';
-foreach (o(db)->get('SELECT d_key,d_id,d_alias,d_type FROM devices WHERE d_id LIKE "' . $idroot . '%" ORDER BY d_id') as $dds)
-{
-  $related[] = '<a href="' . actionUrl('edit', 'devices', array(
-    'key' => $dds['d_key']
-  )) . '" style="' . ($dds['d_key'] == $ds['d_key'] ? 'font-weight:bold;' : '') . '">' . htmlspecialchars(first($dds['d_alias'], $dds['d_type'])) . ' ' . $dds['d_id'] . '</a>'; //array($ds['d_id'] => $ds['d_id'].' ('.first($ds['d_alias'], $ds['d_id']).')');
-}
 
 print('<tr><td valign="top" style="text-align: right;"><span class="faint">Compound</span></td><td>' . implode(', ', $related) . '</td></tr>');
-
-$editable = array(
-  'd_bus' => 'Bus System',
-  'd_id' => 'Identifier',
-  'd_type' => 'Type',
-  'd_icon' => 'Icon',
-  'd_room' => 'Room',
-  'd_name' => 'Name',
-  'd_alias' => 'Alias'
-);
 
 foreach ($editable as $fn => $fncap)
 {
@@ -79,21 +46,77 @@ foreach ($editable as $fn => $fncap)
 ?>
 
 <tr>
-    <td style="text-align:right">
-       
+    <td style="text-align:right">       
     </td>
     <td width="*">
-      <?
-if ($_POST['key'])
-{
-  o(db)->commit('devices', $ds);
-?><div class="banner">Your changes have been saved.</div><?
-}
-
-?><hr/>
+      <hr/>
       <input type="submit" value="Save Changes"/>
     </td>
   </tr>
 
+<tr>
+  <td colspan="10"></td>
+</tr>
+
+<tr>
+  
+  <td style="text-align:right">Event Binding</td>
+  <td><ul>
+  <?
+  
+  foreach($eventList as $evt)
+  {
+    ?><li><a href="<?= actionUrl('edit', 'events', array('id' => $evt['e_key'])) ?>"><?= $evt['e_address'].' / '.$evt['e_address_rev'] ?></a></li><?
+  }
+  
+  ?> 
+  </ul></td>
+  
+</tr>
+
+<tr>
+  
+  <td style="text-align:right">Targeted By</td>
+  <td><ul>
+  <?
+  
+  foreach($eventTargetList as $evt)
+  {
+    ?><li><a href="<?= actionUrl('edit', 'events', array('id' => $evt['e_key'])) ?>"><?= $evt['e_address'].' / '.$evt['e_address_rev'] ?></a></li><?
+  }
+  
+  ?> 
+  </ul></td>
+  
+</tr>
+
+<tr>
+  
+  <td style="text-align:right">Groups</td>
+  <td><ul>
+  <?
+  
+  foreach($groupList as $group)
+  {
+    ?><li><a href="<?= actionUrl('group', 'devices', array('id' => $group)) ?>"><?= $group ?></a></li><?
+  }
+  
+  ?> 
+  </ul></td>
+  
+</tr>
+
+<tr>
+  
+  <td style="text-align:right">Log</td>
+  <td><pre style="max-width:600px;font-size: 85%;overflow:auto;"><?
+  
+  print(shell_exec('tail -n 500 log/node.log | grep "'.$ds['d_id'].'" | tail'));
+  
+  ?></pre></td>
+  
+</tr>
+
 
 </table></form>
+

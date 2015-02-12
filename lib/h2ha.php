@@ -82,14 +82,16 @@ function systemMessage($msgType, $text = '(no text)', $data = array())
 
 function getServiceFlags()
 {
-  $hmSvc = array();
-  foreach(HMRPC('getServiceMessages') as $svc)
-  {
-    $id = $svc[0];
-    $did = CutSegment(':', $id);
-    $hmSvc[$did][] = $svc; 
-  }
-  return($hmSvc);
+  return(dataCache('hm-service-flags', function() {
+    $hmSvc = array();
+    foreach(HMRPC('getServiceMessages') as $svc)
+    {
+      $id = $svc[0];
+      $did = CutSegment(':', $id);
+      $hmSvc[$did][] = $svc; 
+    }
+    return($hmSvc);
+  }));
 }
 
 function getExtendedDeviceState($deviceId)

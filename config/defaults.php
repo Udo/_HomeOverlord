@@ -25,4 +25,5 @@ $GLOBALS['config'] = array(
   );
   
 $GLOBALS['config']['dbinfo']['messages']['keys'] = array('m_key');
-
+$GLOBALS['config']['dbinfo']['nvstore']['keys'] = array('nv_key');
+$GLOBALS['config']['dbinfo']['devices']['keys'] = array('d_key');

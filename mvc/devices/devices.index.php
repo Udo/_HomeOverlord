@@ -2,13 +2,16 @@
 <?
 
 include('templates/modeset.php');
+profile_point('modeset widget complete');
 
 ?>
 <div id="container" style="margin-left: 60px;"><?
   
 include('templates/check-timer-system.php');
+profile_point('timer system check');
 
 $renderer = new H2DeviceRenderer();
+profile_point('H2DeviceRenderer ready');
 
 $clientIdentifier = 'client/'.$_SERVER['REMOTE_ADDR'];
 $clientSettings = $nv->get($clientIdentifier);
