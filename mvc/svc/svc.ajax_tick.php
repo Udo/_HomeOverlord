@@ -52,12 +52,13 @@ if($mode->current != 'No Auto')
     
   profile_point('done');
   $_REQUEST['log'] = $GLOBALS['log'];
+  /*
   WriteToFile('log/event.log', date('Y-m-d H:i:s').' tick event '.json_encode($_REQUEST).chr(10)
     .'- '.json_encode($eventAdresses).chr(10)
     .'- '.json_encode($GLOBALS['log']).chr(10)   
     #.'- '.json_encode($GLOBALS['profiler_log']).chr(10)
     );
-      
+  */  
 }
 
 

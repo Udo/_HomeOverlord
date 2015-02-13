@@ -55,6 +55,13 @@ function hours($h)
   return($h*60);
 }
 
+function queryCommandServer($query, $msg = false)
+{
+  if($msg) $query['msg'] = json_encode($msg);
+  $response = cqrequest(array(array('url' => 'http://localhost:1080/?'.http_build_query($query))));
+  return($response['data']);
+}
+
 function broadcast($msg)
 {
   $msg['cmd'] = 'broadcast';
@@ -97,7 +104,7 @@ function getServiceFlags()
 function getExtendedDeviceState($deviceId)
 {
   $stateInfo = array();
-  foreach(o(db)->get('SELECT si_param,si_value FROM stateinfo WHERE si_name LIKE "'.so($deviceId).'%"') as $tds)
+  foreach(o(db)->get('SELECT si_param,si_value FROM stateinfo WHERE si_mode = "RX" && si_name LIKE "'.so($deviceId).'%"') as $tds)
     $stateInfo[$tds['si_param']] = $tds['si_value'];
   return($stateInfo);
 }
@@ -114,7 +121,7 @@ function HMRPC($method, $cmd = false)
       if($c == 'true')
         $params[] = true;
       else if($c + 0 > 0)
-        $params[] = $c+0;
+        $params[] = floatval($c);
       else if($c == "0")
         $params[] = $c+0;
       else 
@@ -218,7 +225,7 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
     // send HM commands directly, to save time
     $result = HMRPC('setValue', array($device['d_id'], $commandType, $hpv));
     // notify clients
-    $reqUrl = 'http://localhost:1080/?cmd=broadcast&bus='.$device['d_bus'].
+    /*$reqUrl = 'http://localhost:1080/?cmd=broadcast&bus='.$device['d_bus'].
       '&param='.$commandType.
       '&type=devicestatus'.
       '&stxt='.urlencode($reason).
@@ -227,9 +234,21 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
       '&value='.($pv);
     cqrequest(array(array('url' => $reqUrl)));
     WriteToFile('log/switch.log', 'switch: '.$reqUrl.chr(10));
+    */
+    queryCommandServer(array(
+      'cmd' => 'busmessage',
+      'data' => json_encode(array(
+        'key' => $device['d_key'],
+        'type' => $device['d_bus'],
+        'device' => $device['d_id'],
+        'param' => $commandType,
+        'value' => $pv,
+        'stxt' => $reason,
+        )),
+      ));
     recordDeviceStatus($device, $commandType, $pv, $reason);
     $tmr = $config['timer_'.$commandType.'_'.$pv];
-    WriteToFile('log/switch.log', $device['d_key'].' timer prodded: '.'timer_'.$commandType.'_'.$pv.' ('.sizeof($tmr).'/'.sizeof($config).')'.chr(10));
+    #WriteToFile('log/switch.log', $device['d_key'].' timer prodded: '.'timer_'.$commandType.'_'.$pv.' ('.sizeof($tmr).'/'.sizeof($config).')'.chr(10));
     if($tmr)
     {
       cqrequest(array(array('url' => 'http://localhost:1080/?cmd=timer'.
@@ -312,7 +331,12 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
       'si_ip' => first($_SERVER['HTTP_X_FORWARDED_FOR'], $_SERVER['REMOTE_ADDR']),
       );
     o(db)->commit('stateinfo', $sds);
-    WriteToFile('log/switch.log', json_encode($sds).chr(10));
+
+    WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
+      json_encode(array(
+        'type' => 'dp', 'key' => $device['d_key'], 'id' => $device['d_id'], 'bus' => $device['d_bus'], 'param' => $commandType, 'value' => $pv, 'tr' => 'tx')).
+      chr(10)
+      );
 
     $device['d_state'] = $value;
     $device['d_statustext'] = first($GLOBALS['command-source'], $by);

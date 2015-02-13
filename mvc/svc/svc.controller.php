@@ -61,7 +61,7 @@ class SvcController extends H2Controller
   
   function ajax_notify()
   {
-    WriteToFile('log/event.log', date('Y-m-d H:i:s').' notify: '.$_REQUEST['data'].chr(10));
+    #WriteToFile('log/event.log', date('Y-m-d H:i:s').' notify: '.$_REQUEST['data'].chr(10));
     $data = json_decode($_REQUEST['data'], true);
     if($data['event'] != '')
     {
@@ -76,7 +76,7 @@ class SvcController extends H2Controller
     }
     if(isset($data['deviceCommand']))
     {
-      WriteToFile('log/event.log', date('Y-m-d H:i:s').' deviceCommand: '.$data['deviceCommand'].chr(10));
+      #WriteToFile('log/event.log', date('Y-m-d H:i:s').' deviceCommand: '.$data['deviceCommand'].chr(10));
       $this->execTriggerScript($data['deviceCommand'], $data);
     }
   }

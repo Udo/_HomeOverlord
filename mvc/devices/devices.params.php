@@ -29,7 +29,19 @@ $_REQUEST['actionEvents'] = array();
       <?= first($dev['TYPE'], $ds['d_type']) ?>
       <span class="faint">ID</span> <?= $ds['d_id'] ?> 
       <span class="faint">Alias</span> <?= first($ds['d_alias'], '#'.$ds['d_key']) ?>  
-      <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
+    </td>  
+  </tr>
+  <tr>
+    <td style="text-align:right">
+      <span class="faint">Direction</span>   
+    </td>
+    <td width="*">
+      <?
+        
+        $dirText = array( 0 => 'None', 1 => 'Sender', 2 => 'Receiver' );
+        print($dirText[$dev['DIRECTION']]);
+        
+      ?></div>
     </td>  
   </tr>
   <?
@@ -115,7 +127,7 @@ $_REQUEST['actionEvents'] = array();
     return(0);
   }
 
-foreach(array('MASTER', 'VALUES') as $psetType)
+foreach($dev['PARAMSETS'] as $psetType)
 {
   $saveP = array();
   $p = HMRPC('getParamset', array($ds['d_id'], $psetType));
@@ -124,7 +136,7 @@ foreach(array('MASTER', 'VALUES') as $psetType)
   profile_point('getParamsetDescription '.$psetType);
     
   ?><table width="100%" style="max-width: 700px;" class="border-bottom"><?
-  foreach($pdes as $k => $ps)
+  if(is_array($pdes)) foreach($pdes as $k => $ps)
   {
     $ps['WRITABLE'] = /*($psetType != 'VALUES') &&*/ ($ps['OPERATIONS'] & 2) == 2 && $k != 'AES_ACTIVE';
     if($ps['WRITABLE'] && $doSave)
@@ -162,12 +174,15 @@ foreach(array('MASTER', 'VALUES') as $psetType)
     //print_r($_POST);
     print('</pre>');
   }
-  ?><!--<pre><?
-  print_r($p);
+  /*?><pre><?
   print_r($pdes);
-  ?></pre>--><?
+  ?></pre><?*/
 }
 
+/*  ?><pre><?
+  print_r($dev);
+  ?></pre><?
+*/
 ?><input type="submit" value="Save"/></form><?
 
 

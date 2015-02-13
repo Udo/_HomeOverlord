@@ -31,11 +31,16 @@ if(runtimeConfig.enableGPIO) {
 
 var OneMinute = 1000*60;
 var child = null;
-var coolDownTimers = {};
-var registeredDevices = [];
-deviceState = {};
 var xmlrpcServer = false;
 var xmlrpcClient = false;
+
+var serverState = {
+  deviceState : {},
+  tickLog : {},
+  coolDownTimers : {},
+  eventQueue : [],
+  namedTimers : {},
+}
 
 if (!String.prototype.trim) {
   String.prototype.trim = function () {
@@ -49,7 +54,6 @@ execHandler = function (error, stdout, stderr) {
   child = null;
 }
 
-eventQueue = [];
 parseJSON = function(raw, defaultValue) {
   try {
     return(JSON.parse(raw));
@@ -62,11 +66,11 @@ parseJSON = function(raw, defaultValue) {
 queueEvent = function(ev, times) {
   
   if(!times) times = 1;
-  var eventQueueIsEmpty = eventQueue.length == 0;
+  var eventQueueIsEmpty = serverState.eventQueue.length == 0;
   
   if(ev.id > 0) {
     for(var tc = 0; tc < times; tc++)
-      eventQueue.push(ev);
+      serverState.eventQueue.push(ev);
     // restart timer 
     if(eventQueueIsEmpty) {
       queueWorkStep();
@@ -76,13 +80,13 @@ queueEvent = function(ev, times) {
 
 queueWorkStep = function() {
 
-  if(eventQueue.length > 0 && child == null) {
+  if(serverState.eventQueue.length > 0 && child == null) {
     
-    var item = eventQueue.splice(0, 1)[0];
+    var item = serverState.eventQueue.splice(0, 1)[0];
     
     // if item.value isn't defined, use the global device state
-    if(deviceState['d'+item.id]) 
-      item.value = deviceState['d'+item.id].state;
+    if(serverState.deviceState['d'+item.id]) 
+      item.value = serverState.deviceState['d'+item.id].state;
     
     var cmdStr = __dirname+'/he853 '+(item.id)+' '+(item.value);
     console.log('> command: '+cmdStr, JSON.stringify(item));
@@ -90,7 +94,7 @@ queueWorkStep = function() {
       
   }
 
-  if(eventQueue.length > 0) {
+  if(serverState.eventQueue.length > 0) {
     setTimeout(queueWorkStep, 1000);
   }
 
@@ -118,7 +122,76 @@ var commandInterfaceServer = {
   setup : function() {
     return(this);
   },
-  namedTimers : {},
+  
+  commands : {
+    
+    info : function(query, res) {
+      if(query.about)
+        res.write(JSON.stringify(serverState[query.about]));
+      else
+        res.write(JSON.stringify(serverState));
+    },
+    timer : function(query, res) {
+      if(query.countDown == 0)
+        delete serverState.namedTimers[query.name];
+      else
+        serverState.namedTimers[query.name] = query;
+    },
+    broadcast : function(query) {
+      if(wss)
+        wss.broadcast(query);
+    },
+    busmessage : function(query) {
+      if(wss)
+        wss.broadcast({
+          type : 'busmessage',
+          data : parseJSON(query.data),
+        });
+    },
+    gpio : function(query, res) {
+      if(runtimeConfig.enableGPIO)
+        gpioInterface.impulse(query.param, query.value);
+    },
+    update : function(query, res) {
+      query.type = 'devicestatus';      
+    
+      if(wss) {
+        //wss.broadcast(query);
+        wss.broadcast({
+          type : 'busmessage',
+          data : {
+            type : query.bus,
+            key : query.key,
+            device : query.id,
+            param : query.param,
+            value : query.value,
+            stxt : query.stxt,
+          },
+        });
+      }
+      
+      if(query.bus == 'HE') {
+        if(serverState.deviceState['d'+query.id])
+          serverState.deviceState['d'+query.id].state = query.value;
+        queueEvent({ id : query.id, value : query.value }, 3);
+      }
+      else if(query.bus == 'HM') {
+        if(query.value == 'true') query.value = true;
+        if(query.value == 'false') query.value = false;
+        if(serverState.deviceState['d'+query.id])
+          serverState.deviceState['d'+query.id].state = query.value == true ? 1 : 0;
+        xmlrpcClient.methodCall(
+          'setValue', 
+          [ query.id, query.param, query.value ], function (error, value) {});           
+      }
+    },
+    hmcall : function(query, res) {
+      xmlrpcClient.methodCall(
+        query.method, 
+        query.params.split(','), function (error, value) {});
+    },
+    
+  },
 
   start : function() {
 
@@ -127,65 +200,14 @@ var commandInterfaceServer = {
       var params = require('url').parse(req.url, true);
     
       res.writeHead(200, {'Content-Type': 'text/plain'});
+  
+      if(commandInterfaceServer.commands[params.query.cmd]) 
+        commandInterfaceServer.commands[params.query.cmd](params.query, res);
+  
       res.end();
 
       console.log('> commandInterfaceServer.cmd(%s)', util.inspect(params.query).replace(/\n/g, ''));
-    
-      if(params.query.cmd == 'broadcast') {
-      
-        if(wss)
-          wss.broadcast(params.query);
-      
-      }
-      else if(params.query.cmd == 'timer') {
-      
-        if(params.query.countDown == 0)
-          delete commandInterfaceServer.namedTimers[params.query.name];
-        else
-          commandInterfaceServer.namedTimers[params.query.name] = params.query;
-        console.log('> timer '+JSON.stringify(params.query));
-      
-      }
-      else if(params.query.cmd == 'gpio' && runtimeConfig.enableGPIO) {
-
-        gpioInterface.impulse(params.query.param, params.query.value);
-      
-      }
-      else if(params.query.cmd == 'update') {
         
-        params.query.type = 'devicestatus';
-        
-        res.end(params.query.id+'='+params.query.value+'\n\n');
-      
-        // notify clients about state change
-        if(wss)
-          wss.broadcast(params.query);
-        
-        console.log('> '+JSON.stringify(params.query));
-      
-        if(params.query.bus == 'HE') {
-          // update device state table for HomeEasy
-          if(deviceState['d'+params.query.id])
-            deviceState['d'+params.query.id].state = params.query.value;
-      
-          queueEvent({ id : params.query.id, value : params.query.value }, 3);
-        }
-        else if(params.query.bus == 'HM') {
-          if(params.query.value == 'true') params.query.value = true;
-          if(params.query.value == 'false') params.query.value = false;
-          if(deviceState['d'+params.query.id])
-            deviceState['d'+params.query.id].state = params.query.value == true ? 1 : 0;
-          xmlrpcClient.methodCall(
-            'setValue', 
-            [ params.query.id, params.query.param, params.query.value ], function (error, value) {});           
-        }
-      } 
-      else if(params.query.cmd == 'hmcall') {
-        xmlrpcClient.methodCall(
-          params.query.method, 
-          params.query.params.split(','), function (error, value) {});           
-      }  
-      
     }).listen(runtimeConfig.commandInterfaceServerPort);
     
     console.log('- commandInterfaceServer.start() on port '+runtimeConfig.commandInterfaceServerPort);
@@ -254,8 +276,6 @@ var clientsUpdateServer = {
 
 var serverTickCron = {
 
-  extConfig : {},
-
   tick : function(ctr, act, doneFunc) {
     var reqParams = 'action='+act+'&controller='+ctr;
     http.get(runtimeConfig.httpServerUrl+'?'+reqParams, function(res) {
@@ -268,6 +288,7 @@ var serverTickCron = {
           console.log('< serverTickCron.tick('+runtimeConfig.httpServerUrl+'?'+reqParams+')',
             Math.round(body.length/1024)+'kB ',
             body.substr(0, 32).replace(/\n/g, ''));
+          serverState.tickLog[ctr+'/'+act] = Math.floor(new Date() / 1000);
           if(doneFunc) doneFunc(body);
         } catch(err) {}
       });
@@ -279,7 +300,6 @@ var serverTickCron = {
   tickCron : function() {
     serverTickCron.tick('svc', 'ajax_tick', function(data) {
       console.log('> server tick', (data || '').substr(0, 128));
-      serverTickCron.extConfig = parseJSON(data, serverTickCron.extConfig);
       });
     setTimeout(serverTickCron.tickCron, OneMinute);
   },
@@ -294,7 +314,7 @@ var serverTickCron = {
   tickDeviceStates : function() {
     serverTickCron.tick('svc', 'ajax_getstate', function(data) {
       console.log('> reload device states from DB', (data || '').data.length);
-      deviceState = parseJSON(data, deviceState);
+      serverState.deviceState = parseJSON(data, serverState.deviceState);
       });
     setTimeout(serverTickCron.tickDeviceStates, OneMinute*10);
   },
@@ -312,14 +332,14 @@ var serverTickCron = {
   },
   
   tickHeartbeat : function() {
-    Object.keys(commandInterfaceServer.namedTimers).forEach(function(key) {
-        var tmr = commandInterfaceServer.namedTimers[key];
+    Object.keys(serverState.namedTimers).forEach(function(key) {
+        var tmr = serverState.namedTimers[key];
         tmr.countDown -= 1;
         if(tmr.countDown <= 0) {
           console.log('- timer ended: '+key);
           cmdHttpPost({ controller : 'svc', action : 'ajax_timer', data : JSON.stringify(tmr)});
           wss.broadcast({ type : 'timerState', deviceKey : tmr.key, countDown : 0 })
-          delete commandInterfaceServer.namedTimers[key];
+          delete serverState.namedTimers[key];
         } else if(tmr.countDown % 5 == 0) {
           console.log('- timer active... '+key+' '+tmr.countDown+'sec');
           wss.broadcast({ type : 'timerState', deviceKey : tmr.key, countDown : tmr.countDown })
@@ -376,7 +396,7 @@ var homeMaticInterface = {
           if(!params[0][i].params || params[0][i].params.length != 4) continue;
             var ct = JSON.stringify(params[0][i]);
             var pr = params[0][i].params;
-            if(!coolDownTimers[ct]) {
+            if(!serverState.coolDownTimers[ct]) {
               var eventData = {
                 type : 'HM',
                 device : pr[1],
@@ -387,8 +407,9 @@ var homeMaticInterface = {
               if(wss) 
                 wss.broadcast({ type : 'busmessage', data : eventData });
               console.log('> homeMaticInterface.receive('+util.inspect(params[0][i]).replace(/\n/g, '')+')');
-              coolDownTimers[ct] = true;
-              setTimeout(function(){ coolDownTimers[ct] = false; }, 500);
+              // to do: memory leak
+              serverState.coolDownTimers[ct] = true;
+              setTimeout(function(){ serverState.coolDownTimers[ct] = false; }, 500);
             }                          
           }
         }

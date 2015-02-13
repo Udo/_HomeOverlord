@@ -1,6 +1,8 @@
 <?
   
-  if(filemtime('log/event.log') < time()-60*5)
+  $recentTicks = queryCommandServer(array('cmd' => 'info', 'about' => 'tickLog'));
+  
+  if($recentTicks['svc/ajax_tick'] < time()-60*5)
   {
     ?><div class="banner">
       Warning: the timer system is not working.

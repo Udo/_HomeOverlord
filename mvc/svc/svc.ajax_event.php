@@ -18,10 +18,10 @@
     $data);
     
   profile_point('done');
-  WriteToFile('log/event.log', date('Y-m-d H:i:s').' ext event '.$_REQUEST['data'].chr(10)
-    .'- '.json_encode($hdl).chr(10)
-    .'- '.json_encode($GLOBALS['log']).chr(10)
-    #.'- '.json_encode($GLOBALS['profiler_log']).chr(10)
+  WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
+    json_encode(array(
+      'type' => 'dp', 'key' => $dds['d_key'], 'id' => $data['device'], 'bus' => $data['type'], 'param' => $data['param'], 'value' => $data['value'], 'tr' => 'rx')).
+    chr(10)
     );
   
   $sds = array(

@@ -45,7 +45,8 @@ class H2DeviceRenderer
   {
     $thermState = getExtendedDeviceState($ds['d_id']);
     ?>
-      <div class="device_line" data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
+      <div class="device_line" 
+          data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
 
         <span 
           class="asCharacter state_<?= $ds['d_state'] ?>" 
@@ -56,7 +57,17 @@ class H2DeviceRenderer
         </span>
         
         <div class="device_line_text">
-          <div><?= so($ds['d_name']) ?> </div>
+          <div><select onchange="var vl = $(this).val(); if(vl != -1) setDeviceState('<?= $ds['d_id'] ?>:2', 'SET_TEMPERATURE', vl+'.0'); $(this).val(-1);">
+            <option selected value="-1"><?= so($ds['d_name']) ?></option>
+            <?
+            for($tc = 3; $tc <= 30; $tc++) 
+            {
+              ?><option value="<?= $tc ?>">
+                <?= $tc ?> °C
+              </option><?
+            }
+            ?>
+            </select></div>
           <div class="smalltext"> 
             <?= $ds['statusIconStr'] ?>
             <span class="smalltext" id="humidity_<?= $ds['d_key'] ?>">Humidity <?= $thermState['HUMIDITY'] ?>%</span>&nbsp; 
@@ -73,9 +84,10 @@ class H2DeviceRenderer
             $('#humidity_<?= $ds['d_key'] ?>').text('Humidity '+data.value+'%');
         };
         busDataSubscribers['<?= $ds['d_id'] ?>:2'] = function(data) {
+          //console.log('UPD', data);
           if(data.param == 'ACTUAL_TEMPERATURE')
             $('#temp_<?= $ds['d_key'] ?>').text(data.value+'°C');
-          if(data.param == 'SET_TEMPERATURE' && data.value)
+          if(data.param == 'SET_TEMPERATURE')
             $('#settemp_<?= $ds['d_key'] ?>').text(data.value+'°C');
         };
       </script>
