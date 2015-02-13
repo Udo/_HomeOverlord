@@ -364,6 +364,8 @@ On the clients list screen you can also trigger a screen reload of all connected
 
 # Modes
 
+![](https://raw.github.com/Udo/HomeOverlord/master/doc/modes.ui.png)
+
 Modes are a way to change the behavior of devices according to a specific circumstance. For example, the Away mode could be used to make sure all non-essential devices are turned off.
 
 To add or change the available modes, go the the admin screen and then select the "modes" option. On the 
