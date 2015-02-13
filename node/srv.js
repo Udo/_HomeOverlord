@@ -112,6 +112,21 @@ cmdHttpPost = function(params) {
 
 }
 
+incomingDeviceEvent = function(bus, id, param, value, key, stxt) {
+  var eventData = {
+    type : bus,
+    device : id,
+    param : param,
+    value : value,
+    key : key,
+    stxt : stxt,
+    };
+  cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
+  if(wss) 
+    wss.broadcast({ type : 'busmessage', data : eventData });
+}
+
+
 /****************************************************************************************/
 // ======================== Command Interface Server ====================================
 // listens on runtimeConfig.commandInterfaceServerPort for commands
@@ -137,15 +152,21 @@ var commandInterfaceServer = {
       else
         serverState.namedTimers[query.name] = query;
     },
+    fire : function(query) {
+      incomingDeviceEvent(query.bus, query.device, query.param, query.value, query.key, query.stxt);
+    },
     broadcast : function(query) {
       if(wss)
         wss.broadcast(query);
     },
     busmessage : function(query) {
-      if(wss)
+      var msg = parseJSON(query.data);
+      if(query.fireevent == 'Y')
+        commandInterfaceServer.commands.fire(msg);
+      else if(wss)
         wss.broadcast({
           type : 'busmessage',
-          data : parseJSON(query.data),
+          data : msg,
         });
     },
     gpio : function(query, res) {
@@ -155,20 +176,7 @@ var commandInterfaceServer = {
     update : function(query, res) {
       query.type = 'devicestatus';      
     
-      if(wss) {
-        //wss.broadcast(query);
-        wss.broadcast({
-          type : 'busmessage',
-          data : {
-            type : query.bus,
-            key : query.key,
-            device : query.id,
-            param : query.param,
-            value : query.value,
-            stxt : query.stxt,
-          },
-        });
-      }
+      incomingDeviceEvent(query.bus, query.id, query.param, query.value, query.key, query.stxt);
       
       if(query.bus == 'HE') {
         if(serverState.deviceState['d'+query.id])
@@ -397,15 +405,7 @@ var homeMaticInterface = {
             var ct = JSON.stringify(params[0][i]);
             var pr = params[0][i].params;
             if(!serverState.coolDownTimers[ct]) {
-              var eventData = {
-                type : 'HM',
-                device : pr[1],
-                param : pr[2],
-                value : pr[3]
-                };
-              cmdHttpPost({ controller : 'svc', action : 'ajax_event', data : JSON.stringify(eventData)});
-              if(wss) 
-                wss.broadcast({ type : 'busmessage', data : eventData });
+              incomingDeviceEvent('HM', pr[1], pr[2], pr[3]);
               console.log('> homeMaticInterface.receive('+util.inspect(params[0][i]).replace(/\n/g, '')+')');
               // to do: memory leak
               serverState.coolDownTimers[ct] = true;

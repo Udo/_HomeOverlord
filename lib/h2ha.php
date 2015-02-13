@@ -213,7 +213,7 @@ function sendGPIOCommand($device, $commandType, $value, $reason = 'unknown')
   }
 }
 
-function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $config = array())
+function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $config = array(), $fireEvent = false)
 {
   if(sizeof($device) > 0 && $device['d_state'] != $value)
   {
@@ -237,6 +237,7 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
     */
     queryCommandServer(array(
       'cmd' => 'busmessage',
+      'fireevent' => $fireEvent ? 'Y' : 'N',
       'data' => json_encode(array(
         'key' => $device['d_key'],
         'type' => $device['d_bus'],
@@ -287,7 +288,7 @@ function getDeviceDS($deviceIdentifier)
   return($device);
 }
 
-function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
+function deviceCommand($deviceKey, $commandType, $value, $by = 'API', $fireEvent = false)
 {
   $device = getDeviceDS($deviceKey);
   if(!approveAction(array(
@@ -313,7 +314,7 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API')
     }
     else if($device['d_bus'] == 'HM')
     {
-      sendHMCommand($device, $commandType, $value, first($GLOBALS['command-source'], $by), $config);
+      sendHMCommand($device, $commandType, $value, first($GLOBALS['command-source'], $by), $config, $fireEvent);
       return;
     }
 

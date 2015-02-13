@@ -98,7 +98,7 @@ class DevicesController extends H2Controller
   function ajax_switch()
   {
     $this->skipView = true;
-    deviceCommand($_REQUEST['key'], first($_REQUEST['p'], 'STATE'), $_REQUEST['v'], first($_REQUEST['by'], 'EXT'));
+    deviceCommand($_REQUEST['key'], first($_REQUEST['p'], 'STATE'), $_REQUEST['v'], first($_REQUEST['by'], 'EXT'), true);
   }
   
   function ajax_halcommand()
