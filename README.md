@@ -145,6 +145,8 @@ In this example, only the reverse address sets the state of the device.
 
 # Event Handler Commands
 
+![](https://raw.github.com/Udo/HomeOverlord/master/doc/event.edit.png)
+
 In addition to shortcodes, event handlers can also carry out commands that allow for more complex operations. Commands can be chained together in the same line with the slash ("/") character.
 
 ## DAY?
