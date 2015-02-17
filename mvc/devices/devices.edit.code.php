@@ -31,8 +31,11 @@ foreach (o(db)->get('SELECT d_key,d_id,d_alias,d_type FROM devices WHERE d_id LI
 
 if ($_POST['key'])
 {
+  foreach($editable as $fn => $fncap)
+    $ds[$fn] = $_POST[$fn];
   o(db)->commit('devices', $ds);
-  ?><div class="banner">Your changes have been saved.</div><?
+  header('location: '.actionUrl('show'));
+  die();
 }
 
 $eventList = H2EventManager::getEventsByDevice($ds);

@@ -11,7 +11,7 @@
       {
         $gName = $grpData['nv_key']; CutSegment('/', $gName);
         $gList = json_decode($grpData['nv_data']);
-        if(array_search($deviceDS['d_key'], $gList) !== false)
+        if(is_array($gList) && array_search($deviceDS['d_key'], $gList) !== false)
           $matchingGroups[] = $gName;
       }
       

@@ -175,7 +175,6 @@ function recordDeviceStatus($device, $commandType, $value, $reason)
   $device['d_state'] = $value;
   $device['d_statustext'] = $reason;
   $device['d_statuschanged'] = time();
-  WriteToFile('log/switch.log', 'status change: '.json_encode($device).chr(10));
   o(db)->commit('devices', $device);
 }
 
@@ -224,17 +223,7 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
       $hpv = $pv;
     // send HM commands directly, to save time
     $result = HMRPC('setValue', array($device['d_id'], $commandType, $hpv));
-    // notify clients
-    /*$reqUrl = 'http://localhost:1080/?cmd=broadcast&bus='.$device['d_bus'].
-      '&param='.$commandType.
-      '&type=devicestatus'.
-      '&stxt='.urlencode($reason).
-      '&key='.($device['d_key']).
-      '&id='.($device['d_id']).
-      '&value='.($pv);
-    cqrequest(array(array('url' => $reqUrl)));
-    WriteToFile('log/switch.log', 'switch: '.$reqUrl.chr(10));
-    */
+    
     queryCommandServer(array(
       'cmd' => 'busmessage',
       'fireevent' => $fireEvent ? 'Y' : 'N',
@@ -249,7 +238,6 @@ function sendHMCommand($device, $commandType, $value, $reason = 'unknown', $conf
       ));
     recordDeviceStatus($device, $commandType, $pv, $reason);
     $tmr = $config['timer_'.$commandType.'_'.$pv];
-    #WriteToFile('log/switch.log', $device['d_key'].' timer prodded: '.'timer_'.$commandType.'_'.$pv.' ('.sizeof($tmr).'/'.sizeof($config).')'.chr(10));
     if($tmr)
     {
       cqrequest(array(array('url' => 'http://localhost:1080/?cmd=timer'.

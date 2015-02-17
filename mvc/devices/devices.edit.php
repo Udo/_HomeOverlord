@@ -42,8 +42,6 @@ print('<tr><td valign="top" style="text-align: right;"><span class="faint">Compo
 
 foreach ($editable as $fn => $fncap)
 {
-  if ($_POST['key'])
-    $ds[$fn] = $_POST[$fn];
 ?><tr>
       <td style="text-align:right">
          <?= $fncap ?>

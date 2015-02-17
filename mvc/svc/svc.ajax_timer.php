@@ -12,13 +12,11 @@ if(sizeof($device) > 0)
   $tmr = $dcfg[$timerConfig['trigger']];
   if($tmr)
   {
-    WriteToFile('log/switch.log', 'timer trigger found: '.$timerConfig['trigger'].chr(10));
     $GLOBALS['command-mode'] = 'trigger';
     deviceCommand($timerConfig['key'], $timerConfig['param'], $tmr['value'], first($tmr['stxt'], 'API'));
   }
   else
   {
-    WriteToFile('log/switch.log', 'timer trigger NOT found: '.$timerConfig['trigger'].chr(10));
-    
+    WriteToFile('log/error.log', 'timer trigger not found: '.$timerConfig['trigger'].chr(10));
   }
 }
