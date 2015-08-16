@@ -52,6 +52,10 @@ if($mode->current != 'No Auto')
     
   profile_point('done');
   $_REQUEST['log'] = $GLOBALS['log'];
+  
+  ob_start();
+  include('mvc/svc/svc.ajax_camscript.php');
+  ob_get_clean();
   /*
   WriteToFile('log/event.log', date('Y-m-d H:i:s').' tick event '.json_encode($_REQUEST).chr(10)
     .'- '.json_encode($eventAdresses).chr(10)

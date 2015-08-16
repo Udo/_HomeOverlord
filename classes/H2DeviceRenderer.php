@@ -94,6 +94,41 @@ class H2DeviceRenderer
     <?
   }
   
+  function displayCamera($ds)
+  {
+    ?>
+      <div class="device_line" 
+          data-type="<?= $ds['d_type'] ?>" id="dvc_<?= $ds['d_key'] ?>">
+
+        <div id="icon_<?= $ds['d_key'] ?>"  
+          data-state="<?= $ds['d_state'] ?>"
+          style="float:left;width:60px;margin-top:2px;text-align: right;">
+          <?= $ds['d_name'] ?>
+          <?= stripos($ds['d_name'], 'cam') === false ? 'Cam' : '' ?>
+        </div>
+        
+        <div class="device_line_text">
+          <a href="?/cam/single&id=<?= $ds['d_id'] ?>"><img     
+            id="camimg_<?= $ds['d_id'] ?>"
+            class="cam_minipic"       
+            src="data/cam/<?= $ds['d_id'] ?>_mid.jpg"
+            height="50"
+            /></a>
+        </div>          
+        
+      </div>
+      <script>
+        (function() {
+          var refreshCam = function() {
+            $('#camimg_<?= $ds['d_id'] ?>').attr('src', 'data/cam/<?= $ds['d_id'] ?>_mid.jpg?'+Math.random());
+            setTimeout(refreshCam, 5000);
+          };
+          refreshCam();
+        })();
+      </script>
+    <?
+  }
+  
   function displayLight($ds, $icon = '')
   {
     ?>

@@ -22,12 +22,13 @@ function dechex2($a)
   return($result);
 }
 
-function css_color($b, $lightenBy = 0)
+function css_color($b, $factor = 1, $opacity = 1)
 {
-  $result = '';
+  $result = array();
   foreach($b as $c)
-    $result .= dechex2($c + $lightenBy);
-  return('#'.$result);    
+    $result[] = max(0, min(255, round($c * $factor)));
+  $result[] = $opacity;
+  return('rgba('.implode(', ', $result).')');    
 }
 
 function css_gradient($c1, $c2, $defaultColor = null)
@@ -72,11 +73,11 @@ switch($_REQUEST['scheme'])
   {
     $b = array(0x80, 0xa0, 0xff);
     $background = '#000';
-    $barBackground = '#036';
+    $barBackground = css_color($b, 0.5, 0.5);
     $bgBase = '0,51,102';
     $bgBase = $b[0].','.$b[1].','.$b[2].'';
     $onColor = '#ee7';
-    $barText = css_color($b, 20);
+    $barText = css_color($b, 1.2);
     $timeCSS = 'night.css';
     break;
   }
@@ -85,12 +86,12 @@ switch($_REQUEST['scheme'])
 $colWidth = 270;
 $menuWidth = 140;
 
-$baseColor = css_color($b, 0);
-$textColor = css_color($b, 0);
-$lighterColor = css_color($b, +30);
-$lighterColorHighlight = css_color($b, +70);
-$washedOutColor = css_color($b, +120);
-$darkerColor = css_color($b, -100);
+$baseColor = css_color($b);
+$textColor = css_color($b);
+$lighterColor = css_color($b, 1.30);
+$lighterColorHighlight = css_color($b, 1.70);
+$washedOutColor = css_color($b, 1.70);
+$darkerColor = css_color($b, 1, 0.25);
 $linkColor = $baseColor;
 $stdMargin = '6px';
 $bigMargin = '16px';

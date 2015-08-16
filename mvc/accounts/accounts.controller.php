@@ -16,7 +16,7 @@ class AccountsController extends H2Controller
         ));
       if($uds['a_key'] > 0)
       {
-        WriteToFile('log/account.log', date('Y-m-d H:i:s').' (i) '.$_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['REMOTE_ADDR'].' sign in with '.
+        WriteToFile('log/account.log', date('Y-m-d H:i:s').' (i) '.$_SERVER['HTTP_X_FORWARDED_FOR'].' : '.$_SERVER['REMOTE_ADDR'].' sign in with '.
           trim($_POST['username']).'/***'.chr(10));
         $_SESSION['uid'] = $uds['a_key'];
         $_SESSION['ds'] = $uds;
@@ -25,10 +25,15 @@ class AccountsController extends H2Controller
       }
       else
       {
-        WriteToFile('log/account.log', date('Y-m-d H:i:s').' (f) '.$_SERVER['HTTP_X_FORWARDED_FOR'].'-'.$_SERVER['REMOTE_ADDR'].' sign in failed with '.
+        WriteToFile('log/account.log', date('Y-m-d H:i:s').' (f) '.$_SERVER['HTTP_X_FORWARDED_FOR'].' : '.$_SERVER['REMOTE_ADDR'].' sign in failed with '.
           trim($_POST['username']).'/***'.chr(10));
         ?><div style="text-align: center">Error signing in, try again.</div><?
       }
+    }
+    else
+    {
+      WriteToFile('log/account.log', date('Y-m-d H:i:s').' (a) '.$_SERVER['HTTP_X_FORWARDED_FOR'].' : '.
+        gethostbyaddr($_SERVER['HTTP_X_FORWARDED_FOR']).' signin page '.chr(10));
     }
   }
 

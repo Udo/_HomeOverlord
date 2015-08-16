@@ -31,8 +31,11 @@ updateWeatherInfo = function() {
     
     document.weather = data;
     weatherInfo = [
-      document.weather.tecur+'°C | '+document.weather.wscur+'km/h',
-      document.weather.description,
+      document.weather.description+' '+
+      document.weather.tecur+'°C · '+Math.round(document.weather.wind.speed*36)/10+
+      (document.weather.wind.gust ? ' - '+Math.round(document.weather.wind.gust*36)/10 : '')+
+      ' km/h '+
+      (document.weather.rain && document.weather.rain['1h'] ? ' · '+document.weather.rain['1h']+'mm/h' : ''),
       ];
       
     var dt = new Date();

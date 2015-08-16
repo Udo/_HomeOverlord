@@ -45,16 +45,24 @@ class H2Database
   
     $query = $this->parseQueryParams($query, $parameters);
   
-    $lines = mysql_query($query, $GLOBALS['db_link']) or critical(mysql_error($GLOBALS['db_link']).' {query: '.$query.' }');
+    $lines = mysql_query($query, $GLOBALS['db_link']);
   
-    while ($line = mysql_fetch_array($lines, MYSQL_ASSOC))
+    if($lines && !is_bool($lines))
     {
-      if (isset($keyByField))
-        $result[$line[$keyByField]] = $line;
-      else
-        $result[] = $line;
+      while ($line = mysql_fetch_array($lines, MYSQL_ASSOC))
+      {
+        if (isset($keyByField))
+          $result[$line[$keyByField]] = $line;
+        else
+          $result[] = $line;
+      }
+      mysql_free_result($lines);
     }
-    mysql_free_result($lines);
+    else
+    {
+      $error = mysql_error();
+      if($error) WriteToFile('log/error.log', 'MySQL error: '.$error.' Query: '.$query.chr(10));
+    }
 
   	profile_point('DB_GetList('.substr($query, 0, 40).'...)');
     return $result;

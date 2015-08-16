@@ -35,6 +35,10 @@ if(time() - filemtime($owFileName) > 60*2)
     
     $data['tecur'] = number_format($owd['main']['temp'], 1);
     $data['wscur'] = number_format($owd['wind']['speed'], 1);
+    $data['wind'] = $owd['wind'];
+    $data['rain'] = $owd['rain'];
+    $data['clouds'] = $owd['clouds'];
+    $data['temp'] = $owd['main'];
     
     include('lib/moon.php');
     $moon = new Solaris\MoonPhase();

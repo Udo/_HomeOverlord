@@ -40,8 +40,10 @@ foreach($GLOBALS['menu'] as $m)
     </div>
   
     <div id="header_outer">
+      <div style="float:right;padding:5px;"><a href="<?= 
+        actionUrl('client_settings', 'devices', array('id' => 'client/'.$_SERVER['REMOTE_ADDR'])) ?>"><i class="fa fa-cog"></i></a></div>
       <div id="header">
-        <a href="<?= actionUrl('index', 'home') ?>">▶ &nbsp;
+        <a href="<?= actionUrl('index', 'home') ?>"><i class="fa fa-home"></i> &nbsp;
           <span id="lefthdr">
             Home Control <?= $GLOBALS['pagetitle'] ?>
           </span><span id="lefthdr2"></span>

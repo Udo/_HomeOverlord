@@ -29,6 +29,14 @@ body {
   color: <?= $barBackground ?>;
 }
 
+.cam_minipic {
+  margin-left: 16px; 
+  margin-bottom: -4px;
+  margin-top: -3px;
+  border: <?= $borderColor ?>;
+  border-radius: 4px;
+}
+
 .datatable thead {
   background: <?= $barBackground ?>;
   color: <?= $background ?>;
@@ -91,11 +99,14 @@ body {
 }
 
 .device_line {
+  vertical-align: top;
   width: 250px;
   min-height: 33px;
   padding: <?= $stdPadding/2 ?>px;
   cursor:default;
   display: inline-block;
+  height: 46px;
+  overflow: hidden;
 }
 
 .device_line_text {
@@ -249,13 +260,17 @@ h1, h2, h3 {
 #header_outer {
   background: <?= $barBackground ?>;
   color: <?= $barText ?>;
-  text-shadow: 0 0 8px <?= $baseColor ?>;
   position: fixed;
   z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
   border-bottom: <?= $borderColor ?>;
+  box-shadow: 0 0 16px <?= $barBackground ?>;
+}
+
+#header_outer * {
+  text-shadow: 0 0 8px <?= $baseColor ?>;
 }
 
 #content {

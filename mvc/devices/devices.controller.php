@@ -42,6 +42,25 @@ class DevicesController extends H2Controller
       if($d['d_room'] != 'unknown')
         $this->devices[$d[$by]][] = $d;
     }  
+    if($by == 'd_room') foreach($GLOBALS['config']['cameras']['cams'] as $camKey => $camDevice)
+    {
+      if($camDevice['room'] != '')
+      {
+        $this->devices[$camDevice['room']][] = array(
+          'd_key' => 'cam'.$camKey,
+          'd_type' => 'camera',
+          'd_room' => $camDevice['room'],
+          'd_visible' => 'Y',
+          'd_name' => $camDevice['title'],
+          'd_id' => $camDevice['id'],
+          );
+      }
+    }
+  }
+  
+  function pairhe()
+  {
+    
   }
   
   function ajax_cli()
