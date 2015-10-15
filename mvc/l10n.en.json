@@ -24,5 +24,7 @@
   "devices.clients" : "Clients",
   "cam" : "Cameras",
   "cam.index" : "Surveillance Cameras",
-  "cam.single" : "Camera"
+  "cam.single" : "Camera",
+  "radiator.minion" : "Info Radiator",
+  "radiator.admin" : "Info Radiators Config"
 }
