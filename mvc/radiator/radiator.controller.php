@@ -68,7 +68,7 @@ class RadiatorController extends H2Controller
   {
     foreach($this->radiatorSettings as $k => $v)
     {
-      broadcast(array('type' => 'radiator', 'id' => $k, 'url' => $v['url']));
+      broadcast(array_merge(array('type' => 'radiator', 'id' => $k), $v));
     }
   }
   

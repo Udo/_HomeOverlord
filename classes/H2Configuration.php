@@ -32,7 +32,7 @@ class H2Configuration
     $items = array();
     $items[] = array('icon' => 'building-o', 'title' => l10n('devices.index'), 'url' => actionUrl('index', 'devices'));
     $items[] = array('icon' => 'hand-o-down', 'title' => l10n('events.manual'), 'url' => actionUrl('manual', 'events'));
-    $items[] = array('icon' => 'heartbeat', 'title' => l10n('radiator.minion'), 'url' => actionUrl('minion', 'radiator'));
+    $items[] = array('icon' => 'heartbeat', 'title' => l10n('radiator.minion'), 'url' => actionUrl('index', 'radiator'));
     if(cfg('cameras'))
       $items[] = array('icon' => 'video-camera', 'title' => l10n('cam.index'), 'url' => actionUrl('index', 'cam'));
     return($items);
