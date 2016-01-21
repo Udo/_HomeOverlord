@@ -16,6 +16,8 @@ $GLOBALS['config']['geo'] = array(
     'timezone' => 'Europe/Berlin',
     'city' => 'Worms, Germany',
   );
+
+$GLOBALS['config']['openweathermap']['api_key'] = 'c6c73e0e13af0253fae5016df62cdd52';
   
 // your server's address
 $GLOBALS['config']['service']['server'] = '10.32.0.10';

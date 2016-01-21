@@ -9,8 +9,10 @@ if(!$camConfig['cams']) $camConfig['cams'] = array(
   array('photoUrl' => 'http://10.32.4.109:8080/photo.jpg', 'id' => 'cam01'),
   );*/
 
-@mkdir('data/cam/', 0775, true);
-@mkdir('data/sensors/', 0775, true);
+if(!file_exists('data/cam'))
+  @mkdir('data/cam', 0775, true);
+if(!file_exists('data/sensors'))
+  @mkdir('data/sensors', 0775, true);
 
 ?>
 cd "<?= $GLOBALS['APP.BASEDIR'].'/data/' ?>"

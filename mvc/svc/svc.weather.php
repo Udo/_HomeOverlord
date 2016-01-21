@@ -8,7 +8,7 @@ if(time() - filemtime($owFileName) > 60*2)
 {
   print('last called: '.(time() - filemtime($owFileName)).' seconds ago'.chr(10));
 
-  $weatherReq = cqrequest(array(array('url' => 'http://api.openweathermap.org/data/2.5/weather?q='.urlencode(cfg('geo/city')).'&mode=json&units=metric')));
+  $weatherReq = cqrequest(array(array('url' => 'http://api.openweathermap.org/data/2.5/weather?q='.urlencode(cfg('geo/city')).'&mode=json&units=metric&APPID='.cfg('openweathermap/api_key'))));
   
   $owd = $weatherReq['data'];
   

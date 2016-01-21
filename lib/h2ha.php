@@ -321,11 +321,11 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API', $fireEvent
       );
     o(db)->commit('stateinfo', $sds);
 
-    WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
+    /*WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
       json_encode(array(
         'type' => 'dp', 'key' => $device['d_key'], 'id' => $device['d_id'], 'bus' => $device['d_bus'], 'param' => $commandType, 'value' => $pv, 'tr' => 'tx')).
       chr(10)
-      );
+      );*/
 
     $device['d_state'] = $value;
     $device['d_statustext'] = first($GLOBALS['command-source'], $by);

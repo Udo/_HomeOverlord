@@ -18,11 +18,11 @@
     $data);
     
   profile_point('done');
-  WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
+  /* WriteToFile('log/stats.'.gmdate('Y-m').'.log', 
     json_encode(array(
       'type' => 'dp', 'key' => $dds['d_key'], 'id' => $data['device'], 'bus' => $data['type'], 'param' => $data['param'], 'value' => $data['value'], 'tr' => 'rx')).
     chr(10)
-    );
+    ); */
   
   $sds = array(
     'si_bus' => $data['type'],
