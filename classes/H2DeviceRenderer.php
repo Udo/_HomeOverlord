@@ -108,19 +108,24 @@ class H2DeviceRenderer
         </div>
         
         <div class="device_line_text">
-          <a href="?/cam/single&id=<?= $ds['d_id'] ?>"><img     
+          <a id="camimg_<?= $ds['d_id'] ?>" href="?/cam/single&id=<?= $ds['d_id'] ?>" style="
+            margin-left: 20px;
+            display:inline-block;width:180px;height:80px;overflow:hidden;
+            background:url('data/cam/<?= $ds['d_id'] ?>_mid.jpg');
+            background-position:center center;background-size:cover"><!--
+              <img     
             id="camimg_<?= $ds['d_id'] ?>"
             class="cam_minipic"       
             src="data/cam/<?= $ds['d_id'] ?>_mid.jpg"
-            height="50"
-            /></a>
+            width="220px;"
+            />--></a>
         </div>          
         
       </div>
       <script>
         (function() {
           var refreshCam = function() {
-            $('#camimg_<?= $ds['d_id'] ?>').attr('src', 'data/cam/<?= $ds['d_id'] ?>_mid.jpg?'+Math.random());
+            $('#camimg_<?= $ds['d_id'] ?>').css('background-image', 'data/cam/<?= $ds['d_id'] ?>_mid.jpg?'+Math.random());
             setTimeout(refreshCam, 5000);
           };
           refreshCam();

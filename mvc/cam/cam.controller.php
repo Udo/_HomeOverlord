@@ -17,5 +17,15 @@ class CamController extends H2Controller
 
   }
   
+  function video()
+  {
+
+  }
+  
+  function refresh()
+  {
+
+  }
+  
 }
 

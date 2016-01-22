@@ -1,6 +1,7 @@
 <?
 $panelSize = first($_REQUEST['zoom'], 640);
 ?>
+<br/>
 <div id="camsPanel"><?
 
 $camTitle = '';
@@ -9,29 +10,22 @@ foreach(cfg('cameras/cams') as $cam) if($cam['id'] == $_REQUEST['id'])
 {
   $thisCam = $cam;
   $camTitle = htmlspecialchars(first($cam['title'], $cam['id']));
-  ?><a href="<?= actionUrl('index', 'cam') ?>"><img src="data/cam/<?= $cam['id'] ?>_mid.jpg" width="80%"/></a><?
+  ?><a href="<?= actionUrl('index', 'cam') ?>">
+    <iframe frameborder="0" src="<?= $cam['videoUrl'] ?>" width="80%" height="600"></iframe></a><?
 }
 
 ?></div>
 
 <div style="text-align: center;">
   <?
-  if($thisCam['videoUrl'])
+  if($thisCam['photoUrl'])
   {
-    ?><a href="<?= actionUrl('video', 'cam', array('id' => $thisCam['id'])) ?>">&gt; Live Video</a><?
+    ?><a href="<?= actionUrl('single', 'cam', array('id' => $thisCam['id'])) ?>">&gt; Still Image</a><?
   }
   ?>
 </div>
 
 <script>
-  
-  messageHandlers.camtick = function() {
-    window.location.reload(true);
-  };
-  
-  setTimeout(function() {
-    window.location.reload(true);
-    }, 1000*20);
   
   $('#lefthdr').text('<?= $camTitle ?>');
   
