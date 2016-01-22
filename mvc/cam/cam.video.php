@@ -11,7 +11,7 @@ foreach(cfg('cameras/cams') as $cam) if($cam['id'] == $_REQUEST['id'])
   $thisCam = $cam;
   $camTitle = htmlspecialchars(first($cam['title'], $cam['id']));
   ?><a href="<?= actionUrl('index', 'cam') ?>">
-    <iframe frameborder="0" src="<?= $cam['videoUrl'] ?>" width="80%" height="600"></iframe></a><?
+    <img src="<?= $cam['videoUrl'] ?>" width="80%"/></a><?
 }
 
 ?></div>
