@@ -192,7 +192,25 @@ function CutSegment($segdiv, &$cake, $params = array())
   return(CutSegmentEx($segdiv, $cake, $found, $params));
 }
 
-
+// cut $cake at the first occurence of $segdiv, returns the slice
+# fixme: this should supersede CutSegment()
+function nibble($segdiv, &$cake, &$found = false)
+{
+  $p = strpos($cake, $segdiv);
+  if ($p === false)
+  {
+    $result = $cake;
+    $cake = '';
+    $found = false;
+  }
+  else
+  {
+    $result = substr($cake, 0, $p);
+    $cake = substr($cake, $p + strlen($segdiv));
+    $found = true;
+  }
+  return $result;
+}
 
 /* this is for making multiple simultaneous requests, takes an array of URLs instead of only one */
 // fixme: should probably be unified with cqrequest()
@@ -260,6 +278,62 @@ function cqrequest($rq_array, $post = array(), $timeout = 10, $headerMode = true
   profile_point('cqrequest() done');
   
   return($content);  
+}
+
+# fixme: this is the newer httpRequest(), port over all cqrequest() to this thing
+function httpRequest($url, $post = array(), $opt = array())
+{
+  $ch = curl_init();
+  $resheaders = array();
+  $resbody = array();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  if(sizeof($post) > 0 || is_string($post)) curl_setopt($ch, CURLOPT_POST, 1); 
+  
+  // this is a workaround for a parameter bug that prevents params starting with an @ from working correctly
+  foreach($post as $k => $v) if(substr($v, 0, 1) == '@') $post[$k] = '\\'.$v;
+  if(is_string($post))
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+  else if(sizeof($post)>0) 
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+  curl_setopt($ch, CURLOPT_HEADER, 1);  
+  if($opt['headers'])
+  {
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $opt['headers']);  
+  }
+  @curl_setopt($ch, CURLOPT_TIMEOUT, $opt['timeout'] ? $opt['timeout'] : 2); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER  ,1);  
+  $result = curl_exec($ch);
+  curl_close($ch);
+    
+  $headerMode = true;
+  $resBody = '';
+  foreach(explode(chr(13), $result) as $line)
+  {
+    $line = trim($line);
+    if($line == '') $headerMode = false;
+    if ($headerMode)
+    {
+      if(substr($line, 0, 4) == 'HTTP')
+      {
+        $proto = nibble(' ', $line);
+        $resheaders['result'] = trim($line);
+        $resheaders['code'] = nibble(' ', $line);
+        if(substr($resheaders['code'], 0, 1) == '1') $ignoreELine = true;
+      }
+      else
+      {
+        $hkey = nibble(':', $line);
+        $resheaders[$hkey] = trim($line);
+      }
+    }
+    else
+      $resBody .= $line.chr(13);
+  }
+  
+  return(array(
+    'result' => $resheaders['code'],
+    'headers' => $resheaders,
+    'body' => trim($resBody)));
 }
 
 /* returns the first non-null, non-empty variable passed to it */

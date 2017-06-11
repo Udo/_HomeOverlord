@@ -262,9 +262,13 @@ var clientsUpdateServer = {
   
     wss.broadcast = function(data) {
       //console.log('- clientsUpdateServer.broadcast('+data.type+')');
-      var sdata = JSON.stringify(data);
-      for(var i in this.clients)
-        wss.clients[i].send(sdata);
+      try {
+        var sdata = JSON.stringify(data);
+        for(var i in this.clients)
+          wss.clients[i].send(sdata);
+      } catch(ee) {
+        console.log('! error', ee);
+      }
     };
     
     setTimeout(function() {

@@ -62,17 +62,17 @@ foreach($camConfig['cams'] as $cam)
   else 
   {
   ?>
-  cp cam/<?= $cam['id'] ?>_full.jpg cam/<?= $cam['id'] ?>_mid.jpg
+  cp cam/<?= $cam['id'] ?>_full.jpg cam/<?= $cam['id'] ?>_mid.jpg &
   <?
   }
   ?>
-  cp cam/<?= $cam['id'] ?>_full.jpg timelapse/<?= $cam['id'] ?>/$date_string.jpg 
+  cp cam/<?= $cam['id'] ?>_full.jpg timelapse/<?= $cam['id'] ?>/$date_string.jpg &
   <?
 }
 ?>
 chmod 765 *
 
-nohup rsync -az timelapse h1:htdocs/rpgp.org/cam/ > /dev/null 2>&1 &
+#nohup rsync -az timelapse h1:htdocs/rpgp.org/cam/ > /dev/null 2>&1 &
 
 <?
 

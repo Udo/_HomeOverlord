@@ -11,6 +11,7 @@ $GLOBALS['config'] = array(
   ),
   'deviceTypeAliases' => array(
     'HM-TC-IT-WM-W-EU' => 'Thermostat',
+    'temperature' => 'Thermostat',
     ),
   'hal' => array(
     'Light' => 'OnOff',

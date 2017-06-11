@@ -23,18 +23,11 @@ class H2Event
     }
   }
 
-  function handleCallLine($line, $data)
+  function handleCallLine($thisCommand, $data)
   {
-    $rev2 = false;
-    $evtDS = db()->getDS('events', $line);
-    if(sizeof($evtDS) == 0)
-    {
-      $evtDS = db()->getDS('events', $line, 'e_address_rev');
-      $rev2 = true;
-    }
-    $dataCopy = $data;
-    $dataCopy['reverseAction'] = $rev2;
-    $this->executeScript($evtDS['e_code'], $dataCopy);
+    $GLOBALS['log'][] = 'calling '.$thisCommand;
+    $subEvent = new H2Event();
+    $subEvent->callHandlers(array($thisCommand), $data);
   }
   
   function getAllDevices()
@@ -325,7 +318,14 @@ class H2Event
         default: 
         {
           $fname = 'handle'.$fn.'Line';
-          call_user_method($fname, $this, $thisCommand, $data);
+          if(method_exists($this, $fname))
+          {
+            call_user_func(array($this, $fname), $thisCommand, $data);
+          }
+          else
+          {
+            $GLOBALS['log'][] = 'error, handler not found: '.$fname;
+          }
           break;
         }
       } 
@@ -371,6 +371,28 @@ class H2Event
 
   function callHandlers($handlers, $data)
   {
+    foreach($handlers as $h)
+    {
+      $eventHandlerFile = 'events/'.strtolower($h).'.php';
+      $handlerDataFile = 'data/'.strtolower($h).'.handler.json';
+      if(file_exists($eventHandlerFile))
+      {
+        $GLOBALS['log'][] = 'event handler file called: '.$eventHandlerFile;
+        if(file_exists($handlerDataFile))
+        {
+          $handlerRawData = file_get_contents($handlerDataFile);
+          $handlerData = json_decode($handlerRawData, true);
+        }
+        else
+          $handlerData = array();
+        include($eventHandlerFile);
+        $hdEnc = json_encode($handlerData);
+        if($hdEnc != $handlerRawData)
+        {
+          file_put_contents($handlerDataFile, json_encode($handlerData));
+        }
+      }
+    }
     foreach(array('', '_rev') as $addressType)
     {
       $reverseAction = $addressType == '_rev';

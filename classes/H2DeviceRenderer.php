@@ -52,8 +52,10 @@ class H2DeviceRenderer
           class="asCharacter state_<?= $ds['d_state'] ?>" 
           data-state="<?= $ds['d_state'] ?>"
           style="text-align:center;float:left;width:84px;">
-          <div  id="temp_<?= $ds['d_key'] ?>"><?= $thermState['TEMPERATURE'] ?>°C</div>
+          <div  id="temp_<?= $ds['d_key'] ?>"><?= first($thermState['TEMPERATURE'], $ds['d_state']) ?>°C</div>
+          <? if($thermState['SET_TEMPERATURE']) { ?>
           <div class="smalltext" id="settemp_<?= $ds['d_key'] ?>"><?= $thermState['SET_TEMPERATURE'] ?>°C</div>
+          <? } ?>
         </span>
         
         <div class="device_line_text">
@@ -70,7 +72,9 @@ class H2DeviceRenderer
             </select></div>
           <div class="smalltext"> 
             <?= $ds['statusIconStr'] ?>
+            <? if($thermState['HUMIDITY']) { ?>
             <span class="smalltext" id="humidity_<?= $ds['d_key'] ?>">Humidity <?= $thermState['HUMIDITY'] ?>%</span>&nbsp; 
+            <? } ?>
             <span class="smalltext" id="indicator_<?= $ds['d_key'] ?>"></span>
           </div>
         </div>

@@ -8,6 +8,17 @@ $GLOBALS['config']['db'] = array(
     'database' => 'hc',
   );
 
+$GLOBALS['config']['zwave'] = array(
+    'gateways' => array(
+      array(
+        'id' => 'zwave0',
+        'name' => 'Main Gateway', 
+        'url' => 'http://zway1:8083/', 
+        'username' => 'admin', 
+        'password' => 'x7e95f'),
+    ),
+  );
+
 // enter your geo location here
 $GLOBALS['config']['geo'] = array(
     'lat' => 49.635559,
@@ -25,15 +36,6 @@ $GLOBALS['config']['service']['wserverurl'] = '10.32.0.10:1081';
 
 $GLOBALS['config']['cameras'] = array(
   'cams' => array(
-    array(
-      'photoUrl' => 'http://10.32.4.104:8080/photo.jpg', 
-      'videoUrl' => '/cam02/video',
-      'id' => 'cam02', 'title' => '', 'room' => 'Living Room'),
-    #array('photoUrl' => 'http://10.32.4.106:8080/photo.jpg', 'id' => 'cam03', 'title' => '', 'room' => 'Living Room'),
-    array(
-      'photoUrl' => 'http://10.32.0.36:8080/photo.jpg', 
-      'videoUrl' => '/cam04/video',
-      'id' => 'cam04', 'title' => '', 'room' => 'Office'),
     ),
   );
   

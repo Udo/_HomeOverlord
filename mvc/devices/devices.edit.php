@@ -1,3 +1,15 @@
+<?php
+  
+  if($_REQUEST['delcmd'] == md5($ds['d_key'].$ds['d_id']))
+  {
+    db()->remove('devices', $ds['d_key']);
+    ?><script>
+      document.location.href = '/hc/?/devices/show';      
+    </script><?
+  }
+  
+?>
+
 <?= $this->_getSubmenu2('show') ?>
 
 <form action="?" method="post">
@@ -59,6 +71,9 @@ foreach ($editable as $fn => $fncap)
     </td>
     <td width="*">
       <hr/>
+      <input type="button" value="Delete Device" style="float:right"
+        onclick="if(confirm('Are you sure you want to delete this device?')) 
+          document.location.href=document.location.href+'&delcmd=<?= md5($ds['d_key'].$ds['d_id']) ?>';"/>
       <input type="submit" value="Save Changes"/>
     </td>
   </tr>

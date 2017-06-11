@@ -1,0 +1,10 @@
+{
+  "devices" : {
+    "2":   { "name" : "SD101", "location" : "Hallway" }, 
+    "3":   { "name" : "SD102", "location" : "Attic" }, 
+    "4":   { "name" : "SD103", "location" : "Office" }, 
+    "5":   { "name" : "Switch1", "location" : "Attic" }, 
+    "6":   { "name" : "SD104", "location" : "Bedroom" },
+    "7":   { "hidden" : true }
+  }  
+}
