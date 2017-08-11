@@ -24,6 +24,34 @@
       'PIR' => array('short-name' => false, 'icon' => 'circle', 'onoff' => true),
       );
       
+    static function deviceCommand($deviceName, $command, $gateway = false) 
+    { 
+      if(!$gateway)
+        $gateway = $GLOBALS['config']['zwave']['gateways'][0];
+      # http://zway1:8083/ZAutomation/api/v1/devices/ZWayVDev_zway_5-0-37/command/on
+      $url = $gateway['url'].'ZAutomation/api/v1/devices/'.$deviceName.'/command/'.$command;
+      $req = httpRequest(
+        $url, array(), array('headers' => array(
+          'Cookie: ZWAYSession='.(self::$apiState['sid']),
+        )));
+      $data = json_decode($req['body'], true);
+      if($data['code'] == '401')
+      {
+        $data['login-required'] = 'yes';
+        $data['login-data'] = self::DeviceLogin($gateway);
+        if($data['login-data']['auth']['data']['sid']) # looks good, try again
+        {
+          $req = httpRequest(
+            $url, array(), array('headers' => array(
+              'Cookie: ZWAYSession='.(self::$apiState['sid']),
+            )));
+          $data = json_decode($req['body'], true);
+        }
+      }
+      $data['url'] = $url;
+      return($data);
+    }
+      
     static function getDeviceInfo($vdev)
     {
       $deviceType = first($vdev['probeType'], $vdev['deviceType']);

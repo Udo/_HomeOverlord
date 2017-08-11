@@ -24,7 +24,15 @@
       <span class="faint">Device</span>   
     </td>
     <td width="*">
-      <input type="text" style="width: 100%" name="d_name" value="<?= htmlspecialchars(first($ds['d_name'])) ?>"/>
+      <?= htmlspecialchars(first($ds['d_name'], '(unnamed)')) ?>
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:right">
+      <span class="faint">Device ID</span>   
+    </td>
+    <td width="*">
+      <?= htmlspecialchars(first($ds['d_id'], '(unknown ID)')) ?>
     </td>
   </tr>
   <tr>
@@ -33,9 +41,9 @@
     </td>
     <td width="*">
       <?= first($dev['TYPE'], $ds['d_type']) ?>
-      <span class="faint">ID</span> <?= $ds['d_id'] ?> 
+      <span class="faint">ID</span> <?= first($ds['d_id'], '(none)') ?> 
       <span class="faint">Alias</span> <?= first($ds['d_alias'], '#' . $ds['d_key']) ?>  
-      <span class="faint">Name</span> <?= first($ds['d_name']) ?></div>
+      <span class="faint">Name</span> <?= first($ds['d_name'], '(none)') ?></div>
     </td>  
   </tr><?
   if ($ds['d_bus'] == 'HM')
@@ -158,7 +166,10 @@ if(sizeof($groupList) > 0) { ?>
   <td style="text-align:right">Log</td>
   <td><pre style="max-width:600px;font-size: 85%;overflow:auto;"><?
   
-  print(shell_exec('tail -n 500 log/node.log | grep "'.$ds['d_id'].'" | tail'));
+  if($ds['d_id'] != '')
+    print(shell_exec('tail -n 500 log/node.log | grep "'.$ds['d_id'].'" | tail'));
+  else
+    print('(no device id specified)');
   
   ?></pre></td>
   

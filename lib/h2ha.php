@@ -305,6 +305,12 @@ function deviceCommand($deviceKey, $commandType, $value, $by = 'API', $fireEvent
       sendHMCommand($device, $commandType, $value, first($GLOBALS['command-source'], $by), $config, $fireEvent);
       return;
     }
+    else
+    {
+      $hdev = new H2HALDevice($device['d_key']);
+      $hdev->state($value == 1 ? 'on' : 'off');
+      #WriteToFile('log/hal.command.log', $deviceKey.' cmd='.$commandType.' val='.$value.chr(10));
+    }
 
     $sds = array(
       'si_bus' => $device['d_bus'],

@@ -63,6 +63,14 @@ class DevicesController extends H2Controller
     
   }
   
+  function create()
+  {
+    $dds = array();
+    $dkey = o(db)->commit('devices', $dds);
+    header('location: ?/devices/edit&key='.$dkey);
+    die();
+  }
+  
   function ajax_cli()
   {
     $cmd = explode(' ', trim($_REQUEST['q']));

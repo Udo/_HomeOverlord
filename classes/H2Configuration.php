@@ -20,6 +20,7 @@ class H2Configuration
     $items[] = array('icon' => 'flash', 'title' => l10n('events.index'), 'url' => actionUrl('index', 'events'));
     $items[] = array('icon' => 'refresh', 'title' => l10n('devices.pairhm'), 'url' => actionUrl('pairhm', 'devices'));
     $items[] = array('icon' => 'refresh', 'title' => l10n('devices.pairhe'), 'url' => actionUrl('pairhe', 'devices'));
+    $items[] = array('icon' => 'plus', 'title' => l10n('devices.create'), 'url' => actionUrl('create', 'devices'));
     $items[] = array('icon' => 'terminal', 'title' => l10n('devices.cli'), 'url' => actionUrl('cli', 'devices'));
     $items[] = array('icon' => 'dot-circle-o', 'title' => l10n('devices.modes'), 'url' => actionUrl('modes', 'devices'));
     $items[] = array('icon' => 'tablet', 'title' => l10n('devices.clients'), 'url' => actionUrl('clients', 'devices'));

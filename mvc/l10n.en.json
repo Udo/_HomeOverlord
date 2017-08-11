@@ -26,5 +26,6 @@
   "cam.index" : "Surveillance Cameras",
   "cam.single" : "Camera",
   "radiator.minion" : "Info Radiator",
-  "radiator.admin" : "Info Radiators Config"
+  "radiator.admin" : "Info Radiators Config",
+  "devices.create" : "New Device"
 }

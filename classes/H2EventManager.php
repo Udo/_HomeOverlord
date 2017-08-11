@@ -51,6 +51,8 @@
     
     static function getEventsByTarget($deviceDS)
     {
+      if($deviceDS['d_id'] == '')
+        return(array());
       $where = array('e_code LIKE ?', 'e_code LIKE ?', 'e_code LIKE ?', );
       $searchPatterns = array(
         '%'.$deviceDS['d_id'].'%',
