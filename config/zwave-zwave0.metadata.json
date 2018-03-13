@@ -1,10 +1,14 @@
 {
   "devices" : {
-    "2":   { "name" : "SD101", "location" : "Hallway" }, 
     "3":   { "name" : "SD102", "location" : "Attic" }, 
     "4":   { "name" : "SD103", "location" : "Office" }, 
     "5":   { "name" : "Switch1", "location" : "Attic" }, 
     "6":   { "name" : "SD104", "location" : "Bedroom" },
-    "7":   { "hidden" : true }
+    "7":   { "hidden" : true },
+    "8":   { "name" : "SD105", "location" : "Living Room" },
+    "9":   { "name" : "Switch2", "location" : "Living Room" }, 
+    "10":   { "name" : "Switch3", "location" : "Office" }, 
+    "13":   { "name" : "SD101", "location" : "Hallway" }, 
+    "14":   { "name" : "SD106", "location" : "Hallway" }
   }  
 }

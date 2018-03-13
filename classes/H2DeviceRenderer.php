@@ -10,6 +10,8 @@ class H2DeviceRenderer
 
   function display($ds)
   {
+    if($ds['d_type'] == '')
+      return;
     $renderType = cfg('deviceTypeAliases/'.$ds['d_type']);
     if(!$renderType) $renderType = $ds['d_type'];
 
@@ -27,12 +29,27 @@ class H2DeviceRenderer
 
     $renderFunc = 'display'.$renderType;
     $renderFuncBus = $renderFunc.$ds['d_bus'];
+
+    #WriteToFile('log/call-debug.log', 'DEVICE '.json_encode($ds).chr(10));
+
+    #if($ds['d_bus'] != 'HTTP')
+    #{
+    #  print('<div class="device_line">(HTTP)</div>');
+    #  return;
+    #}
+
     if(method_exists($this, $renderFuncBus))
+    {
+      #print('<div class="device_line">'.$renderFuncBus.'</div>');
       $this->{$renderFuncBus}($ds);
+    }
     else if(method_exists($this, $renderFunc))
+    {
+      #print('<div class="device_line">'.$renderFunc.'</div>');
       $this->{$renderFunc}($ds);
-    #else
-    #  print('<div class="device_line">'.$ds['d_type'].'</div>');
+    }
+    /*else
+      print('<div class="device_line">!!!'.$ds['d_type'].'</div>');*/
   } 
   
   function autoConfig($ds)

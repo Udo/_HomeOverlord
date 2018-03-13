@@ -26,6 +26,9 @@
       
     static function deviceCommand($deviceName, $command, $gateway = false) 
     { 
+      if(substr($deviceName, 0, 4) != 'ZWay')
+        # ZWayVDev_zway_5-0-37
+        $deviceName = 'ZWayVDev_zway_'.str_replace(':', '-', $deviceName);
       if(!$gateway)
         $gateway = $GLOBALS['config']['zwave']['gateways'][0];
       # http://zway1:8083/ZAutomation/api/v1/devices/ZWayVDev_zway_5-0-37/command/on
@@ -165,11 +168,11 @@
               $ds['d_added'] = time();
             foreach(array(
               'd_bus' => 'ZW',
-              'd_type' => first($subdev['probeType'], $subdev['deviceType']),
-              'd_room' => $m['location'],
-              'd_name' => first($m['name'], $vdid.':'.$sk),
+              'd_type' => first($ds['d_type'], $subdev['probeType'], $subdev['deviceType']),
+              'd_room' => first($ds['d_room'], $m['location']),
+              'd_name' => first($ds['d_name'], $m['name'], $vdid.':'.$sk),
               'd_id' => $vdid.':'.$sk,
-              'd_visible' => $m['hidden'] ? 'N' : 'Y',
+              'd_visible' => $ds['d_visible'] ? $ds['d_visible'] : ($m['hidden'] ? 'N' : 'Y'),
               'd_state' => $subdev['metrics']['level'],
               ) as $k => $v)
               $ds[$k] = $v;
