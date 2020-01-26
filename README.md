@@ -1,3 +1,5 @@
+# THIS IS HOPELESSLY UNMAINTAINED, DO NOT USE
+
 HomeOverlord
 ===========
 
